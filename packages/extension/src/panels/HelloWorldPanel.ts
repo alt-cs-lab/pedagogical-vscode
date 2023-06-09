@@ -1,4 +1,11 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from "vscode";
+import {
+  Disposable,
+  Webview,
+  WebviewPanel,
+  window,
+  Uri,
+  ViewColumn,
+} from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 
@@ -31,7 +38,10 @@ export class HelloWorldPanel {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Set the HTML content for the webview panel
-    this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
+    this._panel.webview.html = this._getWebviewContent(
+      this._panel.webview,
+      extensionUri
+    );
 
     // Set an event listener to listen for messages passed from the webview context
     this._setWebviewMessageListener(this._panel.webview);
@@ -100,9 +110,19 @@ export class HelloWorldPanel {
    */
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
     // The CSS file from the React build output
-    const stylesUri = getUri(webview, extensionUri, ["dist", "webview-ui", "assets", "index.css"]);
+    const stylesUri = getUri(webview, extensionUri, [
+      "dist",
+      "webview-ui",
+      "assets",
+      "index.css",
+    ]);
     // The JS file from the React build output
-    const scriptUri = getUri(webview, extensionUri, ["dist", "webview-ui", "assets", "index.js"]);
+    const scriptUri = getUri(webview, extensionUri, [
+      "dist",
+      "webview-ui",
+      "assets",
+      "index.js",
+    ]);
 
     const nonce = getNonce();
 

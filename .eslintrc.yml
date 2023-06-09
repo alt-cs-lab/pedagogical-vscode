@@ -5,15 +5,27 @@ env:
   es2021: true
   node: true
 extends:
-  - standard-with-typescript
+  - plugin:@typescript-eslint/recommended
   - plugin:react/recommended
   - prettier
+settings:
+  react:
+    version: detect
 parserOptions:
   ecmaVersion: latest
   project:
     - packages/*/tsconfig.json
-plugins:
-  - react
 ignorePatterns:
   - dist
-rules: {}
+rules:
+  {
+    "@typescript-eslint/naming-convention": "warn",
+    "@typescript-eslint/semi": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/naming-convention": "off",
+    "react/react-in-jsx-scope": "off",
+    "curly": "warn",
+    "eqeqeq": "warn",
+    "no-throw-literal": "warn",
+    "semi": "off",
+  }
