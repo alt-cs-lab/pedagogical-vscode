@@ -1,0 +1,43 @@
+{
+  "name": "hello-world-react-vite",
+  "displayName": "hello-world-react-vite",
+  "description": "A hello world sample extension to demonstrate using React + Vite with the Webview UI Toolkit for VS Code.",
+  "version": "0.0.1",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "main": "./dist/extension/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "hello-world.showHelloWorld",
+        "title": "Hello World (React + Vite): Show"
+      }
+    ]
+  },
+  "scripts": {
+    "watch": "concurrently 'yarn watch:extension' 'yarn watch:webview-ui'",
+    "watch:extension": "yarn workspace extension watch",
+    "watch:webview-ui": "yarn workspace webview-ui watch",
+    "build": "concurrently 'yarn build:extension' 'yarn build:webview-ui'",
+    "build:extension": "yarn workspace extension build",
+    "build:webview-ui": "yarn workspace webview-ui build"
+  },
+  "packageManager": "yarn@3.6.0",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "concurrently": "^8.2.0",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-standard-with-typescript": "latest",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "latest",
+    "prettier": "^2.8.8",
+    "typescript": "*"
+  }
+}
