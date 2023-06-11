@@ -19,10 +19,10 @@ ignorePatterns:
   - dist
 rules:
   {
-    "@typescript-eslint/naming-convention": "warn",
+    "@typescript-eslint/naming-convention": "off",
     "@typescript-eslint/semi": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/naming-convention": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "react/react-in-jsx-scope": "off",
     "curly": "warn",
     "eqeqeq": "warn",

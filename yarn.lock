@@ -684,7 +684,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^5.50.0, @typescript-eslint/parser@npm:^5.59.9":
+"@typescript-eslint/parser@npm:^5.59.9":
   version: 5.59.9
   resolution: "@typescript-eslint/parser@npm:5.59.9"
   dependencies:
@@ -794,6 +794,13 @@ __metadata:
     react-refresh: ^0.13.0
     resolve: ^1.22.0
   checksum: 9e083e561145cad00bdd2bc93d56b7ec8e209a05c4a9ebce8d1891e88e74de7eda197934c716023a1642582f250e330da6269e0cd1dc2285762f628c82f32229
+  languageName: node
+  linkType: hard
+
+"@vscode/debugprotocol@npm:^1.61.0":
+  version: 1.61.0
+  resolution: "@vscode/debugprotocol@npm:1.61.0"
+  checksum: 14d4f6d2f385e15a39ba7aa506c25d3e2a2d6a22ebb6ee9d354062634f292b1ce3b0d9b5ac1c098052e3f6e572a1571bf0db647d13d85157b9a50645a0f1c69f
   languageName: node
   linkType: hard
 
@@ -1698,35 +1705,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-standard-with-typescript@npm:latest":
-  version: 35.0.0
-  resolution: "eslint-config-standard-with-typescript@npm:35.0.0"
-  dependencies:
-    "@typescript-eslint/parser": ^5.50.0
-    eslint-config-standard: 17.0.0
-  peerDependencies:
-    "@typescript-eslint/eslint-plugin": ^5.50.0
-    eslint: ^8.0.1
-    eslint-plugin-import: ^2.25.2
-    eslint-plugin-n: ^15.0.0
-    eslint-plugin-promise: ^6.0.0
-    typescript: "*"
-  checksum: 37ff8a2451cdb3754cd1901e07a7f0a4aa8b65db5f8ac400cc844597e922d16d5814f9d8d60a1ae4da7f3d202fcbe6158e924de7bdea75864c67b092f30724f3
-  languageName: node
-  linkType: hard
-
-"eslint-config-standard@npm:17.0.0":
-  version: 17.0.0
-  resolution: "eslint-config-standard@npm:17.0.0"
-  peerDependencies:
-    eslint: ^8.0.1
-    eslint-plugin-import: ^2.25.2
-    eslint-plugin-n: ^15.0.0
-    eslint-plugin-promise: ^6.0.0
-  checksum: dc0ed51e186fd963ff2c0819d33ef580afce11b11036cbcf5e74427e26e514c2b1be96b8ffe74fd2fd00263554a0d49cc873fcf76f17c3dfdba614b45d7fd7da
-  languageName: node
-  linkType: hard
-
 "eslint-import-resolver-node@npm:^0.3.7":
   version: 0.3.7
   resolution: "eslint-import-resolver-node@npm:0.3.7"
@@ -2020,6 +1998,7 @@ __metadata:
     "@types/glob": ^7.1.3
     "@types/node": ^12.11.7
     "@types/vscode": ^1.46.0
+    "@vscode/debugprotocol": ^1.61.0
     glob: ^7.1.6
     typescript: ^4.1.3
   languageName: unknown
@@ -2427,7 +2406,6 @@ __metadata:
     concurrently: ^8.2.0
     eslint: ^8.42.0
     eslint-config-prettier: ^8.8.0
-    eslint-config-standard-with-typescript: latest
     eslint-plugin-import: ^2.25.2
     eslint-plugin-n: ^15.0.0
     eslint-plugin-promise: ^6.0.0

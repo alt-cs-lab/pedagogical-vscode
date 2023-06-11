@@ -5,7 +5,19 @@
   "tasks": [
     {
       "type": "npm",
-      "script": "watch:extension",
+      "script": "build",
+      "problemMatcher": "$tsc",
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "npm",
+      "script": "watch",
       "problemMatcher": "$tsc-watch",
       "isBackground": true,
       "presentation": {
@@ -13,7 +25,7 @@
       },
       "group": {
         "kind": "build",
-        "isDefault": true
+        "isDefault": false
       }
     }
   ]
