@@ -3,6 +3,8 @@ import { Message } from "../message/Message";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { useEffect } from "react";
 import { vscode } from "../../util/vscode";
+import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
+import { clearMessages } from "./appSlice";
 
 export default function App() {
   const state = useAppSelector((state) => state.app);
@@ -15,6 +17,9 @@ export default function App() {
   return (
     <main>
       <h1>Debug Messages</h1>
+      <VSCodeButton onClick={() => dispatch(clearMessages())} appearance="secondary">
+        Clear Messages
+      </VSCodeButton>
       <div>
         {state.messages.map((msg) => (
           <Message key={msg.id} message={msg.message} />

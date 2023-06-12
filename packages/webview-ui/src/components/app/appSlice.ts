@@ -33,9 +33,12 @@ export const appSlice = createSlice({
       const msg = { id: state.nextId++, message: action.payload };
       state.messages.push(msg);
     },
+    clearMessages: (state) => {
+      state.messages = [];
+    },
   },
 });
 
-export const { addMessage } = appSlice.actions;
+export const { addMessage, clearMessages } = appSlice.actions;
 
 export default appSlice.reducer;

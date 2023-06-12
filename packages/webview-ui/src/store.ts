@@ -20,7 +20,7 @@ export const store = configureStore({
 
 window.addEventListener("message", (ev) => {
   if (ev.data.type === "debugProtocolMessage") {
-    store.dispatch(addMessage(ev.data));
+    store.dispatch(addMessage(ev.data.message));
   }
 });
 

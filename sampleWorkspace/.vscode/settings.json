@@ -1,0 +1,9 @@
+{
+    // to make the debug Code window stand out
+    // based on built-in Red theme
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#770000",
+        "titleBar.inactiveBackground": "#772222",
+        "activityBar.background": "#770000"
+    }
+}
