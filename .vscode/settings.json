@@ -1,6 +1,7 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
+  "editor.detectIndentation": true,
   "editor.indentSize": 2,
 
   // https://github.com/prettier/prettier-vscode/issues/3000#issuecomment-1547290873

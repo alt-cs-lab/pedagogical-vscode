@@ -1,6 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
+import { DebugProtocol } from "@vscode/debugprotocol";
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -87,8 +88,11 @@ export class HelloWorldPanel {
     }
   }
 
-  public static postMessage(message: any) {
-    HelloWorldPanel.currentPanel?._panel.webview.postMessage(message);
+  public static postDebugTrackerMessage(message: DebugProtocol.ProtocolMessage) {
+    HelloWorldPanel.currentPanel?._panel.webview.postMessage({
+      type: "debugProtocolMessage",
+      message: message,
+    });
   }
 
   /**

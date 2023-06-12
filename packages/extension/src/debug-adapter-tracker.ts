@@ -26,7 +26,7 @@ export class PedagogicalDebugAdapterTrackerFactory implements DebugAdapterTracke
 class PedagogicalDebugAdapterTracker implements DebugAdapterTracker {
   onDidSendMessage(message: DebugProtocol.ProtocolMessage) {
     console.log(message);
-    HelloWorldPanel.postMessage(message);
+    HelloWorldPanel.postDebugTrackerMessage(message);
   }
 
   onError(error: Error) {
