@@ -6,7 +6,7 @@ export function activate(context: ExtensionContext) {
   const disposables = [
     // Create the show hello world command
     commands.registerCommand("hello-world.showHelloWorld", () => {
-      HelloWorldPanel.render(context.extensionUri);
+      HelloWorldPanel.render(context);
     }),
 
     // Register our debug adapter tracker to track the python debugger

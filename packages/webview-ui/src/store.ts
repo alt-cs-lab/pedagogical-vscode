@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import appReducer, { AppState } from "./components/app/appSlice";
 import { vscode } from "./util/vscode";
 import { addMessage } from "./components/app/appSlice";
+import { devToolsEnhancer } from "@redux-devtools/remote";
 
 function getPreloadedState(): { app: AppState } | undefined {
   const state = vscode.getState();
@@ -11,11 +12,22 @@ function getPreloadedState(): { app: AppState } | undefined {
   return undefined;
 }
 
+const scriptData = document.getElementById("scriptData") as any;
+const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
+
 export const store = configureStore({
   reducer: {
     app: appReducer,
   },
   preloadedState: getPreloadedState(),
+  enhancers: [
+    devToolsEnhancer({
+      hostname: "localhost",
+      port: 8000,
+      secure: false,
+      realtime: isEnvDevelopment,
+    }),
+  ],
 });
 
 window.addEventListener("message", (ev) => {
