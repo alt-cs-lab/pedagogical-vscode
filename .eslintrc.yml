@@ -17,6 +17,7 @@ parserOptions:
     - packages/*/tsconfig.json
 ignorePatterns:
   - dist
+  - packages/webview-ui/esbuild.mjs
 rules:
   {
     "@typescript-eslint/naming-convention": "off",

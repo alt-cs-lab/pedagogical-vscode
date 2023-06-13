@@ -27,24 +27,7 @@
       "script": "watch",
       "path": "packages/webview-ui",
       "isBackground": true,
-      // custom problem matcher so vscode can properly use vite to build the extension before debugging
-      "problemMatcher": {
-        "owner": "typescript",
-        "fileLocation": "absolute",
-        "pattern": {
-          "regexp": "(^.*):(\\d+):(\\d+):\\s+(WARNING|ERROR):\\s+(.*$)",
-          "file": 1,
-          "line": 2,
-          "column": 3,
-          "severity": 4,
-          "message": 5
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^build started...",
-          "endsPattern": "^built in \\d+ms.$|^\\d+ \\| "
-        }
-      },
+      "problemMatcher": "$esbuild-watch",
       "group": "build"
     },
     {

@@ -1,37 +1,52 @@
-# Hello World (React + Vite)
+# Pedagogical IDE
 
-This is an implementation of the default [Hello World](https://github.com/microsoft/vscode-webview-ui-toolkit-samples/tree/main/default/hello-world) sample extension that demonstrates how to set up and use a [React](https://reactjs.org/) + [Vite](https://vitejs.dev/) + [Webview UI Toolkit](https://github.com/microsoft/vscode-webview-ui-toolkit) webview extension.
+# Development
 
-![A screenshot of the sample extension.](./assets/hello-world.png)
+## Setup
 
-## Documentation
+After cloning this repo and opening in VS Code, use `yarn` to intall packages:
 
-For a deeper dive into how this sample works, read the guides below.
-
-- [Extension structure](./docs/extension-structure.md)
-- [Extension commands](./docs/extension-commands.md)
-- [Extension development cycle](./docs/extension-development-cycle.md)
-
-## Run The Sample
-
-```bash
-# Copy sample extension locally
-npx degit microsoft/vscode-webview-ui-toolkit-samples/frameworks/hello-world-react-vite hello-world
-
-# Navigate into sample directory
-cd hello-world
-
-# Install dependencies for both the extension and webview UI source code
-npm run install:all
-
-# Build webview UI source code
-npm run build:webview
-
-# Open sample in VS Code
-code .
+```sh
+yarn install
 ```
 
-Once the sample is open inside VS Code you can run the extension by doing the following:
+## Workspaces
 
-1. Press `F5` to open a new Extension Development Host window
-2. Inside the host window, open the command palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac) and type `Hello World (React + Vite): Show`
+This project is a monorepo with three workspaces under the `packages` folder:
+
+- `extension` is the entrypoint for the VS Code extension
+- `webview-ui` is the React app used in the extension's WebViewPanel
+- `shared` contains shared type definitions for messages sent between the React app and the WebViewPanel
+
+## Debugging
+
+Run the `Run Extension` launch config (F5 by default) to start debugging the extension. This starts the `watch` scripts for `extension` and `webview-ui`, then starts a new VS Code instance with the extension loaded and the `sampleWorkspace` folder opened. This also gives the VS Code window a red titlebar and sidebar to make it stand out.
+
+The `watch` scripts are very fast. If you leave them running in the background, you can start debugging at any time without waiting for builds to finish.
+
+### Debugging `extension`
+
+Breakpoints in `extension` will work just like any other app.
+
+### Debugging `webview-ui`
+
+Breakpoints in `webview-ui` will not be recognized if they are set through VS Code. Instead, you need to open developer tools in the launched VS Code instance and debug from there:
+
+- In VS Code with the extension loaded, press `Ctrl+Shift+I` (or `Ctrl+Shift+P` and search `Toggle Developer Tools`)
+- Click the `Sources` tab, then the `Filesystem` tab
+- Click `Add folder to workspace` and select the `packages/webview-ui/src` path in the repo
+- Set your breakpoints as desired.
+
+The webview is not loaded until it needs to, so the first breakpoint you set might not work until after it's loaded for the first time. Debugging should work fine after that. If you edited a file and it didn't update in the developer tools, just close and re-open it.
+
+### Using Redux Devtools
+
+Redux Devtools is a very useful tool when debugging Redux stores. store in `webview-ui` is configured to connect to a devtools server if the extension is in development mode. Run this command (either before or after starting the extension) to start Redux Devtools:
+
+```sh
+yarn redux-devtools
+```
+
+This starts the devtools server on `ws://localhost:8000` and launches a standalone devtools app. You can also use a different devtools app if you prefer.
+
+If the webview is open and you don't see the instance in devtools, wait a few seconds then reload devtools with `Ctrl+R`, or go to settings and disconnect/reconnect.

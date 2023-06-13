@@ -22,8 +22,8 @@
     "vscode:prepublish": "yarn build",
     "watch": "concurrently 'yarn workspace extension watch' 'yarn workspace webview-ui watch'",
     "build": "yarn workspace extension compile && yarn workspace webview-ui build",
-    "start": "yarn workspace webview-ui start",
-    "lint": "yarn eslint ."
+    "lint": "yarn eslint .",
+    "redux-devtools": "yarn workspace webview-ui run redux-devtools"
   },
   "packageManager": "yarn@3.6.0",
   "devDependencies": {

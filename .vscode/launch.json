@@ -13,9 +13,6 @@
         "--extensionDevelopmentPath=${workspaceFolder}",
         "${workspaceFolder}/sampleWorkspace"
       ],
-      "outFiles": [
-        "${workspaceFolder}/dist/**/*.js"
-      ],
       "preLaunchTask": "${defaultBuildTask}",
       "sourceMaps": true
     }
