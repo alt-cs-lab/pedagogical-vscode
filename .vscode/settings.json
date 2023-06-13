@@ -3,6 +3,10 @@
   "editor.formatOnSave": true,
   "editor.detectIndentation": true,
   "editor.indentSize": 2,
+  "[typescript][typescriptreact][json]": {
+    "editor.indentSize": 2,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
 
   // https://github.com/prettier/prettier-vscode/issues/3000#issuecomment-1547290873
   "prettier.prettierPath": "./node_modules/prettier"

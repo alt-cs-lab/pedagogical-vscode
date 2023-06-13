@@ -7,10 +7,12 @@ import {
   ViewColumn,
   ExtensionContext,
   ExtensionMode,
+  debug,
 } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { DebugProtocol } from "@vscode/debugprotocol";
+import { WebviewMessage, DebugRequest } from "shared";
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -97,13 +99,6 @@ export class HelloWorldPanel {
     }
   }
 
-  public static postDebugTrackerMessage(message: DebugProtocol.ProtocolMessage) {
-    HelloWorldPanel.currentPanel?._panel.webview.postMessage({
-      type: "debugProtocolMessage",
-      message: message,
-    });
-  }
-
   /**
    * Defines and returns the HTML that should be rendered within the webview panel.
    *
@@ -170,21 +165,34 @@ export class HelloWorldPanel {
    */
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
-      (message: any) => {
-        const command = message.command;
-        const text = message.text;
-
-        switch (command) {
-          case "hello":
-            // Code that should run in response to the hello message command
-            window.showInformationMessage(text);
-            return;
-          // Add more switch case statements here as more webview message commands
-          // are created within the webview context (i.e. inside media/main.js)
+      (message: WebviewMessage) => {
+        switch (message.type) {
+          case "debugRequest":
+            this.processDebugRequest(message.data).then((response) =>
+              HelloWorldPanel.postWebviewMessage({
+                type: "debugResponse",
+                seq: message.seq,
+                data: response,
+              })
+            );
+            break;
+          default:
+            break;
         }
       },
       undefined,
       this._disposables
     );
+  }
+
+  public static postWebviewMessage(message: WebviewMessage) {
+    HelloWorldPanel.currentPanel?._panel.webview.postMessage(message);
+  }
+
+  private async processDebugRequest(req: DebugRequest) {
+    return (await debug.activeDebugSession?.customRequest(
+      req.command,
+      req.args
+    )) as DebugProtocol.Response;
   }
 }

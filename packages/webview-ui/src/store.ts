@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import appReducer, { AppState } from "./components/app/appSlice";
+import appReducer, { AppState } from "./features/app/appSlice";
 import { vscode } from "./util/vscode";
-import { addMessage } from "./components/app/appSlice";
+import { addMessage } from "./features/app/appSlice";
 import { devToolsEnhancer } from "@redux-devtools/remote";
+import { WebviewMessage } from "shared";
+import { DebugProtocol } from "@vscode/debugprotocol";
 
 function getPreloadedState(): { app: AppState } | undefined {
   const state = vscode.getState();
@@ -31,8 +33,9 @@ export const store = configureStore({
 });
 
 window.addEventListener("message", (ev) => {
-  if (ev.data.type === "debugProtocolMessage") {
-    store.dispatch(addMessage(ev.data.message));
+  const msg = ev.data as WebviewMessage;
+  if (msg.type === "debugTrackerMessage") {
+    store.dispatch(addMessage(msg as DebugProtocol.ProtocolMessage));
   }
 });
 

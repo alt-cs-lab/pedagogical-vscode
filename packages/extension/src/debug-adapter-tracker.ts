@@ -10,8 +10,8 @@ import { HelloWorldPanel } from "./panels/HelloWorldPanel";
 
 /** Debug adapter tracker factory to be registered with vscode */
 export class PedagogicalDebugAdapterTrackerFactory implements DebugAdapterTrackerFactory {
-  createDebugAdapterTracker(_session: DebugSession): ProviderResult<DebugAdapterTracker> {
-    return new PedagogicalDebugAdapterTracker();
+  createDebugAdapterTracker(session: DebugSession): ProviderResult<DebugAdapterTracker> {
+    return new PedagogicalDebugAdapterTracker(session);
   }
 }
 
@@ -24,9 +24,15 @@ export class PedagogicalDebugAdapterTrackerFactory implements DebugAdapterTracke
  * @see https://microsoft.github.io/debug-adapter-protocol/specification for the specification.
  */
 class PedagogicalDebugAdapterTracker implements DebugAdapterTracker {
+  private _session: DebugSession;
+
+  constructor(session: DebugSession) {
+    this._session = session;
+  }
+
   onDidSendMessage(message: DebugProtocol.ProtocolMessage) {
     console.log(message);
-    HelloWorldPanel.postDebugTrackerMessage(message);
+    HelloWorldPanel.postWebviewMessage({ type: "debugTrackerMessage", data: message });
   }
 
   onError(error: Error) {

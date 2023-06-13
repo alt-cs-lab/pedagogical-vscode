@@ -2,8 +2,8 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es6",
-    "outDir": "../../dist/extension",
-    "lib": ["es6", "dom"],
+    "outDir": "../../dist/shared",
+    "lib": ["es6"],
     "sourceMap": true,
     "rootDir": "src",
     "strict": true
