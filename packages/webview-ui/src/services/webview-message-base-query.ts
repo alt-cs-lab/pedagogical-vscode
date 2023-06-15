@@ -1,16 +1,17 @@
 import { BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { vscode } from "../util/vscode";
 import AsyncLock from "async-lock";
+import { WebviewMessage } from "shared";
 
-type WebviewMessage = {
-  type: string;
-  message: any;
-};
-
-
-const vscodeMessageQuery: BaseQueryFn = (message: WebviewMessage): Promise<any> => {
+export const vscodeMessageQuery: BaseQueryFn = (message: WebviewMessage<any>): Promise<any> => {
   return MessageHandler.postMessageAndWaitAsync(message);
 };
+
+window.addEventListener("message", (ev) => {
+  if (ev.data.seq) {
+    MessageHandler.completeMessagePromise(ev.data.seq, ev.data);
+  }
+});
 
 type PromiseCallbacks = {
   resolve: (value?: any) => void;
@@ -60,7 +61,7 @@ class MessageHandler {
    * @param timeout The time in ms to wait for a response before the promis is rejected.
    * @returns A Promise, resolved and returning a message response, or rejected due to an error or timeout.
    */
-  public static postMessageAndWaitAsync(message: WebviewMessage | any, timeout = 1000): Promise<any> {
+  public static postMessageAndWaitAsync(message: WebviewMessage<any>, timeout = 1000): Promise<any> {
     const seq = ++this.seqCounter;
 
     // Return a promise that can be awaited to wait for a response
@@ -88,7 +89,7 @@ class MessageHandler {
    * This does nothing if the promise was resolved earlier.
    * @param seq The sequence number for the request that this message is responding to
    * @param value The value to return the promise with (message object for resolve, or Error for reject, etc.)
-   * @param result "resolve" for success or "reject" for error
+   * @param result "resolve" for success (default) or "reject" for error
    */
   public static async completeMessagePromise(
     seq: number,

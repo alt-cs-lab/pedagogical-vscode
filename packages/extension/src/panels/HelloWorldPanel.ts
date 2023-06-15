@@ -165,16 +165,23 @@ export class HelloWorldPanel {
    */
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
-      (message: WebviewMessage) => {
+      (message: WebviewMessage<any>) => {
         switch (message.type) {
+          case "ping":
+            HelloWorldPanel.postWebviewMessage({
+              seq: message.seq,
+              type: "ping",
+              data: "pong",
+            });
+            break;
           case "debugRequest":
-            this.processDebugRequest(message.data).then((response) =>
+            this.processDebugRequest(message.data).then((response) => {
               HelloWorldPanel.postWebviewMessage({
-                type: "debugResponse",
                 seq: message.seq,
+                type: "debugRequest",
                 data: response,
-              })
-            );
+              });
+            });
             break;
           default:
             break;
@@ -185,11 +192,11 @@ export class HelloWorldPanel {
     );
   }
 
-  public static postWebviewMessage(message: WebviewMessage) {
+  public static postWebviewMessage(message: WebviewMessage<any>) {
     HelloWorldPanel.currentPanel?._panel.webview.postMessage(message);
   }
 
-  private async processDebugRequest(req: DebugRequest) {
+  private async processDebugRequest(req: DebugRequest<any>) {
     return (await debug.activeDebugSession?.customRequest(
       req.command,
       req.args

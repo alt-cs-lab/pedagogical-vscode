@@ -7,12 +7,12 @@ import { DebugProtocol as DP } from "@vscode/debugprotocol";
  * @param args The arguments object associated with that command
  * @returns  The response object associated with that command
  */
-export async function sendDebugRequest<C extends keyof DebugRequestTypes>(
-  command: C,
-  args?: DebugRequestArguments<C>
-): Promise<DebugResponse<C>> {
-  throw new Error("TODO: not yet implemented");
-}
+// export async function sendDebugRequest<C extends keyof DebugRequestTypes>(
+//   command: C,
+//   args?: DebugRequestArguments<C>
+// ): Promise<DebugResponse<C>> {
+//   throw new Error("TODO: not yet implemented");
+// }
 
 export type DebugRequest<C extends keyof DebugRequestTypes> = {
   command: C;
@@ -75,4 +75,4 @@ type DebugRequestTypes = {
   readMemory: [DP.ReadMemoryArguments, DP.ReadMemoryResponse];
   writeMemory: [DP.WriteMemoryArguments, DP.WriteMemoryResponse];
   disassemble: [DP.DisassembleArguments, DP.DisassembleResponse];
-}
+};

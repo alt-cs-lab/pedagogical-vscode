@@ -1,15 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
 import messagesReducer, { addMessage } from "./features/message/messagesSlice";
 import { devToolsEnhancer } from "@redux-devtools/remote";
-import { WebviewMessage } from "shared";
+import { debugAdapterApi } from "./services/debug-adapter";
 
 const scriptData = document.getElementById("scriptData") as any;
 const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
 
 export const store = configureStore({
   reducer: {
+    [debugAdapterApi.reducerPath]: debugAdapterApi.reducer,
     messages: messagesReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(debugAdapterApi.middleware),
   // preloadedState: getPreloadedState(),
   enhancers: [
     devToolsEnhancer({
@@ -22,7 +25,7 @@ export const store = configureStore({
 });
 
 window.addEventListener("message", (ev) => {
-  const msg = ev.data as WebviewMessage;
+  const msg = ev.data;
   if (msg.type === "debugTrackerMessage") {
     store.dispatch(addMessage(msg.data));
   }
