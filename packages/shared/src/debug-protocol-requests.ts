@@ -9,10 +9,17 @@ import { DebugProtocol as DP } from "@vscode/debugprotocol";
  */
 export async function sendDebugRequest<C extends keyof DebugRequestTypes>(
   command: C,
-  args?: DebugRequestTypes[C][0]
-): Promise<DebugRequestTypes[C][1]> {
+  args?: DebugRequestArguments<C>
+): Promise<DebugResponse<C>> {
   throw new Error("TODO: not yet implemented");
 }
+
+export type DebugRequest<C extends keyof DebugRequestTypes> = {
+  command: C;
+  args?: DebugRequestArguments<C>;
+};
+export type DebugRequestArguments<C extends keyof DebugRequestTypes> = DebugRequestTypes[C][0];
+export type DebugResponse<C extends keyof DebugRequestTypes> = DebugRequestTypes[C][1];
 
 /**
  * A collection of the auto-generated debug protocol types,
@@ -21,9 +28,9 @@ export async function sendDebugRequest<C extends keyof DebugRequestTypes>(
  * Each key is the command string passed to the debug adapter.
  * Each value is a tuple containing the respective Arguments and Response types for the command.
  */
-// tip: use the multi-select tool (middle-click + drag) if you need to edit a bunch of stuff
+// tip: try the multi-select tool (middle-click + drag) if you need to edit a bunch of stuff
 // prettier-ignore
-interface DebugRequestTypes extends Record<string, [object | undefined, DP.Response]> {
+type DebugRequestTypes = {
   cancel: [DP.CancelArguments, DP.CancelResponse];
   runInTerminal: [DP.RunInTerminalRequestArguments, DP.RunInTerminalResponse];
   startDebugging: [DP.StartDebuggingRequestArguments, DP.StartDebuggingResponse];
