@@ -1,4 +1,4 @@
-import { useGetThreadsQuery } from "../../services/debug-adapter";
+import { useGetThreadsQuery } from "../../services/debugAdapterApi";
 
 export const Threads = () => {
   const { data, error, isLoading } = useGetThreadsQuery(undefined, { pollingInterval: 3000 });

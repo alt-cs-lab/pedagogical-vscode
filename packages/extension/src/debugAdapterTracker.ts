@@ -7,6 +7,7 @@ import {
 } from "vscode";
 import { DebugProtocol } from "@vscode/debugprotocol";
 import { HelloWorldPanel } from "./panels/HelloWorldPanel";
+import { DebugEvent } from "shared";
 
 /** Debug adapter tracker factory to be registered with vscode */
 export class PedagogicalDebugAdapterTrackerFactory implements DebugAdapterTrackerFactory {
@@ -32,7 +33,12 @@ class PedagogicalDebugAdapterTracker implements DebugAdapterTracker {
 
   onDidSendMessage(message: DebugProtocol.ProtocolMessage) {
     console.log(message);
-    HelloWorldPanel.postWebviewMessage({ type: "debugTrackerMessage", data: message });
+    if (message.type === "event") {
+      HelloWorldPanel.postWebviewMessage({
+        type: "debugEvent",
+        data: message as unknown as DebugEvent,
+      });
+    }
   }
 
   onError(error: Error) {

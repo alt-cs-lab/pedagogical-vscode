@@ -1,6 +1,6 @@
 import { commands, debug, ExtensionContext } from "vscode";
 import { HelloWorldPanel } from "./panels/HelloWorldPanel";
-import { PedagogicalDebugAdapterTrackerFactory } from "./debug-adapter-tracker";
+import { PedagogicalDebugAdapterTrackerFactory } from "./debugAdapterTracker";
 
 export function activate(context: ExtensionContext) {
   const disposables = [

@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
-import messagesReducer, { addMessage } from "./features/message/messagesSlice";
+import { eventsReducer } from "./features/events/eventsSlice";
 import { devToolsEnhancer } from "@redux-devtools/remote";
-import { debugAdapterApi } from "./services/debug-adapter";
+import { debugAdapterApi } from "./services/debugAdapterApi";
 
 const scriptData = document.getElementById("scriptData") as any;
 const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
@@ -9,10 +9,9 @@ const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
 export const store = configureStore({
   reducer: {
     [debugAdapterApi.reducerPath]: debugAdapterApi.reducer,
-    messages: messagesReducer,
+    events: eventsReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(debugAdapterApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(debugAdapterApi.middleware),
   // preloadedState: getPreloadedState(),
   enhancers: [
     devToolsEnhancer({
@@ -22,13 +21,6 @@ export const store = configureStore({
       realtime: isEnvDevelopment,
     }),
   ],
-});
-
-window.addEventListener("message", (ev) => {
-  const msg = ev.data;
-  if (msg.type === "debugTrackerMessage") {
-    store.dispatch(addMessage(msg.data));
-  }
 });
 
 export type RootState = ReturnType<typeof store.getState>;

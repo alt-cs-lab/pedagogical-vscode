@@ -12,7 +12,7 @@ import {
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { DebugProtocol } from "@vscode/debugprotocol";
-import { WebviewMessage, DebugRequest } from "shared";
+import { WebviewMessage, DebugRequest, DebugResponse } from "shared";
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -165,21 +165,21 @@ export class HelloWorldPanel {
    */
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
-      (message: WebviewMessage<any>) => {
+      (message: WebviewMessage) => {
         switch (message.type) {
           case "ping":
             HelloWorldPanel.postWebviewMessage({
-              seq: message.seq,
-              type: "ping",
+              msgSeq: message.msgSeq,
+              type: "pong",
               data: "pong",
             });
             break;
           case "debugRequest":
-            this.processDebugRequest(message.data).then((response) => {
+            this.processDebugRequest(message.data).then((responseBody) => {
               HelloWorldPanel.postWebviewMessage({
-                seq: message.seq,
-                type: "debugRequest",
-                data: response,
+                msgSeq: message.msgSeq,
+                type: "debugResponse",
+                data: { ...responseBody, command: message.data.command } as DebugResponse,
               });
             });
             break;
@@ -192,14 +192,14 @@ export class HelloWorldPanel {
     );
   }
 
-  public static postWebviewMessage(message: WebviewMessage<any>) {
+  public static postWebviewMessage(message: WebviewMessage) {
     HelloWorldPanel.currentPanel?._panel.webview.postMessage(message);
   }
 
-  private async processDebugRequest(req: DebugRequest<any>) {
+  private async processDebugRequest(req: DebugRequest) {
     return (await debug.activeDebugSession?.customRequest(
       req.command,
       req.args
-    )) as DebugProtocol.Response;
+    )) as DebugProtocol.Response["body"];
   }
 }

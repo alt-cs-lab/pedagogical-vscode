@@ -1,2 +1,2 @@
-export * from "./debug-protocol-requests";
-export * from "./webview-message";
+export * from "./debugProtocol";
+export * from "./webviewMessage";
