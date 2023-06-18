@@ -1,18 +1,16 @@
-import {
-  DebugAdapterTracker,
-  DebugAdapterTrackerFactory,
-  DebugSession,
-  ProviderResult,
-  window,
-} from "vscode";
+import * as vscode from "vscode";
 import { DebugProtocol } from "@vscode/debugprotocol";
-import { HelloWorldPanel } from "./panels/HelloWorldPanel";
-import { DebugEvent } from "shared";
+
+type OnDidSendMessageEvent = (message: DebugProtocol.ProtocolMessage) => void;
 
 /** Debug adapter tracker factory to be registered with vscode */
-export class PedagogicalDebugAdapterTrackerFactory implements DebugAdapterTrackerFactory {
-  createDebugAdapterTracker(session: DebugSession): ProviderResult<DebugAdapterTracker> {
-    return new PedagogicalDebugAdapterTracker(session);
+export class PedagogicalDebugAdapterTrackerFactory implements vscode.DebugAdapterTrackerFactory {
+  constructor(private onDidSendMessageEvent: OnDidSendMessageEvent) {}
+
+  createDebugAdapterTracker(
+    _session: vscode.DebugSession
+  ): vscode.ProviderResult<vscode.DebugAdapterTracker> {
+    return new PedagogicalDebugAdapterTracker(this.onDidSendMessageEvent);
   }
 }
 
@@ -24,36 +22,22 @@ export class PedagogicalDebugAdapterTrackerFactory implements DebugAdapterTracke
  *
  * @see https://microsoft.github.io/debug-adapter-protocol/specification for the specification.
  */
-class PedagogicalDebugAdapterTracker implements DebugAdapterTracker {
-  private _session: DebugSession;
-
-  constructor(session: DebugSession) {
-    this._session = session;
-  }
-
-  onDidSendMessage(message: DebugProtocol.ProtocolMessage) {
-    console.log(message);
-    if (message.type === "event") {
-      HelloWorldPanel.postWebviewMessage({
-        type: "debugEvent",
-        data: message as unknown as DebugEvent,
-      });
-    }
-  }
+class PedagogicalDebugAdapterTracker implements vscode.DebugAdapterTracker {
+  constructor(public onDidSendMessage: OnDidSendMessageEvent) {}
 
   onError(error: Error) {
-    window.showErrorMessage(`${error.name}: ${error.message}`);
+    vscode.window.showErrorMessage(`${error.name}: ${error.message}`);
   }
 
   onExit(code: number | undefined, signal: string | undefined) {
-    window.showInformationMessage(`DAP exited: ${signal} (${code})`);
+    vscode.window.showInformationMessage(`DAP exited: ${signal} (${code})`);
   }
 
   onWillStartSession() {
-    window.showInformationMessage("Starting session");
+    vscode.window.showInformationMessage("Starting session");
   }
 
   onWillStopSession() {
-    window.showInformationMessage("Stopping session");
+    vscode.window.showInformationMessage("Stopping session");
   }
 }
