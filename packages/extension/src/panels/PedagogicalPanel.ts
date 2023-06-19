@@ -1,53 +1,113 @@
-import * as vscode from "vscode";
+import {
+  Disposable,
+  Webview,
+  WebviewPanel,
+  window,
+  Uri,
+  ViewColumn,
+  ExtensionContext,
+  ExtensionMode,
+  debug,
+} from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { DebugProtocol } from "@vscode/debugprotocol";
-import { WebviewMessage, DebugRequest, DebugResponse, DebugEvent } from "shared";
+import { WebviewMessage, DebugRequest, DebugResponse } from "shared";
 
+/**
+ * This class manages the state and behavior of HelloWorld webview panels.
+ *
+ * It contains all the data and methods for:
+ *
+ * - Creating and rendering HelloWorld webview panels
+ * - Properly cleaning up and disposing of webview resources when the panel is closed
+ * - Setting the HTML (and by proxy CSS/JavaScript) content of the webview panel
+ * - Setting message listeners so data can be passed between the webview and extension
+ */
 export class PedagogicalPanel {
-  //public static currentPanel: PedagogicalPanel | undefined;
-  private panel: vscode.WebviewPanel;
+  public static currentPanel: PedagogicalPanel | undefined;
+  private readonly _panel: WebviewPanel;
+  private _disposables: Disposable[] = [];
 
-  private disposables: vscode.Disposable[] = [];
+  /**
+   * The HelloWorldPanel class private constructor (called only from the render method).
+   *
+   * @param panel A reference to the webview panel
+   * @param extensionUri The URI of the directory containing the extension
+   */
+  private constructor(panel: WebviewPanel, context: ExtensionContext) {
+    this._panel = panel;
 
-  constructor(context: vscode.ExtensionContext) {
-    this.panel = vscode.window.createWebviewPanel(
-      "showHelloWorld",
-      "Pedagogical",
-      vscode.ViewColumn.Beside,
-      {
+    // Set an event listener to listen for when the panel is disposed (i.e. when the user closes
+    // the panel or when the panel is closed programmatically)
+    this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+
+    // Set the HTML content for the webview panel
+    this._panel.webview.html = this._getWebviewContent(this._panel.webview, context);
+
+    // Set an event listener to listen for messages passed from the webview context
+    this._setWebviewMessageListener(this._panel.webview);
+  }
+
+  /**
+   * Renders the current webview panel if it exists otherwise a new webview panel
+   * will be created and displayed.
+   *
+   * @param extensionUri The URI of the directory containing the extension.
+   */
+  public static render(context: ExtensionContext) {
+    if (PedagogicalPanel.currentPanel) {
+      // If the webview panel already exists reveal it
+      PedagogicalPanel.currentPanel._panel.reveal(ViewColumn.One);
+    } else {
+      // If a webview panel does not already exist create and show a new one
+      const panel = window.createWebviewPanel("showHelloWorld", "Hello World", ViewColumn.One, {
         enableScripts: true,
-        localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, "dist")],
-      }
-    );
+        localResourceRoots: [Uri.joinPath(context.extensionUri, "dist")],
+      });
 
-    this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
-    this.panel.webview.html = this.getWebviewContent(this.panel.webview, context);
-    this.setWebviewMessageHandler();
-  }
-
-  public show() {
-    this.panel.reveal(vscode.ViewColumn.Beside);
-  }
-
-  public dispose() {
-    // Dispose of the current webview panel
-    this.panel.dispose();
-
-    // Dispose of all disposables (i.e. commands) for the current webview panel
-    while (this.disposables.length) {
-      this.disposables.pop()?.dispose();
+      PedagogicalPanel.currentPanel = new PedagogicalPanel(panel, context);
     }
   }
 
-  private getWebviewContent(webview: vscode.Webview, context: vscode.ExtensionContext) {
-    // CSS and JS file from the React build output
+  /**
+   * Cleans up and disposes of webview resources when the webview panel is closed.
+   */
+  public dispose() {
+    PedagogicalPanel.currentPanel = undefined;
+
+    // Dispose of the current webview panel
+    this._panel.dispose();
+
+    // Dispose of all disposables (i.e. commands) for the current webview panel
+    while (this._disposables.length) {
+      const disposable = this._disposables.pop();
+      if (disposable) {
+        disposable.dispose();
+      }
+    }
+  }
+
+  /**
+   * Defines and returns the HTML that should be rendered within the webview panel.
+   *
+   * @remarks This is also the place where references to the React webview build files
+   * are created and inserted into the webview HTML.
+   *
+   * @param webview A reference to the extension webview
+   * @param extensionUri The URI of the directory containing the extension
+   * @returns A template string literal containing the HTML that should be
+   * rendered within the webview panel
+   */
+  private _getWebviewContent(webview: Webview, context: ExtensionContext) {
+    // The CSS file from the React build output
     const stylesUri = getUri(webview, context.extensionUri, [
       "dist",
       "webview-ui",
       "assets",
       "index.css",
     ]);
+    // The JS file from the React build output
     const scriptUri = getUri(webview, context.extensionUri, [
       "dist",
       "webview-ui",
@@ -57,7 +117,7 @@ export class PedagogicalPanel {
 
     const nonce = getNonce();
 
-    const isEnvDevelopment = context.extensionMode === vscode.ExtensionMode.Development;
+    const isEnvDevelopment = context.extensionMode === ExtensionMode.Development;
 
     // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
     return /*html*/ `
@@ -72,12 +132,12 @@ export class PedagogicalPanel {
             script-src 'nonce-${nonce}';
             connect-src ${isEnvDevelopment ? "'self' ws:" : "none"}">
           <link rel="stylesheet" type="text/css" href="${stylesUri}">
-          <title>Pedagogical</title>
+          <title>Hello World</title>
         </head>
         <body>
           <div id="root"></div>
           <script id="scriptData" type="application/json">
-            {"isEnvDevelopment": ${context.extensionMode === vscode.ExtensionMode.Development}}
+            {"isEnvDevelopment": ${context.extensionMode === ExtensionMode.Development}}
           </script>
           <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
         </body>
@@ -85,53 +145,50 @@ export class PedagogicalPanel {
     `;
   }
 
-  private setWebviewMessageHandler() {
-    this.panel.webview.onDidReceiveMessage(async (message: WebviewMessage) => {
-      switch (message.type) {
-        case "ping":
-          this.postWebviewMessage({
-            msgSeq: message.msgSeq,
-            type: "pong",
-            data: "pong",
-          });
-          break;
-        case "debugRequest":
-          const responseBody = await this.processDebugRequest(message.data);
-          this.postWebviewMessage({
-            msgSeq: message.msgSeq,
-            type: "debugResponse",
-            data: { ...responseBody, command: message.data.command } as DebugResponse,
-          });
-          break;
-        default:
-          break;
-      }
-    });
+  /**
+   * Sets up an event listener to listen for messages passed from the webview context and
+   * executes code based on the message that is recieved.
+   *
+   * @param webview A reference to the extension webview
+   * @param context A reference to the extension context
+   */
+  private _setWebviewMessageListener(webview: Webview) {
+    webview.onDidReceiveMessage(
+      (message: WebviewMessage) => {
+        switch (message.type) {
+          case "ping":
+            PedagogicalPanel.postWebviewMessage({
+              msgSeq: message.msgSeq,
+              type: "pong",
+              data: "pong",
+            });
+            break;
+          case "debugRequest":
+            this.processDebugRequest(message.data).then((responseBody) => {
+              PedagogicalPanel.postWebviewMessage({
+                msgSeq: message.msgSeq,
+                type: "debugResponse",
+                data: { ...responseBody, command: message.data.command } as DebugResponse,
+              });
+            });
+            break;
+          default:
+            break;
+        }
+      },
+      undefined,
+      this._disposables
+    );
   }
 
-  private postWebviewMessage(message: WebviewMessage) {
-    this.panel.webview.postMessage(message);
+  public static postWebviewMessage(message: WebviewMessage) {
+    PedagogicalPanel.currentPanel?._panel.webview.postMessage(message);
   }
 
   private async processDebugRequest(req: DebugRequest) {
-    // TODO: handle error repsponses
-    return (await vscode.debug.activeDebugSession?.customRequest(
+    return (await debug.activeDebugSession?.customRequest(
       req.command,
       req.args
     )) as DebugProtocol.Response["body"];
   }
-
-  /**
-   * Process messages sent by the debug adapter tracker.
-   * Should only track events here; responses are already handled in processDebugRequest.
-   */
-  public debugProtocolMessageHandler = (message: DebugProtocol.ProtocolMessage) => {
-    console.log(message);
-    if (message.type === "event") {
-      this.postWebviewMessage({
-        type: "debugEvent",
-        data: message as unknown as DebugEvent,
-      });
-    }
-  };
 }

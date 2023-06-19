@@ -1,16 +1,14 @@
 import * as vscode from "vscode";
 import { DebugProtocol } from "@vscode/debugprotocol";
-
-type OnDidSendMessageEvent = (message: DebugProtocol.ProtocolMessage) => void;
+import { PedagogicalPanel } from "./panels/PedagogicalPanel";
+import { DebugEvent } from "shared";
 
 /** Debug adapter tracker factory to be registered with vscode */
 export class PedagogicalDebugAdapterTrackerFactory implements vscode.DebugAdapterTrackerFactory {
-  constructor(private onDidSendMessageEvent: OnDidSendMessageEvent) {}
-
   createDebugAdapterTracker(
     _session: vscode.DebugSession
   ): vscode.ProviderResult<vscode.DebugAdapterTracker> {
-    return new PedagogicalDebugAdapterTracker(this.onDidSendMessageEvent);
+    return new PedagogicalDebugAdapterTracker();
   }
 }
 
@@ -23,7 +21,15 @@ export class PedagogicalDebugAdapterTrackerFactory implements vscode.DebugAdapte
  * @see https://microsoft.github.io/debug-adapter-protocol/specification for the specification.
  */
 class PedagogicalDebugAdapterTracker implements vscode.DebugAdapterTracker {
-  constructor(public onDidSendMessage: OnDidSendMessageEvent) {}
+  onDidSendMessage(message: DebugProtocol.ProtocolMessage) {
+    console.log(message);
+    if (message.type === "event") {
+      PedagogicalPanel.postWebviewMessage({
+        type: "debugEvent",
+        data: message as unknown as DebugEvent,
+      });
+    }
+  }
 
   onError(error: Error) {
     vscode.window.showErrorMessage(`${error.name}: ${error.message}`);
