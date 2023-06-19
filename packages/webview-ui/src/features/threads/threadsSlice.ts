@@ -20,7 +20,6 @@ const threadsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addMatcher(debugAdapterApi.endpoints.getThreads.matchFulfilled, (state, action) => {
-      console.log("threads received!");
       state.threads = action.payload.threads;
     });
   },

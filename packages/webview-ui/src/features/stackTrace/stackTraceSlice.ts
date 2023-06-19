@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { DebugProtocol } from "@vscode/debugprotocol";
+import { debugAdapterApi } from "../../services/debugAdapterApi";
 
 export type StackTraceState = {
   stackFrames: DebugProtocol.StackFrame[];
@@ -19,6 +20,12 @@ const stateTraceSlice = createSlice({
       state = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder.addMatcher(debugAdapterApi.endpoints.getStackTrace.matchFulfilled, (state, action) => {
+      state.stackFrames = action.payload.stackFrames;
+      state.totalFrames = action.payload.totalFrames;
+    })
+  }
 });
 
 export const { setStackTrace } = stateTraceSlice.actions;

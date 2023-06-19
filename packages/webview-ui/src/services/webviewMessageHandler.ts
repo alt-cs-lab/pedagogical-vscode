@@ -3,6 +3,7 @@ import { vscode } from "../util/vscode";
 import AsyncLock from "async-lock";
 import { addEvent } from "../features/events/eventsSlice";
 import { store } from "../store";
+import { debugAdapterApi } from "./debugAdapterApi";
 
 type PromiseCallbacks = {
   resolve: (value: WebviewMessage) => void;
@@ -29,7 +30,8 @@ export class MessageHandler {
     } else {
       switch (msg.type) {
         case "debugEvent":
-          store.dispatch(addEvent(msg.data));
+          store.dispatch(debugAdapterApi.util.resetApiState());
+          //store.dispatch(addEvent(msg.data));
           break;
       }
     }

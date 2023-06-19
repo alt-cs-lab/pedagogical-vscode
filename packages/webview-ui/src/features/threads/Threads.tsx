@@ -3,7 +3,7 @@ import { useGetThreadsQuery } from "../../services/debugAdapterApi";
 import { Thread } from "./Thread";
 
 export const Threads = () => {
-  const { data, error, isLoading } = useGetThreadsQuery(undefined, { pollingInterval: 3000 });
+  const { data, error, isLoading } = useGetThreadsQuery(undefined);
 
   return (
     <div id="threads">

@@ -5,6 +5,7 @@ import { debugAdapterApi } from "./services/debugAdapterApi";
 import { scopesReducer } from "./features/scopes/scopesSlice";
 import { stackTraceReducer } from "./features/stackTrace/stackTraceSlice";
 import { threadsReducer } from "./features/threads/threadsSlice";
+import { variablesReducer } from "./features/variables/variablesSlice";
 
 const scriptData = document.getElementById("scriptData") as any;
 const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
@@ -16,6 +17,7 @@ export const store = configureStore({
     scopes: scopesReducer,
     stackTrace: stackTraceReducer,
     threads: threadsReducer,
+    variables: variablesReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(debugAdapterApi.middleware),
   // preloadedState: getPreloadedState(),

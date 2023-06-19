@@ -58,10 +58,10 @@ export class PedagogicalPanel {
   public static render(context: ExtensionContext) {
     if (PedagogicalPanel.currentPanel) {
       // If the webview panel already exists reveal it
-      PedagogicalPanel.currentPanel._panel.reveal(ViewColumn.One);
+      PedagogicalPanel.currentPanel._panel.reveal(ViewColumn.Beside);
     } else {
       // If a webview panel does not already exist create and show a new one
-      const panel = window.createWebviewPanel("showHelloWorld", "Hello World", ViewColumn.One, {
+      const panel = window.createWebviewPanel("showHelloWorld", "Hello World", ViewColumn.Beside, {
         enableScripts: true,
         localResourceRoots: [Uri.joinPath(context.extensionUri, "dist")],
       });
