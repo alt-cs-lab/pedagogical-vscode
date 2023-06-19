@@ -1,6 +1,19 @@
-import { useGetStackTraceQuery } from "../../services/debugAdapterApi";
+import { DebugProtocol } from "@vscode/debugprotocol";
+import { StackFrame } from "./StackFrame";
 
-export const StackTrace = () => {
-  // TODO: use thread id
-  //const { data, error, isLoading } = useGetStackTraceQuery()
+type StackTraceProps = {
+  stackTrace: DebugProtocol.StackTraceResponse["body"];
+};
+
+export const StackTrace = (props: StackTraceProps) => {
+  return (
+    <>
+      <h2>Stack Trace</h2>
+      <div style={{ paddingLeft: 8 }}>
+        {props.stackTrace.stackFrames.map((frame) => (
+          <StackFrame key={frame.id} frame={frame} />
+        ))}
+      </div>
+    </>
+  );
 };

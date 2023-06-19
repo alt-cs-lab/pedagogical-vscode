@@ -185,11 +185,12 @@ export class PedagogicalPanel {
     PedagogicalPanel.currentPanel?._panel.webview.postMessage(message);
   }
 
-  private async processDebugRequest(req: DebugRequest) {
-    return (await debug.activeDebugSession?.customRequest(
-      req.command,
-      req.args
-    )) as DebugProtocol.Response["body"];
+  private async processDebugRequest(req: DebugRequest): Promise<DebugProtocol.Response["body"]> {
+    const resp = await debug.activeDebugSession?.customRequest(req.command, req.args);
+    if (resp === undefined) {
+      return { error: undefined } as DebugProtocol.ErrorResponse["body"];
+    }
+    return resp as DebugProtocol.Response["body"];
   }
 
   public static processDebugEvent(event: DebugEvent) {

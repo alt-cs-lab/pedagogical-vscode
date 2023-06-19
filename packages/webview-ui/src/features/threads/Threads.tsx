@@ -1,5 +1,6 @@
 import "./Threads.css";
 import { useGetThreadsQuery } from "../../services/debugAdapterApi";
+import { Thread } from "./Thread";
 
 export const Threads = () => {
   const { data, error, isLoading } = useGetThreadsQuery(undefined, { pollingInterval: 3000 });
@@ -12,7 +13,7 @@ export const Threads = () => {
       ) : isLoading ? (
         <>Loading threads...</>
       ) : data ? (
-        JSON.stringify(data)
+        data.threads?.map((thread) => <Thread key={thread.id} thread={thread} />)
       ) : null}
     </div>
   );

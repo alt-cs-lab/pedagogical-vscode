@@ -9,7 +9,6 @@ export const Scope = (props: ScopeProps) => {
   return (
     <div>
       <h4>Scope: {scope.name}</h4>
-      <div>variablesRef: {scope.variablesReference}</div>
     </div>
   );
 };

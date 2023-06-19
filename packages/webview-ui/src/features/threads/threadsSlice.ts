@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { DebugProtocol } from "@vscode/debugprotocol";
+import { debugAdapterApi } from "../../services/debugAdapterApi";
 
 export type ThreadsState = {
   threads: DebugProtocol.Thread[];
@@ -16,6 +17,12 @@ const threadsSlice = createSlice({
     setThreads: (state, action: PayloadAction<DebugProtocol.ThreadsResponse>) => {
       state.threads = action.payload.body.threads;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(debugAdapterApi.endpoints.getThreads.matchFulfilled, (state, action) => {
+      console.log("threads received!");
+      state.threads = action.payload.threads;
+    });
   },
 });
 
