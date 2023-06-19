@@ -1,3 +1,4 @@
+import "./Threads.css";
 import { useGetThreadsQuery } from "../../services/debugAdapterApi";
 
 export const Threads = () => {

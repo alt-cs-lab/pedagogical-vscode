@@ -24,10 +24,7 @@ class PedagogicalDebugAdapterTracker implements vscode.DebugAdapterTracker {
   onDidSendMessage(message: DebugProtocol.ProtocolMessage) {
     console.log(message);
     if (message.type === "event") {
-      PedagogicalPanel.postWebviewMessage({
-        type: "debugEvent",
-        data: message as unknown as DebugEvent,
-      });
+      PedagogicalPanel.processDebugEvent(message as unknown as DebugEvent);
     }
   }
 

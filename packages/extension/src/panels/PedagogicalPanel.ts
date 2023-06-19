@@ -12,7 +12,7 @@ import {
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { DebugProtocol } from "@vscode/debugprotocol";
-import { WebviewMessage, DebugRequest, DebugResponse } from "shared";
+import { WebviewMessage, DebugRequest, DebugResponse, DebugEvent } from "shared";
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -190,5 +190,9 @@ export class PedagogicalPanel {
       req.command,
       req.args
     )) as DebugProtocol.Response["body"];
+  }
+
+  public static processDebugEvent(event: DebugEvent) {
+    PedagogicalPanel.postWebviewMessage({ type: "debugEvent", data: event });
   }
 }
