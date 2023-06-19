@@ -1,10 +1,10 @@
 import "./App.css";
-import { Threads } from "./features/threads/Threads";
+import { DebugSession } from "./features/debugSession/DebugSession";
 
 export default function App() {
   return (
     <main>
-      <Threads />
+      <DebugSession />
     </main>
   );
 }

@@ -1,4 +1,5 @@
 import { DebugProtocol } from "@vscode/debugprotocol";
+import { useGetVariablesQuery } from "../../services/debugAdapterApi";
 
 type VariableProps = {
   variable: DebugProtocol.Variable;
@@ -6,9 +7,18 @@ type VariableProps = {
 
 export const Variable = (props: VariableProps) => {
   const variable = props.variable;
+
+  if (variable.type === "") {
+    return null;
+  }
+
+  if (variable.variablesReference > 0) {
+    useGetVariablesQuery({ variablesReference: variable.variablesReference });
+  }
+
   return (
-    <h5>
+    <div>
       Variable: {variable.name} = {variable.value}
-    </h5>
+    </div>
   );
 };

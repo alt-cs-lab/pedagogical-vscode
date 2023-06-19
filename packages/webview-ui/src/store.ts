@@ -1,11 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { eventsReducer } from "./features/events/eventsSlice";
 import { devToolsEnhancer } from "@redux-devtools/remote";
 import { debugAdapterApi } from "./services/debugAdapterApi";
-import { scopesReducer } from "./features/scopes/scopesSlice";
-import { stackTraceReducer } from "./features/stackTrace/stackTraceSlice";
-import { threadsReducer } from "./features/threads/threadsSlice";
-import { variablesReducer } from "./features/variables/variablesSlice";
+import { debugSessionReducer } from "./features/debugSession/debugSessionSlice";
 
 const scriptData = document.getElementById("scriptData") as any;
 const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
@@ -13,11 +9,7 @@ const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
 export const store = configureStore({
   reducer: {
     [debugAdapterApi.reducerPath]: debugAdapterApi.reducer,
-    events: eventsReducer,
-    scopes: scopesReducer,
-    stackTrace: stackTraceReducer,
-    threads: threadsReducer,
-    variables: variablesReducer,
+    session: debugSessionReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(debugAdapterApi.middleware),
   // preloadedState: getPreloadedState(),
