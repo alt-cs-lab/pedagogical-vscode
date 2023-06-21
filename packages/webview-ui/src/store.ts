@@ -1,7 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { devToolsEnhancer } from "@redux-devtools/remote";
 import { debugAdapterApi } from "./services/debugAdapterApi";
-import { debugSessionReducer } from "./features/debugSession/debugSessionSlice";
 
 const scriptData = document.getElementById("scriptData") as any;
 const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
@@ -9,7 +8,6 @@ const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
 export const store = configureStore({
   reducer: {
     [debugAdapterApi.reducerPath]: debugAdapterApi.reducer,
-    session: debugSessionReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(debugAdapterApi.middleware),
   // preloadedState: getPreloadedState(),

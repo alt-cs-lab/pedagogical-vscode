@@ -1,40 +1,28 @@
-import { FetchBaseQueryError, createApi } from "@reduxjs/toolkit/dist/query/react";
-import { vscodeMessageQuery } from "./webviewMessageBaseQuery";
+import { createApi } from "@reduxjs/toolkit/dist/query/react";
+import { vscodeBaseQuery } from "./vscodeBaseQuery";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { DebugRequest, WebviewMessage } from "shared";
-import { DebugSessionState } from "../features/debugSession/debugSessionSlice";
+import { QueryReturnValue } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import { MaybePromise } from "@reduxjs/toolkit/dist/query/tsHelpers";
 
-function debugRequestMsg(req: DebugRequest): WebviewMessage {
-  return { type: "debugRequest", data: req };
-}
+export type GetSessionResponse = {
+  threads: Record<number, DP.Thread>;
+  stackFrames: Record<number, DP.StackFrame>;
+  scopes: Record<number, DP.Scope[]>;
+  /** array of variables associated with reference number */
+  variables: Record<number, DP.Variable[] | null>;
+};
 
 export const debugAdapterApi = createApi({
   reducerPath: "debugAdapterApi",
-  baseQuery: vscodeMessageQuery,
+  baseQuery: vscodeBaseQuery,
   endpoints: (builder) => ({
-    // getScopes: builder.query<DP.ScopesResponse["body"], DP.ScopesArguments>({
-    //   query: (args) => debugRequestMsg({ command: "scopes", args }),
-    // }),
-
-    // getStackTrace: builder.query<DP.StackTraceResponse["body"], DP.StackTraceArguments>({
-    //   query: (args) => debugRequestMsg({ command: "stackTrace", args }),
-    // }),
-
-    // getThreads: builder.query<DP.ThreadsResponse["body"], undefined>({
-    //   // threads has no arguments
-    //   query: () => debugRequestMsg({ command: "threads", args: undefined }),
-    // }),
-
-    // getVariables: builder.query<DP.VariablesResponse["body"], DP.VariablesArguments>({
-    //   query: (args) => debugRequestMsg({ command: "variables", args }),
-    // }),
-
     /**
      * Performs the queries to get all threads, stack frames, scopes and variables and returns a DebugSessionState.
      */
-    getSession: builder.query<DebugSessionState, void>({
+    getSession: builder.query<GetSessionResponse, void>({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
-        const sessionResult: DebugSessionState = {
+        const sessionResult: GetSessionResponse = {
           threads: {},
           stackFrames: {},
           scopes: {},
@@ -42,12 +30,10 @@ export const debugAdapterApi = createApi({
         };
 
         // get threads
+        // TODO: error handling
         const threadsResult = await baseQuery(
           debugRequestMsg({ command: "threads", args: undefined })
         );
-        if (threadsResult.error) {
-          return { error: threadsResult.error as FetchBaseQueryError };
-        }
         const threads = (threadsResult.data as DP.ThreadsResponse["body"]).threads;
 
         if (threads === undefined || threads.length === 0) {
@@ -63,53 +49,33 @@ export const debugAdapterApi = createApi({
         const stackTraceResult = await baseQuery(
           debugRequestMsg({ command: "stackTrace", args: { threadId: threads[0].id } })
         );
-        if (stackTraceResult.error) {
-          return { error: stackTraceResult.error as FetchBaseQueryError };
-        }
         // TODO: handle paginated results
         const stackFrames = (stackTraceResult.data as DP.StackTraceResponse["body"]).stackFrames;
 
         // array of promises so scopes can be fetched asynchronously at the same time
-        const scopesPromises: ReturnType<typeof baseQuery>[] = [];
+        const scopesPromises: ReturnType<typeof fetchScopesWithFrameId>[] = [];
 
         for (const frame of stackFrames) {
           sessionResult.stackFrames[frame.id] = frame;
-          scopesPromises.push(
-            baseQuery(debugRequestMsg({ command: "scopes", args: { frameId: frame.id } }))
-          );
+          scopesPromises.push(fetchScopesWithFrameId(baseQuery, frame.id));
         }
 
-        const scopesResults = await Promise.all(scopesPromises);
-
-        // convert nested array of scope responses into a single array of scopes
-        const scopes = scopesResults.reduce(
-          (acc, scopesResult) =>
-            acc.concat((scopesResult.data as DP.ScopesResponse["body"]).scopes),
-          [] as DP.Scope[]
-        );
-
-        // function to fetch variables while still keeping the ref number associated with it
-        const fetchVariablesWithRef = async (ref: number) => {
-          const result = await baseQuery(
-            debugRequestMsg({
-              command: "variables",
-              args: { variablesReference: ref },
-            })
-          );
-          return { ref, variables: (result.data as DP.VariablesResponse["body"]).variables };
-        };
+        const allScopes = await Promise.all(scopesPromises);
 
         // set to avoid pulling variable references more than once
         const variableRefSet = new Set<number>();
         let variablesPromises: ReturnType<typeof fetchVariablesWithRef>[] = [];
 
-        for (const scope of scopes) {
-          const ref = scope.variablesReference;
-          // TODO: scopes need to be keyed with the stack trace id
-          sessionResult.scopes[ref] = scope;
-          variableRefSet.add(ref);
-          variablesPromises.push(fetchVariablesWithRef(ref));
+        for (const { frameId, scopes } of allScopes) {
+          sessionResult.scopes[frameId] = scopes;
+          for (const scope of scopes) {
+            const ref = scope.variablesReference;
+            variableRefSet.add(ref);
+            variablesPromises.push(fetchVariablesWithRef(baseQuery, ref));
+          }
         }
+
+        const filterSkipNames = new Set(["special variables", "function variables"]);
 
         // loop until all nested variables are covered
         while (variablesPromises.length > 0) {
@@ -123,13 +89,10 @@ export const debugAdapterApi = createApi({
               // fetch the variable unless we already requested it earlier
               if (ref > 0 && !variableRefSet.has(ref)) {
                 variableRefSet.add(ref);
-                if (
-                  variable.name === "special variables" ||
-                  variable.name === "function variables"
-                ) {
+                if (filterSkipNames.has(variable.name)) {
                   continue;
                 }
-                variablesPromises.push(fetchVariablesWithRef(ref));
+                variablesPromises.push(fetchVariablesWithRef(baseQuery, ref));
               }
             }
           }
@@ -141,10 +104,37 @@ export const debugAdapterApi = createApi({
   }),
 });
 
-export const {
-  // useGetScopesQuery,
-  // useGetStackTraceQuery,
-  // useGetVariablesQuery,
-  // useGetThreadsQuery,
-  useGetSessionQuery,
-} = debugAdapterApi;
+function debugRequestMsg(req: DebugRequest): WebviewMessage {
+  return { type: "debugRequest", data: req };
+}
+
+async function fetchScopesWithFrameId(
+  baseQuery: (arg: WebviewMessage) => MaybePromise<QueryReturnValue>,
+  frameId: number
+): Promise<{ frameId: number; scopes: DP.Scope[] }> {
+  const result = await baseQuery(
+    debugRequestMsg({
+      command: "scopes",
+      args: { frameId },
+    })
+  );
+  const scopes = (result.data as DP.ScopesResponse["body"]).scopes;
+  return { frameId, scopes };
+}
+
+// function to fetch variables while still keeping the ref number associated with it
+async function fetchVariablesWithRef(
+  baseQuery: (arg: WebviewMessage) => MaybePromise<QueryReturnValue>,
+  ref: number
+): Promise<{ ref: number; variables: DP.Variable[] }> {
+  const result = await baseQuery(
+    debugRequestMsg({
+      command: "variables",
+      args: { variablesReference: ref },
+    })
+  );
+  const variables = (result.data as DP.VariablesResponse["body"]).variables;
+  return { ref, variables };
+}
+
+export const { useGetSessionQuery } = debugAdapterApi;
