@@ -5,7 +5,7 @@ import { DebugRequest, WebviewMessage } from "shared";
 import { QueryReturnValue } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 import { MaybePromise } from "@reduxjs/toolkit/dist/query/tsHelpers";
 
-export type GetSessionResponse = {
+export type SessionState = {
   threads: Record<number, DP.Thread>;
   stackFrames: Record<number, DP.StackFrame>;
   scopes: Record<number, DP.Scope[]>;
@@ -20,9 +20,9 @@ export const debugAdapterApi = createApi({
     /**
      * Performs the queries to get all threads, stack frames, scopes and variables and returns a DebugSessionState.
      */
-    getSession: builder.query<GetSessionResponse, void>({
+    getSession: builder.query<SessionState, void>({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
-        const sessionResult: GetSessionResponse = {
+        const sessionResult: SessionState = {
           threads: {},
           stackFrames: {},
           scopes: {},

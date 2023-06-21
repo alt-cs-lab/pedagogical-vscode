@@ -1,6 +1,6 @@
 import { BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { WebviewMessage } from "shared";
-import { MessageHandler } from "./webviewMessageHandler";
+import { MessageHandler } from "./vscodeMessageHandler";
 
 export const vscodeBaseQuery: BaseQueryFn<WebviewMessage, unknown> = async (
   message: WebviewMessage

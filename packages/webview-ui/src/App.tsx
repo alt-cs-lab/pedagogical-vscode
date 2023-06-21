@@ -1,10 +1,10 @@
 import "./App.css";
-import { DebugSession } from "./features/debugSession/DebugSession";
+import { Flow } from "./features/flow/Flow";
 
 export default function App() {
   return (
     <main>
-      <DebugSession />
+      <Flow />
     </main>
   );
 }
