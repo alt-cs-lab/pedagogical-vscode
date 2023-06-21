@@ -3,15 +3,23 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import "reactflow/dist/style.css";
 import { useGetSessionQuery } from "../../services/debugAdapterApi";
 import { nodesChanged } from "./flowSlice";
+import { nodeTypes } from "../nodes/nodeTypes";
+import { useMemo } from "react";
 
 export const Flow = () => {
   const dispatch = useAppDispatch();
   useGetSessionQuery();
   const flow = useAppSelector((state) => state.flow);
 
+  // useMemo so const isn't reinstantiated on every render
+  const nodeTypesMemo = useMemo(() => nodeTypes, []);
+
   return (
     <div style={{ height: "100%", width: "100%" }}>
-      <ReactFlow nodes={flow.nodes} onNodesChange={(changes) => dispatch(nodesChanged(changes))}>
+      <ReactFlow
+        nodes={flow.nodes}
+        onNodesChange={(changes) => dispatch(nodesChanged(changes))}
+        nodeTypes={nodeTypesMemo}>
         <Background />
         <Controls />
       </ReactFlow>

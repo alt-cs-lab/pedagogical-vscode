@@ -1,10 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { Node, applyNodeChanges, NodeChange } from "reactflow";
-import { DebugProtocol as DP } from "@vscode/debugprotocol";
+import { applyNodeChanges, NodeChange } from "reactflow";
 import { SessionState } from "../../services/debugAdapterApi";
+import { DebugNode } from "../nodes/nodeTypes";
 
 type FlowState = {
-  nodes: Node /*<DP.Variable[]>*/[];
+  nodes: DebugNode[];
 };
 
 const initialState: FlowState = {
@@ -24,9 +24,10 @@ export const flowSlice = createSlice({
         if (variables === null) {
           continue;
         }
-        const node: Node = {
-          id: `var${ref}`,
-          data: { label: "Variables: " + variables.map(($var) => $var.name).join("\n") },
+        const node: DebugNode = {
+          type: "variables",
+          id: `vars-${ref}`,
+          data: variables,
           position: { x: xy, y: xy },
         };
         state.nodes.push(node);
@@ -34,7 +35,7 @@ export const flowSlice = createSlice({
       }
     },
     nodesChanged: (state, action: PayloadAction<NodeChange[]>) => {
-      state.nodes = applyNodeChanges(action.payload, state.nodes);
+      state.nodes = applyNodeChanges(action.payload, state.nodes) as DebugNode[];
     },
   },
 });
