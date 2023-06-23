@@ -23,7 +23,8 @@
     "watch": "concurrently 'yarn workspace extension watch' 'yarn workspace webview-ui watch'",
     "build": "yarn workspace extension compile && yarn workspace webview-ui build",
     "lint": "yarn eslint .",
-    "redux-devtools": "yarn workspace webview-ui run redux-devtools"
+    "redux-devtools": "yarn workspace webview-ui run redux-devtools",
+    "storybook": "yarn workspace webview-ui run storybook"
   },
   "packageManager": "yarn@3.6.0",
   "devDependencies": {

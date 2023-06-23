@@ -1,5 +1,7 @@
 import type { Preview } from "@storybook/react";
 
+import "./styleDeclarations.css";
+import "./styleDefault.css";
 import "reactflow/dist/style.css";
 
 const preview: Preview = {
@@ -11,8 +13,8 @@ const preview: Preview = {
         date: /Date$/,
       },
     },
-    parameters: {
-      layout: "centered",
+    backgrounds: {
+      values: [{ name: "default", value: "#181818" }],
     },
   },
 };

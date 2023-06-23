@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import "reactflow/dist/style.css";
 import { useGetSessionQuery } from "../../services/debugAdapterApi";
 import { nodesChanged } from "./flowSlice";
-import { nodeTypes } from "../nodes/nodeTypes";
+import { nodeTypes } from "../nodes/types";
 import { useMemo } from "react";
 
 export const Flow = () => {
