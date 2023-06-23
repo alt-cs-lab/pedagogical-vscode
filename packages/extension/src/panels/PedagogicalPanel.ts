@@ -187,7 +187,7 @@ export class PedagogicalPanel {
 
   private async processDebugRequest(req: DebugRequest): Promise<DebugProtocol.Response["body"]> {
     const resp = await debug.activeDebugSession?.customRequest(req.command, req.args);
-    console.log(resp);
+    // console.log(resp);
     if (resp === undefined) {
       return { error: undefined } as DebugProtocol.ErrorResponse["body"];
     }
@@ -195,7 +195,7 @@ export class PedagogicalPanel {
   }
 
   public static processDebugEvent(event: DebugEvent) {
-    console.log(event);
+    // console.log(event);
     PedagogicalPanel.postWebviewMessage({ type: "debugEvent", data: event });
   }
 }

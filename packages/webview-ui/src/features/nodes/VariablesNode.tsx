@@ -1,18 +1,17 @@
-import { Handle, Position } from "reactflow";
+import { Node, Handle, Position } from "reactflow";
 
-export type VariablesNodeProps = {
-  data: {
-    variables: {
-      name: string;
-      type?: string;
-      value?: string;
-      reference?: number;
-    }[];
-  };
+export type VariablesData = {
+  type?: string;
+  variables: {
+    name: string;
+    type?: string;
+    value?: string;
+    reference?: number;
+  }[];
 };
 
-export const VariablesNode = ({ data }: VariablesNodeProps) => {
-  const variables = data.variables;
+export const VariablesNode = (props: Node<VariablesData>) => {
+  const variables = props.data.variables;
   return (
     <>
       <div
@@ -20,7 +19,9 @@ export const VariablesNode = ({ data }: VariablesNodeProps) => {
           border: "solid black",
           position: "relative",
           backgroundColor: "var(--vscode-panel-background)",
-        }}>
+        }}
+      >
+        <h4>{props.data.type}</h4>
         <Handle
           position={Position.Left}
           type="target"
@@ -33,7 +34,8 @@ export const VariablesNode = ({ data }: VariablesNodeProps) => {
               display: "flex",
               justifyContent: "space-between",
               padding: "0 10px",
-            }}>
+            }}
+          >
             <pre style={{ margin: "5px 0" }}>{variable.name}:</pre>
             {variable.reference ? (
               <div style={{ position: "relative", marginLeft: 25, left: -3 }}>

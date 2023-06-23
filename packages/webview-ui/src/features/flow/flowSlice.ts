@@ -36,31 +36,38 @@ export const flowSlice = createSlice({
       let stackY = 0;
 
       const varRefsToAdd: number[] = [];
+      const varRefTypeMap = new Map<number, string | undefined>();
 
       // generate stack frame groups
       for (const frameId in session.stackFrames) {
         const frame = session.stackFrames[frameId];
         //const frame = session.stackFrames[frameId];
-        const stackNode: DebugNodeType = {
-          id: stackId(frame.id),
-          type: "stackFrame",
-          data: { name: frame.name },
-          position: { x: 0, y: stackY },
-          style: { width: 200, height: 500 },
-        };
-        state.nodes.push(stackNode);
+        // const stackNode: DebugNodeType = {
+        //   id: stackId(frame.id),
+        //   type: "stackFrame",
+        //   data: { name: frame.name },
+        //   position: { x: 0, y: stackY },
+        //   width: 230,
+        //   height: 400,
+        //   style: { height: "100%" }
+        // };
+        // state.nodes.push(stackNode);
 
         // add scopes inside each frame
-        let scopeY = 30;
+        // let scopeY = 30;
         for (const scope of session.scopes[frameId]) {
-          const variables = session.variables[scope.variablesReference];
-          if (!variables) {
+          let variables = session.variables[scope.variablesReference];
+          if (!variables || scope.name === "Globals") {
             continue;
           }
-          const varsNode: DebugNodeType = {
+          variables = variables.filter(
+            ($var) => $var.name !== "special variables" && $var.name !== "function variables"
+          );
+          const scopeNode: DebugNodeType = {
             id: varsId(scope.variablesReference),
             type: "variables",
             data: {
+              type: `Scope: ${frame.name}`,
               variables: variables.map(($var) => ({
                 name: $var.name,
                 type: $var.type,
@@ -68,21 +75,22 @@ export const flowSlice = createSlice({
                 reference: $var.variablesReference,
               })),
             },
-            position: { x: 20, y: scopeY },
-            parentNode: stackId(frameId),
+            position: { x: 20, y: stackY },
+            // parentNode: stackId(frameId),
           };
-          state.nodes.push(varsNode);
-          scopeY += 200;
+          state.nodes.push(scopeNode);
+          // scopeY += 200;
 
           for (const $var of variables) {
             const source = varsId(scope.variablesReference);
             const target = varsId($var.variablesReference);
             state.edges.push(newEdge(source, $var.name, target));
             varRefsToAdd.push($var.variablesReference);
+            varRefTypeMap.set($var.variablesReference, $var.type);
           }
         }
 
-        stackY += 550;
+        stackY += 150;
       }
 
       let varsX = 250;
@@ -99,17 +107,16 @@ export const flowSlice = createSlice({
           continue;
         }
 
-        variables = variables.filter(
-          ($var) => $var.name !== "special variables" && $var.name !== "function variables"
-        );
+        variables = variables.filter(($var) => !$var.name.endsWith(" variables"));
         if (variables.length === 0) {
           continue;
         }
 
-        const node: DebugNodeType = {
+        const varNode: DebugNodeType = {
           type: "variables",
           id: varsId(ref),
           data: {
+            type: varRefTypeMap.get(ref),
             variables: variables.map(($var) => ({
               name: $var.name,
               value: $var.value,
@@ -118,8 +125,8 @@ export const flowSlice = createSlice({
           },
           position: { x: varsX, y: 0 },
         };
-        state.nodes.push(node);
-        varsX += 250;
+        state.nodes.push(varNode);
+        varsX += 300;
 
         for (const $var of variables) {
           if ($var.variablesReference > 0) {
@@ -127,6 +134,7 @@ export const flowSlice = createSlice({
             const target = varsId($var.variablesReference);
             state.edges.push(newEdge(source, $var.name, target));
             varRefsToAdd.push($var.variablesReference);
+            varRefTypeMap.set($var.variablesReference, $var.type);
           }
         }
       }

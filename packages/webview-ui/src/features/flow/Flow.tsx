@@ -20,7 +20,8 @@ export const Flow = () => {
         nodes={flow.nodes}
         edges={flow.edges}
         onNodesChange={(changes) => dispatch(nodesChanged(changes))}
-        nodeTypes={nodeTypesMemo}>
+        nodeTypes={nodeTypesMemo}
+      >
         <Background />
         <Controls />
       </ReactFlow>

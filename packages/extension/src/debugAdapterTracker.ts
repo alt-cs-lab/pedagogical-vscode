@@ -22,6 +22,7 @@ export class PedagogicalDebugAdapterTrackerFactory implements vscode.DebugAdapte
  */
 class PedagogicalDebugAdapterTracker implements vscode.DebugAdapterTracker {
   onDidSendMessage(message: DebugProtocol.ProtocolMessage) {
+    console.log(message);
     if (message.type === "event") {
       PedagogicalPanel.processDebugEvent(message as unknown as DebugEvent);
     }
