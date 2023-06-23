@@ -18,6 +18,7 @@ export const Flow = () => {
     <div style={{ height: "100%", width: "100%" }}>
       <ReactFlow
         nodes={flow.nodes}
+        edges={flow.edges}
         onNodesChange={(changes) => dispatch(nodesChanged(changes))}
         nodeTypes={nodeTypesMemo}>
         <Background />

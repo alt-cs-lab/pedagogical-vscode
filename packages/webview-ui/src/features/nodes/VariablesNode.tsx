@@ -40,7 +40,7 @@ export const VariablesNode = ({ data }: VariablesNodeProps) => {
                 <Handle
                   type="source"
                   position={Position.Right}
-                  id={`${variable.reference}`}
+                  id={`handle-${variable.name}`}
                   style={{ backgroundColor: "#512888", width: 10, height: 10 }}
                 />
               </div>

@@ -1,18 +1,29 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { applyNodeChanges, NodeChange, Node } from "reactflow";
+import { applyNodeChanges, NodeChange, Node, Edge } from "reactflow";
 import { SessionState } from "../../services/debugAdapterApi";
 import { DebugNodeType } from "../nodes/types";
 
 type FlowState = {
   nodes: DebugNodeType[];
+  edges: Edge[];
 };
 
 const initialState: FlowState = {
   nodes: [],
+  edges: [],
 };
 
 const stackId = (id: string | number) => `stack-${id}`;
 const varsId = (ref: string | number) => `vars-${ref}`;
+const edgeId = (source: string, target: string) => `${source}-${target}`;
+const handleId = (name: string) => `handle-${name}`;
+const newEdge = (sourceId: string, sourceName: string, targetId: string): Edge => ({
+  id: edgeId(sourceId, targetId),
+  source: sourceId,
+  sourceHandle: handleId(sourceName),
+  target: targetId,
+  zIndex: 2000,
+});
 
 export const flowSlice = createSlice({
   name: "flow",
@@ -21,6 +32,7 @@ export const flowSlice = createSlice({
     generateFlow: (state, action: PayloadAction<SessionState>) => {
       const session = action.payload;
       state.nodes = [];
+      state.edges = [];
       let stackY = 0;
 
       const varRefsToAdd: number[] = [];
@@ -63,6 +75,9 @@ export const flowSlice = createSlice({
           scopeY += 200;
 
           for (const $var of variables) {
+            const source = varsId(scope.variablesReference);
+            const target = varsId($var.variablesReference);
+            state.edges.push(newEdge(source, $var.name, target));
             varRefsToAdd.push($var.variablesReference);
           }
         }
@@ -108,6 +123,9 @@ export const flowSlice = createSlice({
 
         for (const $var of variables) {
           if ($var.variablesReference > 0) {
+            const source = varsId(ref);
+            const target = varsId($var.variablesReference);
+            state.edges.push(newEdge(source, $var.name, target));
             varRefsToAdd.push($var.variablesReference);
           }
         }
