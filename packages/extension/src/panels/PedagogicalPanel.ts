@@ -12,7 +12,8 @@ import {
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { DebugProtocol } from "@vscode/debugprotocol";
-import { WebviewMessage, DebugRequest, DebugResponse, DebugEvent } from "shared";
+import { WebviewMessage, DebugRequest } from "shared";
+import { DebugSessionMessageListener, DebugSessionObserver } from "../DebugSessionObserver";
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -38,15 +39,13 @@ export class PedagogicalPanel {
   private constructor(panel: WebviewPanel, context: ExtensionContext) {
     this._panel = panel;
 
-    // Set an event listener to listen for when the panel is disposed (i.e. when the user closes
-    // the panel or when the panel is closed programmatically)
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
-    // Set the HTML content for the webview panel
     this._panel.webview.html = this._getWebviewContent(this._panel.webview, context);
 
-    // Set an event listener to listen for messages passed from the webview context
     this._setWebviewMessageListener(this._panel.webview);
+
+    DebugSessionObserver.subscribe(this.onDebugSessionMessage);
   }
 
   /**
@@ -75,6 +74,8 @@ export class PedagogicalPanel {
    */
   public dispose() {
     PedagogicalPanel.currentPanel = undefined;
+
+    DebugSessionObserver.unsubscribe(this.onDebugSessionMessage);
 
     // Dispose of the current webview panel
     this._panel.dispose();
@@ -164,13 +165,7 @@ export class PedagogicalPanel {
             });
             break;
           case "debugRequest":
-            this.processDebugRequest(message.data).then((responseBody) => {
-              PedagogicalPanel.postWebviewMessage({
-                msgSeq: message.msgSeq,
-                type: "debugResponse",
-                data: { ...responseBody, command: message.data.command } as DebugResponse,
-              });
-            });
+            this.handleDebugRequest(message.data, message.msgSeq);
             break;
           default:
             break;
@@ -185,17 +180,23 @@ export class PedagogicalPanel {
     PedagogicalPanel.currentPanel?._panel.webview.postMessage(message);
   }
 
-  private async processDebugRequest(req: DebugRequest): Promise<DebugProtocol.Response["body"]> {
-    const resp = await debug.activeDebugSession?.customRequest(req.command, req.args);
-    // console.log(resp);
-    if (resp === undefined) {
-      return { error: undefined } as DebugProtocol.ErrorResponse["body"];
-    }
-    return resp as DebugProtocol.Response["body"];
+  private handleDebugRequest(req: DebugRequest, msgSeq?: number) {
+    // TODO: send to specific debug session
+    debug.activeDebugSession?.customRequest(req.command, req.args).then((resp) => {
+      const msgData = resp ? resp : { error: undefined } as DebugProtocol.ErrorResponse["body"];
+      PedagogicalPanel.postWebviewMessage({ type: "debugResponse", msgSeq, data: msgData });
+    });
   }
 
-  public static processDebugEvent(event: DebugEvent) {
-    // console.log(event);
-    PedagogicalPanel.postWebviewMessage({ type: "debugEvent", data: event });
-  }
+  public onDebugSessionMessage: DebugSessionMessageListener = (msg) => {
+    switch (msg.type) {
+      case "started":
+        break;
+      case "stopped":
+        break;
+      case "debugEvent":
+        PedagogicalPanel.postWebviewMessage({ type: "debugEvent", data: msg.data.event });
+        break;
+    }
+  };
 }

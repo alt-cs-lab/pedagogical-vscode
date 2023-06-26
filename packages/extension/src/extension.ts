@@ -1,6 +1,6 @@
 import { commands, debug, ExtensionContext } from "vscode";
 import { PedagogicalPanel } from "./panels/PedagogicalPanel";
-import { PedagogicalDebugAdapterTrackerFactory } from "./debugAdapterTracker";
+import { DebugTrackerFactory } from "./DebugTracker";
 
 export function activate(context: ExtensionContext) {
   const disposables = [
@@ -11,7 +11,7 @@ export function activate(context: ExtensionContext) {
 
     debug.registerDebugAdapterTrackerFactory(
       "*", // can also be specific debuggers (e.g. "python")
-      new PedagogicalDebugAdapterTrackerFactory()
+      DebugTrackerFactory
     ),
   ];
 
