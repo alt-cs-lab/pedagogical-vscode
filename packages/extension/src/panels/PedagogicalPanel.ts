@@ -12,7 +12,7 @@ import {
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { DebugProtocol } from "@vscode/debugprotocol";
-import { WebviewMessage, DebugRequest } from "shared";
+import { VsCodeMessage, DebugRequest } from "shared";
 import { DebugSessionMessageListener, DebugSessionObserver } from "../DebugSessionObserver";
 
 /**
@@ -155,7 +155,7 @@ export class PedagogicalPanel {
    */
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
-      (message: WebviewMessage) => {
+      (message: VsCodeMessage) => {
         switch (message.type) {
           case "ping":
             PedagogicalPanel.postWebviewMessage({
@@ -176,14 +176,14 @@ export class PedagogicalPanel {
     );
   }
 
-  public static postWebviewMessage(message: WebviewMessage) {
+  public static postWebviewMessage(message: VsCodeMessage) {
     PedagogicalPanel.currentPanel?._panel.webview.postMessage(message);
   }
 
   private handleDebugRequest(req: DebugRequest, msgSeq?: number) {
     // TODO: send to specific debug session
     debug.activeDebugSession?.customRequest(req.command, req.args).then((resp) => {
-      const msgData = resp ? resp : { error: undefined } as DebugProtocol.ErrorResponse["body"];
+      const msgData = resp ? resp : ({ error: undefined } as DebugProtocol.ErrorResponse["body"]);
       PedagogicalPanel.postWebviewMessage({ type: "debugResponse", msgSeq, data: msgData });
     });
   }

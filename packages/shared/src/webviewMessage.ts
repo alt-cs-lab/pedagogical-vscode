@@ -1,19 +1,22 @@
-import { DebugEvent, DebugRequest, DebugResponse } from "./debugProtocol";
-import { DebugProtocol } from "@vscode/debugprotocol";
+import type { DebugEvent, DebugRequest, DebugResponse } from "./debugProtocol";
+import type { DebugProtocol } from "@vscode/debugprotocol";
+import type { DebugSession } from "vscode";
 
-type WebviewMessageMappedType<T extends string, D> = {
+type MessageData<T extends string, D> = {
   type: T;
   data: D;
   msgSeq?: number;
 };
 
-export type WebviewMessage =
-  | WebviewMessageMappedType<"ping", "ping">
-  | WebviewMessageMappedType<"pong", "pong">
-  | WebviewMessageMappedType<"debugRequest", DebugRequest>
-  | WebviewMessageMappedType<"debugResponse", DebugResponse>
-  | WebviewMessageMappedType<"debugEvent", DebugEvent>
-  | WebviewMessageMappedType<"debugError", DebugProtocol.ErrorResponse["body"]>;
+export type VsCodeMessage =
+  | MessageData<"ping", "ping">
+  | MessageData<"pong", "pong">
+  | MessageData<"debugRequest", DebugRequest>
+  | MessageData<"debugResponse", DebugResponse>
+  | MessageData<"debugEvent", DebugEvent>
+  | MessageData<"debugError", DebugProtocol.ErrorResponse["body"]>
+  | MessageData<"sessionStartedEvent", Pick<DebugSession, "name" | "type" | "id">>
+  | MessageData<"sessionStoppedEvent", { id: string }>;
 
-export type WebviewMessageType = WebviewMessage["type"];
-export type WebviewMessageData = WebviewMessage["data"];
+export type WebviewMessageType = VsCodeMessage["type"];
+export type WebviewMessageData = VsCodeMessage["data"];

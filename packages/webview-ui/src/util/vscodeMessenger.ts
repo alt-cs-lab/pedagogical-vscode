@@ -1,39 +1,47 @@
-import { WebviewMessage } from "shared";
-import { vscode } from "../util/vscode";
+import { DebugEvent, VsCodeMessage } from "shared";
+import { vscode } from "./vscode";
 import AsyncLock from "async-lock";
-import { store } from "../store";
-import { debugAdapterApi } from "./debugAdapterApi";
+// import { store } from "../store";
+// import { debugAdapterApi } from "./debugAdapterApi";
 
 type PromiseCallbacks = {
-  resolve: (value: WebviewMessage) => void;
+  resolve: (value: VsCodeMessage) => void;
   reject: (error?: any) => void;
 };
 
 /**
  * Static class to help handle messages sent between this webview and vscode.
- * Use {@link postMessageAndWaitAsync} to send a message and wait for a response.
+ * Use {@link postRequestAsync} to send a message and wait for a response.
  */
-export class MessageHandler {
+class VsCodeMessenger {
   /** Map that resolves a response sequence number to its promise callbacks */
-  static seqPromiseMap = new Map<number, PromiseCallbacks>();
+  seqPromiseMap = new Map<number, PromiseCallbacks>();
 
-  static lock = new AsyncLock();
-  static msgSeqCounter = 0;
+  lock = new AsyncLock();
+  msgSeqCounter = 0;
+
+  observers: ((msg: VsCodeMessage) => void)[] = [];
+
+  constructor() {
+    window.addEventListener("message", vscodeMessenger.handleWindowMessage);
+  }
+
+  addObserver(callback: (msg: VsCodeMessage) => void) {
+    this.observers.push(callback);
+  }
+
+  removeObserver(callback: (msg: VsCodeMessage) => void) {
+    this.observers = this.observers.filter((cb) => cb !== callback);
+  }
 
   /** Handle a message sent from the vscode extension */
-  public static handleWindowMessage(ev: MessageEvent) {
-    const msg = ev.data as WebviewMessage;
+  handleWindowMessage(ev: MessageEvent) {
+    const msg = ev.data as VsCodeMessage;
     if (msg.msgSeq) {
       // this is a reponse to an earlier request message
-      MessageHandler.completeMessagePromise(msg.msgSeq, msg);
+      this.completeMessagePromise(msg.msgSeq, msg);
     } else {
-      switch (msg.type) {
-        case "debugEvent":
-          if (msg.data.event === "stopped") {
-            store.dispatch(debugAdapterApi.util.resetApiState());
-          }
-          break;
-      }
+      this.observers.forEach((cb) => cb(msg));
     }
   }
 
@@ -43,19 +51,14 @@ export class MessageHandler {
    * @param timeout The time in ms to wait for a response before the promis is rejected.
    * @returns A Promise, resolved and returning a message response, or rejected due to an error or timeout.
    */
-  public static postMessageAndWaitAsync(
-    message: WebviewMessage,
-    timeout = 1000
-  ): Promise<WebviewMessage> {
+  postRequestAsync(message: VsCodeMessage, timeout = 1000): Promise<VsCodeMessage> {
     const msgSeq = ++this.msgSeqCounter;
 
-    // Return a promise that can be awaited to wait for a response
     return new Promise((resolve, reject) => {
-      // Map the sequence number to the resolve/reject callbacks so we know which callback to use when we get the response message.
       this.seqPromiseMap.set(msgSeq, { resolve, reject });
       vscode.postMessage({ msgSeq: msgSeq, ...message });
 
-      // reject the promise if we never hear back
+      // reject if we never hear back
       setTimeout(
         () => this.completeMessagePromise(msgSeq, new Error("message timeout reached"), "reject"),
         timeout
@@ -71,13 +74,11 @@ export class MessageHandler {
    * @param value The value to return the promise with (message object for resolve, or Error for reject, etc.)
    * @param result "resolve" for success (default) or "reject" for error
    */
-  public static async completeMessagePromise(
+  private async completeMessagePromise(
     msgSeq: number,
     value: any,
     result: "resolve" | "reject" = "resolve"
   ) {
-    // Lock the map in case we get two sources accessing the same promise.
-    // This probably isn't necessary but I don't want to worry about a race condition like this happening.
     await this.lock.acquire("key", (done) => {
       const callbacks = this.seqPromiseMap.get(msgSeq);
       // if undefined then this promise was already completed earlier
@@ -85,8 +86,9 @@ export class MessageHandler {
         callbacks[result](value);
         this.seqPromiseMap.delete(msgSeq);
       }
-      // release the lock
       done();
     });
   }
 }
+
+export const vscodeMessenger = new VsCodeMessenger();

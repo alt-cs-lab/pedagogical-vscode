@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { applyNodeChanges, NodeChange, Node, Edge } from "reactflow";
-import { SessionState } from "../../services/debugAdapterApi";
+// import { SessionState } from "../../services/debugAdapterApi";
 import { DebugNodeType } from "../nodes/types";
 
 type FlowState = {
@@ -29,120 +29,107 @@ export const flowSlice = createSlice({
   name: "flow",
   initialState: initialState,
   reducers: {
-    generateFlow: (state, action: PayloadAction<SessionState>) => {
-      const session = action.payload;
-      state.nodes = [];
-      state.edges = [];
-      let stackY = 0;
+    // generateFlow: (state, action: PayloadAction<SessionState>) => {
+    //   const session = action.payload;
+    //   state.nodes = [];
+    //   state.edges = [];
+    //   let stackY = 0;
 
-      const varRefsToAdd: number[] = [];
-      const varRefTypeMap = new Map<number, string | undefined>();
+    //   const varRefsToAdd: number[] = [];
+    //   const varRefTypeMap = new Map<number, string | undefined>();
 
-      // generate stack frame groups
-      for (const frameId in session.stackFrames) {
-        const frame = session.stackFrames[frameId];
-        //const frame = session.stackFrames[frameId];
-        // const stackNode: DebugNodeType = {
-        //   id: stackId(frame.id),
-        //   type: "stackFrame",
-        //   data: { name: frame.name },
-        //   position: { x: 0, y: stackY },
-        //   width: 230,
-        //   height: 400,
-        //   style: { height: "100%" }
-        // };
-        // state.nodes.push(stackNode);
+    //   // generate stack frame groups
+    //   for (const frameId in session.stackFrames) {
+    //     const frame = session.stackFrames[frameId];
 
-        // add scopes inside each frame
-        // let scopeY = 30;
-        for (const scope of session.scopes[frameId]) {
-          let variables = session.variables[scope.variablesReference];
-          if (!variables || scope.name === "Globals") {
-            continue;
-          }
-          variables = variables.filter(
-            ($var) => $var.name !== "special variables" && $var.name !== "function variables"
-          );
-          const scopeNode: DebugNodeType = {
-            id: varsId(scope.variablesReference),
-            type: "variables",
-            data: {
-              type: `Scope: ${frame.name}`,
-              variables: variables.map(($var) => ({
-                name: $var.name,
-                type: $var.type,
-                value: $var.value,
-                reference: $var.variablesReference,
-              })),
-            },
-            position: { x: 20, y: stackY },
-            // parentNode: stackId(frameId),
-          };
-          state.nodes.push(scopeNode);
-          // scopeY += 200;
+    //     for (const scope of session.scopes[frameId]) {
+    //       let variables = session.variables[scope.variablesReference];
+    //       if (!variables || scope.name === "Globals") {
+    //         continue;
+    //       }
+    //       variables = variables.filter(
+    //         ($var) => $var.name !== "special variables" && $var.name !== "function variables"
+    //       );
+    //       const scopeNode: DebugNodeType = {
+    //         id: varsId(scope.variablesReference),
+    //         type: "variables",
+    //         data: {
+    //           type: `Scope: ${frame.name}`,
+    //           variables: variables.map(($var) => ({
+    //             name: $var.name,
+    //             type: $var.type,
+    //             value: $var.value,
+    //             reference: $var.variablesReference,
+    //           })),
+    //         },
+    //         position: { x: 20, y: stackY },
+    //         // parentNode: stackId(frameId),
+    //       };
+    //       state.nodes.push(scopeNode);
+    //       // scopeY += 200;
 
-          for (const $var of variables) {
-            const source = varsId(scope.variablesReference);
-            const target = varsId($var.variablesReference);
-            state.edges.push(newEdge(source, $var.name, target));
-            varRefsToAdd.push($var.variablesReference);
-            varRefTypeMap.set($var.variablesReference, $var.type);
-          }
-        }
+    //       for (const $var of variables) {
+    //         const source = varsId(scope.variablesReference);
+    //         const target = varsId($var.variablesReference);
+    //         state.edges.push(newEdge(source, $var.name, target));
+    //         varRefsToAdd.push($var.variablesReference);
+    //         varRefTypeMap.set($var.variablesReference, $var.type);
+    //       }
+    //     }
 
-        stackY += 150;
-      }
+    //     stackY += 150;
+    //   }
 
-      let varsX = 250;
-      const varsAdded = new Set<number>();
-      while (varRefsToAdd.length > 0) {
-        const ref = varRefsToAdd.pop()!;
-        if (varsAdded.has(ref)) {
-          continue;
-        }
-        varsAdded.add(ref);
+    //   let varsX = 250;
+    //   const varsAdded = new Set<number>();
+    //   while (varRefsToAdd.length > 0) {
+    //     const ref = varRefsToAdd.pop()!;
+    //     if (varsAdded.has(ref)) {
+    //       continue;
+    //     }
+    //     varsAdded.add(ref);
 
-        let variables = session.variables[ref];
-        if (!variables) {
-          continue;
-        }
+    //     let variables = session.variables[ref];
+    //     if (!variables) {
+    //       continue;
+    //     }
 
-        variables = variables.filter(($var) => !$var.name.endsWith(" variables"));
-        if (variables.length === 0) {
-          continue;
-        }
+    //     variables = variables.filter(($var) => !$var.name.endsWith(" variables"));
+    //     if (variables.length === 0) {
+    //       continue;
+    //     }
 
-        const varNode: DebugNodeType = {
-          type: "variables",
-          id: varsId(ref),
-          data: {
-            type: varRefTypeMap.get(ref),
-            variables: variables.map(($var) => ({
-              name: $var.name,
-              value: $var.value,
-              reference: $var.variablesReference,
-            })),
-          },
-          position: { x: varsX, y: 0 },
-        };
-        state.nodes.push(varNode);
-        varsX += 300;
+    //     const varNode: DebugNodeType = {
+    //       type: "variables",
+    //       id: varsId(ref),
+    //       data: {
+    //         type: varRefTypeMap.get(ref),
+    //         variables: variables.map(($var) => ({
+    //           name: $var.name,
+    //           value: $var.value,
+    //           reference: $var.variablesReference,
+    //         })),
+    //       },
+    //       position: { x: varsX, y: 0 },
+    //     };
+    //     state.nodes.push(varNode);
+    //     varsX += 300;
 
-        for (const $var of variables) {
-          if ($var.variablesReference > 0) {
-            const source = varsId(ref);
-            const target = varsId($var.variablesReference);
-            state.edges.push(newEdge(source, $var.name, target));
-            varRefsToAdd.push($var.variablesReference);
-            varRefTypeMap.set($var.variablesReference, $var.type);
-          }
-        }
-      }
-    },
+    //     for (const $var of variables) {
+    //       if ($var.variablesReference > 0) {
+    //         const source = varsId(ref);
+    //         const target = varsId($var.variablesReference);
+    //         state.edges.push(newEdge(source, $var.name, target));
+    //         varRefsToAdd.push($var.variablesReference);
+    //         varRefTypeMap.set($var.variablesReference, $var.type);
+    //       }
+    //     }
+    //   }
+    // },
     nodesChanged: (state, action: PayloadAction<NodeChange[]>) => {
       state.nodes = applyNodeChanges(action.payload, state.nodes as Node<any>[]) as DebugNodeType[];
     },
   },
 });
 
-export const { generateFlow, nodesChanged } = flowSlice.actions;
+export const { nodesChanged } = flowSlice.actions;
