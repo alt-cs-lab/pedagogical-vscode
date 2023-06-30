@@ -42,9 +42,10 @@ function* watchVscodeMessageSaga() {
 
 function* handleVscodeMessageSaga(msg: VscodeMessage): Generator<Effect> {
   let session;
+  let handler;
   switch (msg.type) {
     case "sessionStartedEvent":
-      const handler = getLanguageHandler(msg.data.type);
+      handler = getLanguageHandler(msg.data.type);
       if (handler) {
         yield fork(handler.sessionStartSaga, msg.data.id, msg.data.name, msg.data.type);
       }
@@ -55,7 +56,7 @@ function* handleVscodeMessageSaga(msg: VscodeMessage): Generator<Effect> {
         | Session
         | undefined;
       if (session) {
-        const handler = getLanguageHandler(session.type);
+        handler = getLanguageHandler(session.type);
         if (handler) {
           yield fork(handler.sessionTerminatedSaga, session.id);
         }
@@ -63,11 +64,9 @@ function* handleVscodeMessageSaga(msg: VscodeMessage): Generator<Effect> {
       break;
 
     case "debugEvent":
-      session = (yield select((state: RootState) => state.sessions[msg.data.sessionId])) as
-        | Session
-        | undefined;
+      session = (yield select((state: RootState) => state.sessions[msg.data.sessionId])) as Session | undefined;
       if (session) {
-        const handler = getLanguageHandler(session.type);
+        handler = getLanguageHandler(session.type);
         if (handler) {
           yield fork(handler.sessionTerminatedSaga, session.id);
         }

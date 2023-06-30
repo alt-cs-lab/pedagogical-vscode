@@ -37,7 +37,6 @@
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-react": "latest",
-    "prettier": "^2.8.8",
     "typescript": "*"
   }
 }

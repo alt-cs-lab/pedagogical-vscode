@@ -5,9 +5,9 @@ env:
   es2021: true
   node: true
 extends:
+  - eslint:recommended
   - plugin:@typescript-eslint/recommended
   - plugin:react/recommended
-  - prettier
 settings:
   react:
     version: detect
@@ -18,9 +18,7 @@ parserOptions:
 ignorePatterns:
   - dist
   - "*.mjs"
-rules:
-  {
-    "@typescript-eslint/naming-convention": "off",
+rules: {
     "@typescript-eslint/semi": "warn",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
@@ -29,5 +27,4 @@ rules:
     "curly": "warn",
     "eqeqeq": "warn",
     "no-throw-literal": "warn",
-    "semi": "off",
   }
