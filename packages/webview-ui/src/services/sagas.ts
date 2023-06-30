@@ -1,31 +1,87 @@
-import { eventChannel } from "redux-saga";
-import { Effect, ForkEffect, all, fork, takeLatest } from "redux-saga/effects";
-import { buildSession } from "../features/sessions/sessionsSlice";
+import createSagaMiddleware, { EventChannel, eventChannel } from "redux-saga";
+import { Effect, ForkEffect, all, fork, select, takeEvery, takeLatest } from "redux-saga/effects";
+import { Session, buildSession } from "../features/sessions/sessionsSlice";
 import { pythonLanguageHandler } from "./languages/python";
 import { LanguageHandler } from "./languages/base";
 import { Action } from "@reduxjs/toolkit";
 import { vscodeMessenger } from "../util";
+import { VsCodeMessage as VscodeMessage } from "shared";
+import { RootState } from "../store";
 
 const languageHandlers: LanguageHandler[] = [pythonLanguageHandler];
 
-export function* watchBuildSessionAsync(): Generator<ForkEffect> {
-  yield takeLatest(buildSession.type, buildSessionRootAsync);
+function getLanguageHandler(type: string) {
+  const handler = languageHandlers.find((handler) => handler.debugType === type);
+  return handler;
 }
 
-export function* buildSessionRootAsync(action: Action): Generator<Effect> {
+function* watchBuildSessionSaga(): Generator<ForkEffect> {
+  yield takeLatest(buildSession.type, matchBuildSessionSaga);
+}
+
+/**
+ * Match the `buildSession` action to the proper language handler and trigger its
+ * `buildSessionSaga`.
+ */
+function* matchBuildSessionSaga(action: Action): Generator<Effect> {
   if (buildSession.match(action)) {
-    const handler = languageHandlers.find((handler) => handler.name === action.payload.type);
+    const handler = getLanguageHandler(action.payload.type);
     if (handler) {
-      yield fork(handler.buildSessionAsync, action.payload.id);
+      yield fork(handler.buildSessionSaga, action.payload.id);
     }
   }
 }
 
-const vscodeMessageChannel = eventChannel((emitter) => {
-  vscodeMessenger.addObserver(emitter);
-  return () => vscodeMessenger.removeObserver(emitter);
-});
+function* watchVscodeMessageSaga() {
+  const vscodeMessageChannel: EventChannel<VscodeMessage> = eventChannel((emitter) => {
+    vscodeMessenger.addObserver(emitter);
+    return () => vscodeMessenger.removeObserver(emitter);
+  });
+  yield takeEvery(vscodeMessageChannel, handleVscodeMessageSaga);
+}
+
+function* handleVscodeMessageSaga(msg: VscodeMessage): Generator<Effect> {
+  let session;
+  switch (msg.type) {
+    case "sessionStartedEvent":
+      const handler = getLanguageHandler(msg.data.type);
+      if (handler) {
+        yield fork(handler.sessionStartSaga, msg.data.id, msg.data.name, msg.data.type);
+      }
+      break;
+
+    case "sessionStoppedEvent":
+      session = (yield select((state: RootState) => state.sessions[msg.data.id])) as
+        | Session
+        | undefined;
+      if (session) {
+        const handler = getLanguageHandler(session.type);
+        if (handler) {
+          yield fork(handler.sessionTerminatedSaga, session.id);
+        }
+      }
+      break;
+
+    case "debugEvent":
+      session = (yield select((state: RootState) => state.sessions[msg.data.sessionId])) as
+        | Session
+        | undefined;
+      if (session) {
+        const handler = getLanguageHandler(session.type);
+        if (handler) {
+          yield fork(handler.sessionTerminatedSaga, session.id);
+        }
+      }
+      break;
+
+    case "debugError":
+      // TODO
+      break;
+  }
+}
 
 export function* rootSaga() {
-  yield all([]);
+  yield all([watchBuildSessionSaga(), watchVscodeMessageSaga()]);
 }
+
+export const sagaMiddleware = createSagaMiddleware();

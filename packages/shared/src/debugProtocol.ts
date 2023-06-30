@@ -28,6 +28,7 @@ import { DebugProtocol as DP } from "@vscode/debugprotocol";
 export type DebugRequestType<Command extends string, Arguments> = {
   command: Command;
   args: Arguments;
+  sessionId: string;
 };
 
 /** The command and args for a request sent to the debug adapter. */

@@ -1,12 +1,15 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 
+/** `DP.Thread` with an added `stackFrameIds` array */
 export type SessionStateThread = DP.Thread & { stackFrameIds: number[] };
-export type SessionStateStackFrame = DP.StackFrame & { scopeIds: number[] };
+
+/** `DP.StackFrame` with an added `scopeVariableReferences` array */
+export type SessionStateStackFrame = DP.StackFrame & { scopeVariableReferences: number[] };
 
 type SessionsState = Record<string, Session>;
 
-type Session = {
+export type Session = {
   name: string;
   type: string;
   id: string;

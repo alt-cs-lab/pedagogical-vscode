@@ -8,6 +8,7 @@ import {
   ExtensionContext,
   ExtensionMode,
   debug,
+  DebugSession,
 } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
@@ -29,6 +30,7 @@ export class PedagogicalPanel {
   public static currentPanel: PedagogicalPanel | undefined;
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
+  private _sessions: DebugSession[] = [];
 
   /**
    * The HelloWorldPanel class private constructor (called only from the render method).
@@ -165,7 +167,7 @@ export class PedagogicalPanel {
             });
             break;
           case "debugRequest":
-            this.handleDebugRequest(message.data, message.msgSeq);
+            this._handleDebugRequest(message.data, message.msgSeq);
             break;
           default:
             break;
@@ -180,7 +182,7 @@ export class PedagogicalPanel {
     PedagogicalPanel.currentPanel?._panel.webview.postMessage(message);
   }
 
-  private handleDebugRequest(req: DebugRequest, msgSeq?: number) {
+  private _handleDebugRequest(req: DebugRequest, msgSeq?: number) {
     // TODO: send to specific debug session
     debug.activeDebugSession?.customRequest(req.command, req.args).then((resp) => {
       const msgData = resp ? resp : ({ error: undefined } as DebugProtocol.ErrorResponse["body"]);
@@ -191,11 +193,18 @@ export class PedagogicalPanel {
   public onDebugSessionMessage: DebugSessionMessageListener = (msg) => {
     switch (msg.type) {
       case "started":
+        this._sessions.push(msg.session);
+        PedagogicalPanel.postWebviewMessage({ type: "sessionStartedEvent", data: msg.session });
         break;
       case "stopped":
+        this._sessions = this._sessions.filter((session) => session.id !== msg.session.id);
+        PedagogicalPanel.postWebviewMessage({ type: "sessionStoppedEvent", data: msg.session });
         break;
       case "debugEvent":
-        PedagogicalPanel.postWebviewMessage({ type: "debugEvent", data: msg.data.event });
+        PedagogicalPanel.postWebviewMessage({
+          type: "debugEvent",
+          data: { sessionId: msg.session.id, event: msg.data.event },
+        });
         break;
     }
   };

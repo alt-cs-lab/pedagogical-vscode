@@ -1,8 +1,6 @@
-import { DebugEvent, VsCodeMessage } from "shared";
+import { VsCodeMessage } from "shared";
 import { vscode } from "./vscode";
 import AsyncLock from "async-lock";
-// import { store } from "../store";
-// import { debugAdapterApi } from "./debugAdapterApi";
 
 type PromiseCallbacks = {
   resolve: (value: VsCodeMessage) => void;
@@ -23,7 +21,7 @@ class VsCodeMessenger {
   observers: ((msg: VsCodeMessage) => void)[] = [];
 
   constructor() {
-    window.addEventListener("message", vscodeMessenger.handleWindowMessage);
+    window.addEventListener("message", this.handleWindowMessage);
   }
 
   addObserver(callback: (msg: VsCodeMessage) => void) {
@@ -35,15 +33,15 @@ class VsCodeMessenger {
   }
 
   /** Handle a message sent from the vscode extension */
-  handleWindowMessage(ev: MessageEvent) {
+  handleWindowMessage = (ev: MessageEvent) => {
     const msg = ev.data as VsCodeMessage;
     if (msg.msgSeq) {
       // this is a reponse to an earlier request message
       this.completeMessagePromise(msg.msgSeq, msg);
     } else {
-      this.observers.forEach((cb) => cb(msg));
+      this.observers.forEach((cb) => cb(msg)); // TODO: error
     }
-  }
+  };
 
   /**
    * Post a message to the extension WebViewPanel and asynchronously wait for a response.

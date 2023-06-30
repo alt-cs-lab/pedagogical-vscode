@@ -13,7 +13,7 @@ export type VsCodeMessage =
   | MessageData<"pong", "pong">
   | MessageData<"debugRequest", DebugRequest>
   | MessageData<"debugResponse", DebugResponse>
-  | MessageData<"debugEvent", DebugEvent>
+  | MessageData<"debugEvent", { sessionId: string; event: DebugEvent }>
   | MessageData<"debugError", DebugProtocol.ErrorResponse["body"]>
   | MessageData<"sessionStartedEvent", Pick<DebugSession, "name" | "type" | "id">>
   | MessageData<"sessionStoppedEvent", { id: string }>;
