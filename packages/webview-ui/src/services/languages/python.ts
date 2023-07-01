@@ -9,10 +9,12 @@ import {
   addStackTrace,
   addThreads,
   addVariables,
+  buildSessionDone,
   clearSession,
 } from "../../features/sessions/sessionsSlice";
 import { LanguageHandler } from "./base";
 import { RootState } from "../../store";
+import { DebugResponse } from "shared";
 
 class PythonLanguageHandler extends LanguageHandler {
   debugType = "python";
@@ -40,43 +42,53 @@ class PythonLanguageHandler extends LanguageHandler {
     yield put(addScopes({ id: sessionId, scopes }));
 
     for (const scope of scopes) {
-      yield call(this.fetchVariablesSaga, sessionId, scope.variablesReference);
+      // include `this` context because fetchVariablesSaga needs to call itself recursively
+
+      yield call([this, this.fetchVariablesSaga], sessionId, scope.variablesReference);
       // addVariables is dispatched inside fetchVariablesSaga
     }
+
+    yield put(buildSessionDone({ id: sessionId }));
   }
 
   *fetchThreadsSaga(sessionId: string): Generator<Effect, SessionStateThread[]> {
-    const threadsResp = yield call(debugApi.getThreads, sessionId);
-    const threads: SessionStateThread[] = (threadsResp as DP.ThreadsResponse["body"]).threads.map(
+    const resp = (yield call(debugApi.getThreads, sessionId)) as DebugResponse;
+    if (resp.command !== "threads") {
+      throw new Error(`expected threads response, got ${resp.command} instead`);
+    }
+
+    const threads: SessionStateThread[] = resp.body.threads.map(
       (thread) => ({ ...thread, stackFrameIds: [] })
     );
     return threads;
   }
 
-  *fetchStackFramesSaga(
-    sessionId: string,
-    threads: SessionStateThread[]
-  ): Generator<Effect, SessionStateStackFrame[]> {
+  *fetchStackFramesSaga(sessionId: string, threads: SessionStateThread[]): Generator<Effect, SessionStateStackFrame[]> {
     const stackFrames: SessionStateStackFrame[] = [];
     for (const thread of threads) {
-      const stackTraceResp = yield call(debugApi.getStackTrace, sessionId, { threadId: thread.id });
-      const threadStackFrames = (stackTraceResp as DP.StackTraceResponse["body"]).stackFrames;
-      thread.stackFrameIds = threadStackFrames.map((frame) => frame.id);
+      const resp = (yield call(debugApi.getStackTrace, sessionId, { threadId: thread.id })) as DebugResponse;
+      if (resp.command !== "stackTrace") {
+        throw new Error(`expected stackTrace response, got ${resp.command} instead`);
+      }
+
+      const frames = resp.body.stackFrames;
+      thread.stackFrameIds = frames.map((frame) => frame.id);
       stackFrames.push(
-        ...threadStackFrames.map((frame) => ({ ...frame, scopeVariableReferences: [] }))
+        ...frames.map((frame) => ({ ...frame, scopeVariableReferences: [] }))
       );
     }
     return stackFrames;
   }
 
-  *fetchScopesSaga(
-    sessionId: string,
-    stackFrames: SessionStateStackFrame[]
-  ): Generator<Effect, DP.Scope[]> {
+  *fetchScopesSaga(sessionId: string, stackFrames: SessionStateStackFrame[]): Generator<Effect, DP.Scope[]> {
     let allScopes: DP.Scope[] = [];
     for (const frame of stackFrames) {
-      const scopesResp = yield call(debugApi.getScopes, sessionId, { frameId: frame.id });
-      let scopes = (scopesResp as DP.ScopesResponse["body"]).scopes;
+      const resp = (yield call(debugApi.getScopes, sessionId, { frameId: frame.id })) as DebugResponse;
+      if (resp.command !== "scopes") {
+        throw new Error(`expected scopes response, got ${resp.command} instead`);
+      }
+
+      let scopes = resp.body.scopes;
 
       // always ignore "Global" scope
       scopes = scopes.filter((scope) => scope.name !== "Globals");
@@ -89,25 +101,31 @@ class PythonLanguageHandler extends LanguageHandler {
     return allScopes;
   }
 
-  *fetchVariablesSaga(sessionId: string, variablesReference: number): Generator<Effect> {
-    const varsResp = yield call(debugApi.getVariables, sessionId, { variablesReference });
-    let variables = (varsResp as DP.VariablesResponse["body"]).variables;
+  *fetchVariablesSaga(sessionId: string, ref: number): Generator<Effect> {
+    if (ref === 0) {
+      return;
+    }
+
+    const resp = (yield call(debugApi.getVariables, sessionId, { variablesReference: ref })) as DebugResponse;
+    if (resp.command !== "variables") {
+      throw new Error(`expected variables response, got ${resp.command} instead`);
+    }
+
+    let variables = resp.body.variables;
 
     // ignore "special variables", "function variables", etc.
-    const stateVariables = (yield select(
-      (state: RootState) => state.sessions[sessionId].variables
-    )) as Session["variables"];
+    const stateVariables = (yield select((state: RootState) => state.sessions[sessionId].variableRefs)) as Session["variableRefs"];
     const existingRefs = Object.keys(stateVariables).map(Number);
-    variables = variables.filter(
-      ($var) => !$var.name.endsWith(" variables") && !existingRefs.includes($var.variablesReference)
+    variables = variables.filter(($var) =>
+      !$var.name.endsWith(" variables") && !existingRefs.includes($var.variablesReference)
     );
 
     // add variables to the state so the recursive call can check to see if one was already fetched
-    yield put(addVariables({ id: sessionId, variables }));
+    yield put(addVariables({ id: sessionId, ref, variables }));
 
     // recursively fetch nested variables
     for (const nextVar of variables) {
-      yield call(this.fetchVariablesSaga, sessionId, nextVar.variablesReference);
+      yield call([this, this.fetchVariablesSaga], sessionId, nextVar.variablesReference);
     }
   }
 }

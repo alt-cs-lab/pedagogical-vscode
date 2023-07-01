@@ -39,7 +39,7 @@ class VsCodeMessenger {
       // this is a reponse to an earlier request message
       this.completeMessagePromise(msg.msgSeq, msg);
     } else {
-      this.observers.forEach((cb) => cb(msg)); // TODO: error
+      this.observers.forEach((cb) => cb(msg));
     }
   };
 

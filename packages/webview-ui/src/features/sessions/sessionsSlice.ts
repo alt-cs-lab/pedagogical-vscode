@@ -16,7 +16,7 @@ export type Session = {
   threads: Record<number, SessionStateThread>;
   stackFrames: Record<number, SessionStateStackFrame>;
   scopes: Record<number, DP.Scope>;
-  variables: Record<number, DP.Variable>;
+  variableRefs: Record<number, DP.Variable[]>;
 };
 
 const initialState: SessionsState = {};
@@ -25,7 +25,9 @@ export const sessionsSlice = createSlice({
   name: "sessions",
   initialState: initialState,
   reducers: {
-    buildSession: (_state, _action: PayloadAction<Pick<Session, "type" | "id">>) => undefined,
+    buildSession: (_state, _action: PayloadAction<{ id: string }>) => undefined,
+
+    buildSessionDone: (_state, _action: PayloadAction<{id: string }>) => undefined,
 
     addSession: (state, action: PayloadAction<Pick<Session, "name" | "type" | "id">>) => {
       state[action.payload.id] = {
@@ -33,7 +35,7 @@ export const sessionsSlice = createSlice({
         threads: {},
         stackFrames: {},
         scopes: {},
-        variables: {},
+        variableRefs: {},
       };
     },
 
@@ -43,7 +45,7 @@ export const sessionsSlice = createSlice({
         threads: {},
         stackFrames: {},
         scopes: {},
-        variables: {},
+        variableRefs: {},
       };
     },
 
@@ -72,10 +74,8 @@ export const sessionsSlice = createSlice({
       }
     },
 
-    addVariables: (state, action: PayloadAction<{ id: string; variables: DP.Variable[] }>) => {
-      for (const variable of action.payload.variables) {
-        state[action.payload.id].variables[variable.variablesReference] = variable;
-      }
+    addVariables: (state, action: PayloadAction<{ id: string; ref: number, variables: DP.Variable[] }>) => {
+      state[action.payload.id].variableRefs[action.payload.ref] = action.payload.variables;
     },
   },
 });
@@ -86,6 +86,7 @@ export const {
   addThreads,
   addVariables,
   buildSession,
+  buildSessionDone,
   clearSession,
   addSession,
   removeSession,

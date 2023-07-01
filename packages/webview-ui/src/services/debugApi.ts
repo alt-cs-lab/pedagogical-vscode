@@ -1,36 +1,49 @@
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { vscodeMessenger } from "../util/vscodeMessenger";
+import { DebugResponse, VsCodeMessage } from "shared";
 
 export const debugApi = {
-  async getThreads(sessionId: string) {
-    const resp = await vscodeMessenger.postRequestAsync({
+  async getThreads(sessionId: string): Promise<DebugResponse> {
+    const resp: VsCodeMessage = await vscodeMessenger.postRequestAsync({
       type: "debugRequest",
-      data: { command: "threads", args: undefined, sessionId },
+      data: { sessionId, req: { command: "threads", args: undefined } },
     });
-    return resp as unknown as DP.ThreadsResponse["body"];
+    if (resp.type !== "debugResponse") {
+      throw new Error(`Expected debugResponse, got ${resp.type} instead`);
+    }
+    return resp.data.resp;
   },
 
-  async getStackTrace(sessionId: string, args: DP.StackTraceArguments) {
+  async getStackTrace(sessionId: string, args: DP.StackTraceArguments): Promise<DebugResponse> {
     const resp = await vscodeMessenger.postRequestAsync({
       type: "debugRequest",
-      data: { command: "stackTrace", args, sessionId },
+      data: { sessionId, req: { command: "stackTrace", args } },
     });
-    return resp as unknown as DP.StackTraceResponse["body"];
+    if (resp.type !== "debugResponse") {
+      throw new Error(`Expected debugResponse, got ${resp.type} instead`);
+    }
+    return resp.data.resp;
   },
 
-  async getScopes(sessionId: string, args: DP.ScopesArguments) {
+  async getScopes(sessionId: string, args: DP.ScopesArguments): Promise<DebugResponse> {
     const resp = await vscodeMessenger.postRequestAsync({
       type: "debugRequest",
-      data: { command: "scopes", args, sessionId },
+      data: { sessionId, req: { command: "scopes", args } },
     });
-    return resp as unknown as DP.ScopesResponse["body"];
+    if (resp.type !== "debugResponse") {
+      throw new Error(`Expected debugResponse, got ${resp.type} instead`);
+    }
+    return resp.data.resp;
   },
 
-  async getVariables(sessionId: string, args: DP.VariablesArguments) {
+  async getVariables(sessionId: string, args: DP.VariablesArguments): Promise<DebugResponse> {
     const resp = await vscodeMessenger.postRequestAsync({
       type: "debugRequest",
-      data: { command: "variables", args, sessionId },
+      data: { sessionId, req: { command: "variables", args } },
     });
-    return resp as unknown as DP.VariablesResponse["body"];
+    if (resp.type !== "debugResponse") {
+      throw new Error(`Expected debugResponse, got ${resp.type} instead`);
+    }
+    return resp.data.resp;
   },
 };

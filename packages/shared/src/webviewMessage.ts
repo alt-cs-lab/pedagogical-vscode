@@ -9,11 +9,9 @@ type MessageData<T extends string, D> = {
 };
 
 export type VsCodeMessage =
-  | MessageData<"ping", "ping">
-  | MessageData<"pong", "pong">
-  | MessageData<"debugRequest", DebugRequest>
-  | MessageData<"debugResponse", DebugResponse>
-  | MessageData<"debugEvent", { sessionId: string; event: DebugEvent }>
+  | MessageData<"debugRequest", { sessionId: string, req: DebugRequest }>
+  | MessageData<"debugResponse", { sessionId: string, resp: DebugResponse }>
+  | MessageData<"debugEvent", { sessionId: string, event: DebugEvent }>
   | MessageData<"debugError", DebugProtocol.ErrorResponse["body"]>
   | MessageData<"sessionStartedEvent", Pick<DebugSession, "name" | "type" | "id">>
   | MessageData<"sessionStoppedEvent", { id: string }>;

@@ -49,7 +49,7 @@ export abstract class LanguageHandler {
   *debugEventSaga(sessionId: string, event: DebugEvent): Generator<Effect> {
     switch (event.event) {
       case "stopped":
-        yield put(buildSession({ id: sessionId, type: this.debugType }));
+        yield put(buildSession({ id: sessionId }));
     }
   }
 

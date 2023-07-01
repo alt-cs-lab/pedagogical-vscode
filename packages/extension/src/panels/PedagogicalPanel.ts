@@ -12,8 +12,7 @@ import {
 } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
-import { DebugProtocol } from "@vscode/debugprotocol";
-import { VsCodeMessage, DebugRequest } from "shared";
+import { VsCodeMessage, DebugRequest, DebugResponse } from "shared";
 import { DebugSessionMessageListener, DebugSessionObserver } from "../DebugSessionObserver";
 
 /**
@@ -159,15 +158,8 @@ export class PedagogicalPanel {
     webview.onDidReceiveMessage(
       (message: VsCodeMessage) => {
         switch (message.type) {
-          case "ping":
-            PedagogicalPanel.postWebviewMessage({
-              msgSeq: message.msgSeq,
-              type: "pong",
-              data: "pong",
-            });
-            break;
           case "debugRequest":
-            this._handleDebugRequest(message.data, message.msgSeq);
+            this._handleDebugRequest(message.data.sessionId, message.data.req, message.msgSeq);
             break;
           default:
             break;
@@ -182,11 +174,21 @@ export class PedagogicalPanel {
     PedagogicalPanel.currentPanel?._panel.webview.postMessage(message);
   }
 
-  private _handleDebugRequest(req: DebugRequest, msgSeq?: number) {
+  private _handleDebugRequest(sessionId: string, req: DebugRequest, msgSeq?: number) {
     // TODO: send to specific debug session
-    debug.activeDebugSession?.customRequest(req.command, req.args).then((resp) => {
-      const msgData = resp ? resp : ({ error: undefined } as DebugProtocol.ErrorResponse["body"]);
-      PedagogicalPanel.postWebviewMessage({ type: "debugResponse", msgSeq, data: msgData });
+    const session = this._sessions.find((ses) => ses.id === sessionId);
+    if (session === undefined) {
+      PedagogicalPanel.postWebviewMessage({ type: "debugError", msgSeq, data: {} });
+      return;
+    }
+
+    debug.activeDebugSession?.customRequest(req.command, req.args).then((respBody: DebugResponse["body"]) => {
+      if (respBody) {
+        const resp = { command: req.command, body: respBody } as DebugResponse;
+        PedagogicalPanel.postWebviewMessage({ type: "debugResponse", msgSeq, data: { sessionId, resp } });
+      } else {
+        PedagogicalPanel.postWebviewMessage({ type: "debugError", msgSeq, data: {} });
+      }
     });
   }
 
@@ -194,12 +196,20 @@ export class PedagogicalPanel {
     switch (msg.type) {
       case "started":
         this._sessions.push(msg.session);
-        PedagogicalPanel.postWebviewMessage({ type: "sessionStartedEvent", data: msg.session });
+        PedagogicalPanel.postWebviewMessage({
+          type: "sessionStartedEvent",
+          data: { id: msg.session.id, name: msg.session.name, type: msg.session.type },
+        });
         break;
+
       case "stopped":
         this._sessions = this._sessions.filter((session) => session.id !== msg.session.id);
-        PedagogicalPanel.postWebviewMessage({ type: "sessionStoppedEvent", data: msg.session });
+        PedagogicalPanel.postWebviewMessage({
+          type: "sessionStoppedEvent",
+          data: { id: msg.session.id },
+        });
         break;
+
       case "debugEvent":
         PedagogicalPanel.postWebviewMessage({
           type: "debugEvent",
