@@ -9688,23 +9688,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hello-world-react-vite@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "hello-world-react-vite@workspace:."
-  dependencies:
-    "@typescript-eslint/eslint-plugin": ^5.50.0
-    "@typescript-eslint/parser": ^5.59.9
-    concurrently: ^8.2.0
-    eslint: ^8.42.0
-    eslint-config-prettier: ^8.8.0
-    eslint-plugin-import: ^2.25.2
-    eslint-plugin-n: ^15.0.0
-    eslint-plugin-promise: ^6.0.0
-    eslint-plugin-react: latest
-    typescript: "*"
-  languageName: unknown
-  linkType: soft
-
 "hex-rgba@npm:^1.0.2":
   version: 1.0.2
   resolution: "hex-rgba@npm:1.0.2"
@@ -12274,6 +12257,23 @@ __metadata:
   checksum: 34ab3da2e5aa832ebc6a330ffe3f73d7ba8aec6e899b53b8ec4f4018de08e40742802deb12cf5add9c73b7bf719b62c0778246bd376ca62b0fb23e0dde44b759
   languageName: node
   linkType: hard
+
+"pedagogical@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "pedagogical@workspace:."
+  dependencies:
+    "@typescript-eslint/eslint-plugin": ^5.50.0
+    "@typescript-eslint/parser": ^5.59.9
+    concurrently: ^8.2.0
+    eslint: ^8.42.0
+    eslint-config-prettier: ^8.8.0
+    eslint-plugin-import: ^2.25.2
+    eslint-plugin-n: ^15.0.0
+    eslint-plugin-promise: ^6.0.0
+    eslint-plugin-react: latest
+    typescript: "*"
+  languageName: unknown
+  linkType: soft
 
 "peek-stream@npm:^1.1.0":
   version: 1.1.3

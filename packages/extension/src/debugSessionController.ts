@@ -1,7 +1,7 @@
-import { DebugEvent } from "shared";
+import { DebugEvent, DebugRequest, DebugResponse } from "shared";
 import { DebugSession } from "vscode";
 
-export class DebugSessionObserver {
+export class DebugSessionController {
   static listeners: DebugSessionMessageListener[] = [];
   static sessions: DebugSession[] = [];
 
@@ -27,8 +27,17 @@ export class DebugSessionObserver {
     this.notify({ type: "stopped", session });
   }
 
-  static sendEvent(session: DebugSession, event: DebugEvent) {
+  static notifyEvent(session: DebugSession, event: DebugEvent) {
     this.notify({ type: "debugEvent", session, data: { event } });
+  }
+
+  static async sendDebugRequest(sessionId: string, req: DebugRequest): Promise<DebugResponse> {
+    const session = this.sessions.find((s) => s.id === sessionId);
+    if (session === undefined) {
+      throw new Error(`session id ${sessionId} not found`);
+    }
+    const respBody = await session.customRequest(req.command, req.args);
+    return { command: req.command, body: respBody } as DebugResponse;
   }
 }
 

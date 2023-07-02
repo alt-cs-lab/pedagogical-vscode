@@ -7,13 +7,12 @@ import {
   ViewColumn,
   ExtensionContext,
   ExtensionMode,
-  debug,
   DebugSession,
 } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
-import { VsCodeMessage, DebugRequest, DebugResponse } from "shared";
-import { DebugSessionMessageListener, DebugSessionObserver } from "../DebugSessionObserver";
+import { VsCodeMessage, DebugRequest } from "shared";
+import { DebugSessionMessageListener, DebugSessionController } from "../debugSessionController";
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -46,7 +45,7 @@ export class PedagogicalPanel {
 
     this._setWebviewMessageListener(this._panel.webview);
 
-    DebugSessionObserver.subscribe(this.onDebugSessionMessage);
+    DebugSessionController.subscribe(this._onDebugSessionMessage);
   }
 
   /**
@@ -61,7 +60,7 @@ export class PedagogicalPanel {
       PedagogicalPanel.currentPanel._panel.reveal(ViewColumn.Beside);
     } else {
       // If a webview panel does not already exist create and show a new one
-      const panel = window.createWebviewPanel("showHelloWorld", "Hello World", ViewColumn.Beside, {
+      const panel = window.createWebviewPanel("showPedagogicalView", "Show Pedagogical View", ViewColumn.Beside, {
         enableScripts: true,
         localResourceRoots: [Uri.joinPath(context.extensionUri, "dist")],
       });
@@ -76,7 +75,7 @@ export class PedagogicalPanel {
   public dispose() {
     PedagogicalPanel.currentPanel = undefined;
 
-    DebugSessionObserver.unsubscribe(this.onDebugSessionMessage);
+    DebugSessionController.unsubscribe(this._onDebugSessionMessage);
 
     // Dispose of the current webview panel
     this._panel.dispose();
@@ -103,19 +102,9 @@ export class PedagogicalPanel {
    */
   private _getWebviewContent(webview: Webview, context: ExtensionContext) {
     // The CSS file from the React build output
-    const stylesUri = getUri(webview, context.extensionUri, [
-      "dist",
-      "webview-ui",
-      "assets",
-      "index.css",
-    ]);
+    const stylesUri = getUri(webview, context.extensionUri, ["dist", "webview-ui", "assets", "index.css"]);
     // The JS file from the React build output
-    const scriptUri = getUri(webview, context.extensionUri, [
-      "dist",
-      "webview-ui",
-      "assets",
-      "index.js",
-    ]);
+    const scriptUri = getUri(webview, context.extensionUri, ["dist", "webview-ui", "assets", "index.js"]);
 
     const nonce = getNonce();
 
@@ -134,7 +123,7 @@ export class PedagogicalPanel {
             script-src 'nonce-${nonce}';
             connect-src ${isEnvDevelopment ? "'self' ws:" : "none"}">
           <link rel="stylesheet" type="text/css" href="${stylesUri}">
-          <title>Hello World</title>
+          <title>Pedagogical</title>
         </head>
         <body>
           <div id="root"></div>
@@ -170,33 +159,23 @@ export class PedagogicalPanel {
     );
   }
 
-  public static postWebviewMessage(message: VsCodeMessage) {
-    PedagogicalPanel.currentPanel?._panel.webview.postMessage(message);
+  private _postWebviewMessage(message: VsCodeMessage) {
+    this._panel.webview.postMessage(message);
   }
 
   private _handleDebugRequest(sessionId: string, req: DebugRequest, msgSeq?: number) {
-    // TODO: send to specific debug session
-    const session = this._sessions.find((ses) => ses.id === sessionId);
-    if (session === undefined) {
-      PedagogicalPanel.postWebviewMessage({ type: "debugError", msgSeq, data: {} });
-      return;
-    }
-
-    debug.activeDebugSession?.customRequest(req.command, req.args).then((respBody: DebugResponse["body"]) => {
-      if (respBody) {
-        const resp = { command: req.command, body: respBody } as DebugResponse;
-        PedagogicalPanel.postWebviewMessage({ type: "debugResponse", msgSeq, data: { sessionId, resp } });
-      } else {
-        PedagogicalPanel.postWebviewMessage({ type: "debugError", msgSeq, data: {} });
-      }
+    DebugSessionController.sendDebugRequest(sessionId, req).then((resp) => {
+      this._postWebviewMessage({ type: "debugResponse", msgSeq, data: { sessionId, resp } });
+    }).catch(() => {
+      this._postWebviewMessage({ type: "debugError", msgSeq, data: {} });
     });
   }
 
-  public onDebugSessionMessage: DebugSessionMessageListener = (msg) => {
+  private _onDebugSessionMessage: DebugSessionMessageListener = (msg) => {
     switch (msg.type) {
       case "started":
         this._sessions.push(msg.session);
-        PedagogicalPanel.postWebviewMessage({
+        this._postWebviewMessage({
           type: "sessionStartedEvent",
           data: { id: msg.session.id, name: msg.session.name, type: msg.session.type },
         });
@@ -204,14 +183,14 @@ export class PedagogicalPanel {
 
       case "stopped":
         this._sessions = this._sessions.filter((session) => session.id !== msg.session.id);
-        PedagogicalPanel.postWebviewMessage({
+        this._postWebviewMessage({
           type: "sessionStoppedEvent",
           data: { id: msg.session.id },
         });
         break;
 
       case "debugEvent":
-        PedagogicalPanel.postWebviewMessage({
+        this._postWebviewMessage({
           type: "debugEvent",
           data: { sessionId: msg.session.id, event: msg.data.event },
         });

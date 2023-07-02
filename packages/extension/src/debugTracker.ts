@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { DebugProtocol } from "@vscode/debugprotocol";
 import { DebugEvent } from "shared";
-import { DebugSessionObserver } from "./DebugSessionObserver";
+import { DebugSessionController } from "./debugSessionController";
 
 /** Debug adapter tracker factory to be registered with vscode */
 export const DebugTrackerFactory: vscode.DebugAdapterTrackerFactory = {
@@ -18,15 +18,15 @@ class DebugTracker implements vscode.DebugAdapterTracker {
   onDidSendMessage(message: DebugProtocol.ProtocolMessage) {
     console.log(message);
     if (message.type === "event") {
-      DebugSessionObserver.sendEvent(this.session, message as unknown as DebugEvent);
+      DebugSessionController.notifyEvent(this.session, message as unknown as DebugEvent);
     }
   }
 
   onWillStartSession() {
-    DebugSessionObserver.addSession(this.session);
+    DebugSessionController.addSession(this.session);
   }
 
   onWillStopSession() {
-    DebugSessionObserver.removeSession(this.session);
+    DebugSessionController.removeSession(this.session);
   }
 }

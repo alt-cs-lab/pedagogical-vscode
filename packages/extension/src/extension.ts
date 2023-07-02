@@ -1,11 +1,11 @@
 import { commands, debug, ExtensionContext } from "vscode";
 import { PedagogicalPanel } from "./panels/PedagogicalPanel";
-import { DebugTrackerFactory } from "./DebugTracker";
+import { DebugTrackerFactory } from "./debugTracker";
 
 export function activate(context: ExtensionContext) {
   const disposables = [
     // Create the show hello world command
-    commands.registerCommand("hello-world.showHelloWorld", () => {
+    commands.registerCommand("pedagogical.showPedagogicalView", () => {
       PedagogicalPanel.render(context);
     }),
 
