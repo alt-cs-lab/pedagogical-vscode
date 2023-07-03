@@ -1,5 +1,5 @@
 import { VsCodeMessage } from "shared";
-import { vscode } from "./vscode";
+import { vscode } from "../../util/vscode";
 import AsyncLock from "async-lock";
 
 type PromiseCallbacks = {
@@ -8,10 +8,10 @@ type PromiseCallbacks = {
 };
 
 /**
- * Static class to help handle messages sent between this webview and vscode.
+ * Class to help handle messages sent between this webview and vscode.
  * Use {@link postRequestAsync} to send a message and wait for a response.
  */
-class VsCodeMessenger {
+class VsCodeMessageController {
   /** Map that resolves a response sequence number to its promise callbacks */
   seqPromiseMap = new Map<number, PromiseCallbacks>();
 
@@ -89,4 +89,4 @@ class VsCodeMessenger {
   }
 }
 
-export const vscodeMessenger = new VsCodeMessenger();
+export const messageController = new VsCodeMessageController();

@@ -4,7 +4,7 @@ import { DebugEvent } from "shared";
 import { DebugSessionController } from "./debugSessionController";
 
 /** Debug adapter tracker factory to be registered with vscode */
-export const DebugTrackerFactory: vscode.DebugAdapterTrackerFactory = {
+export const debugTrackerFactory: vscode.DebugAdapterTrackerFactory = {
   createDebugAdapterTracker(session: vscode.DebugSession): vscode.ProviderResult<DebugTracker> {
     return new DebugTracker(session);
   }

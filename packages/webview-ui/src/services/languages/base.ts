@@ -1,13 +1,15 @@
 import { Effect, put } from "redux-saga/effects";
-import { addSession, buildSession, removeSession } from "../../features/sessions/sessionsSlice";
+import { addSession, buildSession, buildSessionDone, removeSession } from "../../features/sessions/sessionsSlice";
 import { DebugEvent } from "shared";
 
-export abstract class LanguageHandler {
+export type LanguageHandler = typeof baseLanguageHandler;
+
+export const baseLanguageHandler = {
   /**
    * The name of the debug adapter (e.g. `python`).
    * This must match the type given by `DebugSession` in the extension package.
    */
-  abstract debugType: string;
+  debugType: "",
 
   /**
    * Saga triggered when a new debug session is launched in vscode. Default implementation
@@ -26,7 +28,7 @@ export abstract class LanguageHandler {
    */
   *sessionStartSaga(id: string, name: string, type: string): Generator<Effect> {
     yield put(addSession({ id, name, type }));
-  }
+  },
 
   /**
    * Saga triggered when a debug session has terminated and is about to disconnect.
@@ -37,7 +39,7 @@ export abstract class LanguageHandler {
    */
   *sessionTerminatedSaga(id: string): Generator<Effect> {
     yield put(removeSession({ id }));
-  }
+  },
 
   /**
    * Saga triggered when the debug session emits an event. By default this only watches
@@ -51,13 +53,19 @@ export abstract class LanguageHandler {
       case "stopped":
         yield put(buildSession({ id: sessionId }));
     }
-  }
+  },
 
   /**
-   * Abstract saga that is called when the `buildSession` action is triggered and
+   * Saga that is called when the `buildSession` action is triggered and
    * the session's debug adapter type matches {@link debugType}.
+   * 
+   * This must be implemented for each language handler seperately.
+   * It should complete all the steps needed to populate the session state, then dispatch `buildSessionDone`.
    *
    * @param sessionId session id
    */
-  abstract buildSessionSaga(sessionId: string): Generator<Effect>;
-}
+  *buildSessionSaga(sessionId: string): Generator<Effect> {
+    // must be implemented by specific language handler
+    yield put(buildSessionDone({ id: sessionId }));
+  },
+};

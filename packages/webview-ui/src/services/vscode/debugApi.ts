@@ -1,10 +1,10 @@
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
-import { vscodeMessenger } from "../util/vscodeMessenger";
+import { messageController } from "./messageController";
 import { DebugResponse, VsCodeMessage } from "shared";
 
 export const debugApi = {
   async getThreads(sessionId: string): Promise<DebugResponse> {
-    const resp: VsCodeMessage = await vscodeMessenger.postRequestAsync({
+    const resp: VsCodeMessage = await messageController.postRequestAsync({
       type: "debugRequest",
       data: { sessionId, req: { command: "threads", args: undefined } },
     });
@@ -15,7 +15,7 @@ export const debugApi = {
   },
 
   async getStackTrace(sessionId: string, args: DP.StackTraceArguments): Promise<DebugResponse> {
-    const resp = await vscodeMessenger.postRequestAsync({
+    const resp = await messageController.postRequestAsync({
       type: "debugRequest",
       data: { sessionId, req: { command: "stackTrace", args } },
     });
@@ -26,7 +26,7 @@ export const debugApi = {
   },
 
   async getScopes(sessionId: string, args: DP.ScopesArguments): Promise<DebugResponse> {
-    const resp = await vscodeMessenger.postRequestAsync({
+    const resp = await messageController.postRequestAsync({
       type: "debugRequest",
       data: { sessionId, req: { command: "scopes", args } },
     });
@@ -37,7 +37,7 @@ export const debugApi = {
   },
 
   async getVariables(sessionId: string, args: DP.VariablesArguments): Promise<DebugResponse> {
-    const resp = await vscodeMessenger.postRequestAsync({
+    const resp = await messageController.postRequestAsync({
       type: "debugRequest",
       data: { sessionId, req: { command: "variables", args } },
     });

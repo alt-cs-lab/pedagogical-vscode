@@ -2,10 +2,10 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 
 /** `DP.Thread` with an added `stackFrameIds` array */
-export type SessionStateThread = DP.Thread & { stackFrameIds: number[] };
+export type SessionThread = DP.Thread & { stackFrameIds: number[] };
 
 /** `DP.StackFrame` with an added `scopeVariableReferences` array */
-export type SessionStateStackFrame = DP.StackFrame & { scopeVariableReferences: number[] };
+export type SessionStackFrame = DP.StackFrame & { scopeVariableReferences: number[] };
 
 type SessionsState = Record<string, Session>;
 
@@ -13,9 +13,9 @@ export type Session = {
   name: string;
   type: string;
   id: string;
-  threads: Record<number, SessionStateThread>;
-  stackFrames: Record<number, SessionStateStackFrame>;
-  scopes: Record<number, DP.Scope>;
+  threads: SessionThread[];
+  stackFrames: SessionStackFrame[];
+  scopes: DP.Scope[];
   variableRefs: Record<number, DP.Variable[]>;
 };
 
@@ -27,14 +27,14 @@ export const sessionsSlice = createSlice({
   reducers: {
     buildSession: (_state, _action: PayloadAction<{ id: string }>) => undefined,
 
-    buildSessionDone: (_state, _action: PayloadAction<{id: string }>) => undefined,
+    buildSessionDone: (_state, _action: PayloadAction<{ id: string }>) => undefined,
 
     addSession: (state, action: PayloadAction<Pick<Session, "name" | "type" | "id">>) => {
       state[action.payload.id] = {
         ...action.payload,
-        threads: {},
-        stackFrames: {},
-        scopes: {},
+        threads: [],
+        stackFrames: [],
+        scopes: [],
         variableRefs: {},
       };
     },
@@ -42,9 +42,9 @@ export const sessionsSlice = createSlice({
     clearSession: (state, action: PayloadAction<{ id: string }>) => {
       state[action.payload.id] = {
         ...state[action.payload.id],
-        threads: {},
-        stackFrames: {},
-        scopes: {},
+        threads: [],
+        stackFrames: [],
+        scopes: [],
         variableRefs: {},
       };
     },
@@ -53,29 +53,24 @@ export const sessionsSlice = createSlice({
       delete state[action.payload.id];
     },
 
-    addThreads: (state, action: PayloadAction<{ id: string; threads: SessionStateThread[] }>) => {
-      for (const thread of action.payload.threads) {
-        state[action.payload.id].threads[thread.id] = thread;
-      }
+    addThreads: (state, action: PayloadAction<{ id: string; threads: SessionThread[] }>) => {
+      const session = state[action.payload.id];
+      session.threads = [...session.threads, ...action.payload.threads];
     },
 
-    addStackTrace: (
-      state,
-      action: PayloadAction<{ id: string; frames: SessionStateStackFrame[] }>
-    ) => {
-      for (const frame of action.payload.frames) {
-        state[action.payload.id].stackFrames[frame.id] = frame;
-      }
+    addStackTrace: (state, action: PayloadAction<{ id: string; frames: SessionStackFrame[] }>) => {
+      const session = state[action.payload.id];
+      session.stackFrames = [...session.stackFrames, ...action.payload.frames];
     },
 
     addScopes: (state, action: PayloadAction<{ id: string; scopes: DP.Scope[] }>) => {
-      for (const scope of action.payload.scopes) {
-        state[action.payload.id].scopes[scope.variablesReference] = scope;
-      }
+      const session = state[action.payload.id];
+      session.scopes = [...session.scopes, ...action.payload.scopes];
     },
 
     addVariables: (state, action: PayloadAction<{ id: string; ref: number, variables: DP.Variable[] }>) => {
-      state[action.payload.id].variableRefs[action.payload.ref] = action.payload.variables;
+      const session = state[action.payload.id];
+      session.variableRefs[action.payload.ref] = action.payload.variables;
     },
   },
 });

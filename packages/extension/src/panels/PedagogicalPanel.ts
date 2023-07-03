@@ -15,11 +15,11 @@ import { VsCodeMessage, DebugRequest } from "shared";
 import { DebugSessionMessageListener, DebugSessionController } from "../debugSessionController";
 
 /**
- * This class manages the state and behavior of HelloWorld webview panels.
+ * This class manages the state and behavior of webview panels.
  *
  * It contains all the data and methods for:
  *
- * - Creating and rendering HelloWorld webview panels
+ * - Creating and rendering webview panels
  * - Properly cleaning up and disposing of webview resources when the panel is closed
  * - Setting the HTML (and by proxy CSS/JavaScript) content of the webview panel
  * - Setting message listeners so data can be passed between the webview and extension
@@ -31,7 +31,7 @@ export class PedagogicalPanel {
   private _sessions: DebugSession[] = [];
 
   /**
-   * The HelloWorldPanel class private constructor (called only from the render method).
+   * The PedagogicalPanel class private constructor (called only from the render method).
    *
    * @param panel A reference to the webview panel
    * @param extensionUri The URI of the directory containing the extension
@@ -60,7 +60,7 @@ export class PedagogicalPanel {
       PedagogicalPanel.currentPanel._panel.reveal(ViewColumn.Beside);
     } else {
       // If a webview panel does not already exist create and show a new one
-      const panel = window.createWebviewPanel("showPedagogicalView", "Show Pedagogical View", ViewColumn.Beside, {
+      const panel = window.createWebviewPanel("showPedagogicalView", "Pedagogical", ViewColumn.Beside, {
         enableScripts: true,
         localResourceRoots: [Uri.joinPath(context.extensionUri, "dist")],
       });
@@ -163,6 +163,7 @@ export class PedagogicalPanel {
     this._panel.webview.postMessage(message);
   }
 
+  /** Forward a request from the webview to the DebugSessionController */
   private _handleDebugRequest(sessionId: string, req: DebugRequest, msgSeq?: number) {
     DebugSessionController.sendDebugRequest(sessionId, req).then((resp) => {
       this._postWebviewMessage({ type: "debugResponse", msgSeq, data: { sessionId, resp } });

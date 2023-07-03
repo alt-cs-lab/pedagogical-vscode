@@ -1,2 +1,2 @@
 export * from "./vscode";
-export * from "./vscodeMessenger";
+export * from "../services/vscode/messageController";
