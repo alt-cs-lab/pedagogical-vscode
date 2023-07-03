@@ -1,5 +1,5 @@
 import { Effect, call, put, select } from "redux-saga/effects";
-import { debugApi } from "../vscode/debugApi";
+import { debugApi } from "../../../services/debugApi";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import {
   Session,
@@ -11,9 +11,9 @@ import {
   addVariables,
   buildSessionDone,
   clearSession,
-} from "../../features/sessions/sessionsSlice";
+} from "../sessionsSlice";
 import { baseLanguageHandler } from "./base";
-import { RootState } from "../../store";
+import { RootState } from "../../../store";
 import { DebugResponse } from "shared";
 
 export const pythonLanguageHandler = {

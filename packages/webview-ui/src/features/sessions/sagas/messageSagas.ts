@@ -1,10 +1,10 @@
 import { Effect, fork, select, takeEvery } from "redux-saga/effects";
-import { Session } from "../../features/sessions/sessionsSlice";
-import { RootState } from "../../store";
+import { Session } from "../sessionsSlice";
+import { RootState } from "../../../store";
 import { getLanguageHandler } from "../languages";
 import { VsCodeMessage } from "shared";
 import { EventChannel, eventChannel } from "redux-saga";
-import { messageController } from "../../util";
+import { messageController } from "../../../util";
 
 function* handleVscodeMessageSaga(msg: VsCodeMessage): Generator<Effect> {
   let session;

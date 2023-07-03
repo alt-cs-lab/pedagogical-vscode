@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { devToolsEnhancer } from "@redux-devtools/remote";
 import { flowSlice } from "./features/flow/flowSlice";
 import { sessionsSlice } from "./features/sessions/sessionsSlice";
-import { rootSaga } from "./services/sagas";
+import { rootSaga } from "./features/sessions/sagas/debugSagas";
 import createSagaMiddleware from "redux-saga";
 import sagaMonitor from "@redux-saga/simple-saga-monitor";
 

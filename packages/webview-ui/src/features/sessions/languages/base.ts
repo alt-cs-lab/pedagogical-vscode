@@ -1,5 +1,5 @@
 import { Effect, put } from "redux-saga/effects";
-import { addSession, buildSession, buildSessionDone, removeSession } from "../../features/sessions/sessionsSlice";
+import { addSession, buildSession, buildSessionDone, removeSession } from "../sessionsSlice";
 import { DebugEvent } from "shared";
 
 export type LanguageHandler = typeof baseLanguageHandler;

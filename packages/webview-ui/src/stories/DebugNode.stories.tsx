@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { ReactFlowProvider } from "reactflow";
-import { DebugNode } from "../features/nodes/DebugNode";
+import { DebugNodeContainer } from "../features/flow/nodes";
 
 // default export determines wehre story goes in the story list
-const meta: Meta<typeof DebugNode> = {
-  component: DebugNode,
+const meta: Meta<typeof DebugNodeContainer> = {
+  component: DebugNodeContainer,
   decorators: [
     (Story) => (
       <div style={{ width: "min-content", margin: "0 auto" }}>
@@ -17,47 +17,47 @@ const meta: Meta<typeof DebugNode> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof DebugNode>;
+type Story = StoryObj<typeof DebugNodeContainer>;
 
 export const Variables: Story = {
   args: {
-    type: "variables",
+    type: "defaultVariables",
     data: {
       variables: [
         {
           name: "i",
           value: "2",
           type: "int",
-          reference: 0,
+          variablesReference: 0,
         },
         {
           name: "n",
           value: "10",
           type: "int",
-          reference: 0,
+          variablesReference: 0,
         },
         {
           name: "nums",
           value: "[0, 1]",
           type: "list",
-          reference: 6,
+          variablesReference: 6,
         },
         {
           name: "more_nums",
           value: "[2, 3, 4, 5]",
           type: "list",
-          reference: 7,
+          variablesReference: 7,
         },
       ],
     },
   },
 };
 
-export const StackFrame: Story = {
-  args: {
-    type: "stackFrame",
-    data: {
-      name: "<module>",
-    },
-  },
-};
+// export const StackFrame: Story = {
+//   args: {
+//     type: "stackFrame",
+//     data: {
+//       name: "<module>",
+//     },
+//   },
+// };

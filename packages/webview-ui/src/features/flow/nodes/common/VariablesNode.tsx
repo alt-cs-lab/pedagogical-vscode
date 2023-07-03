@@ -1,16 +1,12 @@
-import { Node, Handle, Position } from "reactflow";
+import { NodeProps, Handle, Position } from "reactflow";
+import { DebugProtocol as DP } from "@vscode/debugprotocol";
 
 export type VariablesData = {
   type?: string;
-  variables: {
-    name: string;
-    type?: string;
-    value?: string;
-    reference?: number;
-  }[];
+  variables: DP.Variable[];
 };
 
-export const VariablesNode = (props: Node<VariablesData>) => {
+export const VariablesNode = (props: NodeProps<VariablesData>) => {
   const variables = props.data.variables;
   return (
     <>
@@ -37,7 +33,7 @@ export const VariablesNode = (props: Node<VariablesData>) => {
             }}
           >
             <pre style={{ margin: "5px 0" }}>{variable.name}:</pre>
-            {variable.reference ? (
+            {variable.variablesReference ? (
               <div style={{ position: "relative", marginLeft: 25, left: -3 }}>
                 <Handle
                   type="source"

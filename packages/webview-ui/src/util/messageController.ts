@@ -1,5 +1,5 @@
 import { VsCodeMessage } from "shared";
-import { vscode } from "../../util/vscode";
+import { vscode } from "./vscode";
 import AsyncLock from "async-lock";
 
 type PromiseCallbacks = {

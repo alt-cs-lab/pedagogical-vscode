@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import "reactflow/dist/style.css";
 // import { useGetSessionQuery } from "../../services/debugAdapterApi";
 import { nodesChanged } from "./flowSlice";
-import { nodeTypes } from "../nodes/types";
+import { nodeTypes } from "./nodes";
 import { useMemo } from "react";
 
 export const Flow = () => {
@@ -20,7 +20,7 @@ export const Flow = () => {
         nodes={flow.nodes}
         edges={flow.edges}
         onNodesChange={(changes) => dispatch(nodesChanged(changes))}
-        // nodeTypes={nodeTypesMemo}
+        nodeTypes={nodeTypesMemo}
       >
         <Background />
         <Controls />
