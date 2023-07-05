@@ -7,6 +7,15 @@ export type SessionThread = DP.Thread & { stackFrameIds: number[] };
 /** `DP.StackFrame` with an added `scopeVariableReferences` array */
 export type SessionStackFrame = DP.StackFrame & { scopeVariableReferences: number[] };
 
+/** Same as `DP.Scope` */
+export type SessionScope = DP.Scope;
+
+/**
+ * Record where each key (property) is a variable reference number
+ * and each value is an array of variables
+ */
+export type SessionVariableRefs = Record<number, DP.Variable[]>;
+
 type SessionsState = Record<string, Session>;
 
 export type Session = {
@@ -25,10 +34,6 @@ export const sessionsSlice = createSlice({
   name: "sessions",
   initialState: initialState,
   reducers: {
-    buildSession: (_state, _action: PayloadAction<{ id: string }>) => undefined,
-
-    buildSessionDone: (_state, _action: PayloadAction<{ id: string }>) => undefined,
-
     addSession: (state, action: PayloadAction<Pick<Session, "name" | "type" | "id">>) => {
       state[action.payload.id] = {
         ...action.payload,
@@ -36,6 +41,14 @@ export const sessionsSlice = createSlice({
         stackFrames: [],
         scopes: [],
         variableRefs: {},
+      };
+    },
+
+    updateSession: (state, action: PayloadAction<Partial<Session>>) => {
+      if (action.payload.id === undefined) { return; }
+      state[action.payload.id] = {
+        ...state[action.payload.id],
+        ...action.payload,
       };
     },
 
@@ -72,7 +85,7 @@ export const sessionsSlice = createSlice({
       const session = state[action.payload.id];
       session.variableRefs[action.payload.ref] = action.payload.variables;
     },
-  },
+  }
 });
 
 export const {
@@ -80,9 +93,8 @@ export const {
   addStackTrace,
   addThreads,
   addVariables,
-  buildSession,
-  buildSessionDone,
   clearSession,
   addSession,
+  updateSession,
   removeSession,
 } = sessionsSlice.actions;

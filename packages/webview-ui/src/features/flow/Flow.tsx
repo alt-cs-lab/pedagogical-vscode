@@ -1,14 +1,13 @@
 import ReactFlow, { Controls, Background } from "reactflow";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import "reactflow/dist/style.css";
-// import { useGetSessionQuery } from "../../services/debugAdapterApi";
 import { nodesChanged } from "./flowSlice";
 import { nodeTypes } from "./nodes";
 import { useMemo } from "react";
 
+import "reactflow/dist/style.css";
+
 export const Flow = () => {
   const dispatch = useAppDispatch();
-  // useGetSessionQuery();
   const flow = useAppSelector((state) => state.flow);
 
   // useMemo so const isn't reinstantiated on every render

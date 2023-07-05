@@ -21,7 +21,7 @@ type Story = StoryObj<typeof DebugNodeContainer>;
 
 export const Variables: Story = {
   args: {
-    type: "defaultVariables",
+    type: "commonVariables",
     data: {
       variables: [
         {
