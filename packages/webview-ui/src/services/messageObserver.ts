@@ -1,7 +1,6 @@
 import { DebugEvent, VsCodeMessage } from "shared";
 import { store } from "../store";
-import { addSession, removeSession } from "../features/sessions/sessionsSlice";
-import { fetchSession } from "../features/sessions/thunks";
+import { addSession, debuggerPaused, removeSession } from "../features/sessions/sessionsSlice";
 import { messageController } from "../util";
 
 export function startMessageObserver() {
@@ -27,13 +26,9 @@ function messageObserver(msg: VsCodeMessage) {
 function handleDebugEvent(sessionId: string, event: DebugEvent) {
   switch (event.event) {
     case "stopped": {
-      const session = store.getState().sessions[sessionId];
-      store.dispatch(fetchSession(session));
+      // const session = store.getState().sessions[sessionId];
+      store.dispatch(debuggerPaused({ sessionId: sessionId }));
       return;
     }
-    
-    case "thread":
-      // TODO
-      return;
   }
 }

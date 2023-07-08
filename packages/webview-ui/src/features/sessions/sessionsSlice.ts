@@ -1,5 +1,6 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { EntityState, PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
+import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesReferenceEntity, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./debugAdapters/default/entities";
 
 /** `DP.Thread` with an added `stackFrameIds` array */
 export type SessionThread = DP.Thread & { stackFrameIds: number[] };
@@ -22,10 +23,10 @@ export type Session = {
   name: string;
   type: string;
   id: string;
-  threads: SessionThread[];
-  stackFrames: SessionStackFrame[];
-  scopes: DP.Scope[];
-  variableRefs: Record<number, DP.Variable[]>;
+  threads: EntityState<ThreadEntity>;
+  stackFrames: EntityState<StackFrameEntity>;
+  scopes: EntityState<ScopeEntity>;
+  variableRefs: EntityState<VariablesReferenceEntity>;
 };
 
 const initialState: SessionsState = {};
@@ -34,31 +35,25 @@ export const sessionsSlice = createSlice({
   name: "sessions",
   initialState: initialState,
   reducers: {
+    debuggerPaused: (state, action: PayloadAction<{ sessionId: string }>) => {
+      state[action.payload.sessionId] = {
+        ...state[action.payload.sessionId],
+        threads: threadsAdapter.getInitialState(),
+        stackFrames: stackFramesAdapter.getInitialState(),
+        scopes: scopesAdapter.getInitialState(),
+        variableRefs: variablesAdapter.getInitialState(),
+      };
+    },
+
     addSession: (state, action: PayloadAction<Pick<Session, "name" | "type" | "id">>) => {
       state[action.payload.id] = {
-        ...action.payload,
-        threads: [],
-        stackFrames: [],
-        scopes: [],
-        variableRefs: {},
-      };
-    },
-
-    updateSession: (state, action: PayloadAction<Partial<Session>>) => {
-      if (action.payload.id === undefined) { return; }
-      state[action.payload.id] = {
-        ...state[action.payload.id],
-        ...action.payload,
-      };
-    },
-
-    clearSession: (state, action: PayloadAction<{ id: string }>) => {
-      state[action.payload.id] = {
-        ...state[action.payload.id],
-        threads: [],
-        stackFrames: [],
-        scopes: [],
-        variableRefs: {},
+        id: action.payload.id,
+        name: action.payload.name,
+        type: action.payload.type,
+        threads: threadsAdapter.getInitialState(),
+        stackFrames: stackFramesAdapter.getInitialState(),
+        scopes: scopesAdapter.getInitialState(),
+        variableRefs: variablesAdapter.getInitialState(),
       };
     },
 
@@ -66,35 +61,54 @@ export const sessionsSlice = createSlice({
       delete state[action.payload.id];
     },
 
-    addThreads: (state, action: PayloadAction<{ id: string; threads: SessionThread[] }>) => {
-      const session = state[action.payload.id];
-      session.threads = [...session.threads, ...action.payload.threads];
-    },
+    // updateSession: (state, action: PayloadAction<Partial<Session>>) => {
+    //   if (action.payload.id === undefined) { return; }
+    //   state[action.payload.id] = {
+    //     ...state[action.payload.id],
+    //     ...action.payload,
+    //   };
+    // },
 
-    addStackTrace: (state, action: PayloadAction<{ id: string; frames: SessionStackFrame[] }>) => {
-      const session = state[action.payload.id];
-      session.stackFrames = [...session.stackFrames, ...action.payload.frames];
-    },
+    // clearSession: (state, action: PayloadAction<{ id: string }>) => {
+    //   state[action.payload.id] = {
+    //     ...state[action.payload.id],
+    //     threads: [],
+    //     stackFrames: [],
+    //     scopes: [],
+    //     variableRefs: {},
+    //   };
+    // },
 
-    addScopes: (state, action: PayloadAction<{ id: string; scopes: DP.Scope[] }>) => {
-      const session = state[action.payload.id];
-      session.scopes = [...session.scopes, ...action.payload.scopes];
-    },
+    // addThreads: (state, action: PayloadAction<{ id: string; threads: SessionThread[] }>) => {
+    //   const session = state[action.payload.id];
+    //   session.threads = [...session.threads, ...action.payload.threads];
+    // },
 
-    addVariables: (state, action: PayloadAction<{ id: string; ref: number, variables: DP.Variable[] }>) => {
-      const session = state[action.payload.id];
-      session.variableRefs[action.payload.ref] = action.payload.variables;
-    },
-  }
+    // addStackTrace: (state, action: PayloadAction<{ id: string; frames: SessionStackFrame[] }>) => {
+    //   const session = state[action.payload.id];
+    //   session.stackFrames = [...session.stackFrames, ...action.payload.frames];
+    // },
+
+    // addScopes: (state, action: PayloadAction<{ id: string; scopes: DP.Scope[] }>) => {
+    //   const session = state[action.payload.id];
+    //   session.scopes = [...session.scopes, ...action.payload.scopes];
+    // },
+
+    // addVariables: (state, action: PayloadAction<{ id: string; ref: number, variables: DP.Variable[] }>) => {
+    //   const session = state[action.payload.id];
+    //   session.variableRefs[action.payload.ref] = action.payload.variables;
+    // },
+  },
 });
 
 export const {
-  addScopes,
-  addStackTrace,
-  addThreads,
-  addVariables,
-  clearSession,
+  // addScopes,
+  // addStackTrace,
+  // addThreads,
+  // addVariables,
+  // clearSession,
   addSession,
-  updateSession,
+  // updateSession,
   removeSession,
+  debuggerPaused,
 } = sessionsSlice.actions;
