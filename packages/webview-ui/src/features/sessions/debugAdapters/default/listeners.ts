@@ -1,6 +1,7 @@
 import { addListener } from "@reduxjs/toolkit";
-import { fetchScopes, fetchStackTrace, fetchThreads, fetchVariables, isFetchFulfilledAction } from "./thunks";
+import { fetchScopes, fetchSessionState, fetchStackTrace, fetchThreads, fetchVariables, isFetchFulfilledAction } from "./thunks";
 import { debuggerPaused, removeSession } from "../../sessionsSlice";
+import { buildFlow } from "../../../flow/builders/default";
 
 export function addDefaultListener(sessionId: string) {
   return addListener({
@@ -15,7 +16,11 @@ export function addDefaultListener(sessionId: string) {
       // we could also switch based on action.type,
       // but these match functions give us type assertion
       if (debuggerPaused.match(action)) {
-        api.dispatch(fetchThreads({ sessionId }));
+        api.dispatch(fetchSessionState({ sessionId }));
+      }
+
+      else if (fetchSessionState.fulfilled.match(action)) {
+        api.dispatch(buildFlow({ sessionId }));
       }
 
       else if (fetchThreads.fulfilled.match(action)) {

@@ -1,42 +1,63 @@
-import { Session } from "../../sessions/sessionsSlice";
 import { DebugNode } from "../nodes";
-import { FlowState } from "../flowSlice";
 import { Edge } from "reactflow";
+import { variableSelectors } from "../../sessions/debugAdapters/default/entities";
+import { RootState } from "../../../store";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { Session } from "../../sessions/sessionsSlice";
 
-const varsId = (ref: string | number) => `vars-${ref}`;
-const edgeId = (sourceRef: string | number, sourceName: string, targetRef: string | number) => {
-  return `${sourceRef}[${sourceName}]-${targetRef}`;
+const edgeId = (sourceId: string | number, sourceName: string, targetId: string | number) => {
+  return `${sourceId}[${sourceName}]-${targetId}`;
 };
-const handleId = (name: string) => `handle-${name}`;
 
-export function defaultFlowBuilder(state: FlowState, session: Session) {
-  state.nodes = [];
-  state.edges = [];
+type BuildFlowArgs = { sessionId: string };
+type BuildFlowReturn = {
+  nodes: DebugNode[];
+  edges: Edge[];
+};
+export const buildFlow = createAsyncThunk<BuildFlowReturn, BuildFlowArgs>(
+  "flow/build",
+  (args, thunkApi) => {
+    // TODO: different builders for different debugger types
+    // TODO: incremental changes so position data isn't changed
+    const state = thunkApi.getState() as RootState;
+    return defaultFlowBuilder(state.sessions[args.sessionId]);
+  },
+);
+
+export function defaultFlowBuilder(session: Session): BuildFlowReturn {
+  const nodes: DebugNode[] = [];
+  const edges: Edge[] = [];
 
   let xy = 0;
 
-  for (const variablesReference in session.variableRefs) {
-    const variables = session.variableRefs[variablesReference];
+  const variableIds = variableSelectors.selectIds(session);
+  for (const variableId of variableIds) {
     const node: DebugNode = {
       type: "commonVariables",
-      data: { variables: variables },
-      id: varsId(variablesReference),
+      data: { sessionId: session.id, variableId },
+      id: variableId.toString(),
       position: { x: xy, y: xy },
     };
-    state.nodes.push(node);
+    nodes.push(node);
 
     xy += 20;
 
-    // create an edge for each referenced child variable
-    for (const childVar of variables.filter((v) => v.variablesReference > 0)) {
+    const childVars = variableSelectors.selectById(session, variableId);
+    if (!childVars) { continue; }
+    for (const childVar of childVars.variables) {
+      if (childVar.variablesReference === 0) { continue; }
+      const childVarEntity = variableSelectors.selectByReference(session, childVar.variablesReference);
+      if (childVarEntity === undefined) { continue; }
+
       const edge: Edge = {
-        id: edgeId(variablesReference, childVar.name, childVar.variablesReference),
-        source: node.id,
-        sourceHandle: handleId(childVar.name),
-        target: varsId(childVar.variablesReference),
-        animated: true,
+        id: edgeId(variableId, childVar.name, childVarEntity.pedagogId),
+        source: variableId.toString(),
+        sourceHandle: childVar.name,
+        target: childVarEntity.pedagogId,
       };
-      state.edges.push(edge);
+      edges.push(edge);
     }
   }
+
+  return { nodes, edges };
 }

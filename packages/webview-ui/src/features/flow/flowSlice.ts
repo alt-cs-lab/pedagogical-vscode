@@ -2,8 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { applyNodeChanges, NodeChange, Node, Edge } from "reactflow";
 // import { SessionState } from "../../services/debugAdapterApi";
 import { DebugNode } from "./nodes";
-import { Session } from "../sessions/sessionsSlice";
-import { defaultFlowBuilder } from "./builders/default";
+import { buildFlow } from "./builders/default";
 
 export type FlowState = {
   nodes: DebugNode[];
@@ -19,14 +18,20 @@ export const flowSlice = createSlice({
   name: "flow",
   initialState: initialState,
   reducers: {
-    buildFlow: (state, action: PayloadAction<{ session: Session }>) => {
-      // TODO: different builders for different debugger types
-      defaultFlowBuilder(state, action.payload.session);
-    },
     nodesChanged: (state, action: PayloadAction<NodeChange[]>) => {
       state.nodes = applyNodeChanges(action.payload, state.nodes as Node<any>[]) as DebugNode[];
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(buildFlow.fulfilled, (state, action) => {
+      state.nodes = action.payload.nodes;
+      state.edges = action.payload.edges;
+    });
+    builder.addCase(buildFlow.rejected, (_state, action) => {
+      console.log("build flow state failed!!!!");
+      console.log(action);
+    });
+  }
 });
 
-export const { buildFlow, nodesChanged } = flowSlice.actions;
+export const { nodesChanged } = flowSlice.actions;

@@ -1,31 +1,32 @@
 import { NodeProps, Handle, Position } from "reactflow";
-import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { VariablesList } from "./VariablesList";
+import { variableSelectors } from "../../../sessions/debugAdapters/default/entities";
+import { useAppSelector } from "../../../../hooks";
+
+import "./VariablesNode.css";
 
 export type VariablesData = {
-  type?: string;
-  variables: DP.Variable[];
+  sessionId: string;
+  variableId: string | number;
 };
 
 export const VariablesNode = (props: NodeProps<VariablesData>) => {
-  const variables = props.data.variables;
+  const session = useAppSelector((state) => state.sessions[props.data.sessionId]);
+  const variable = variableSelectors.selectById(session, props.data.variableId);
+  if (variable === undefined) {
+    return null;
+  }
+
+  const variables = variable?.variables;
   return (
-    <>
-      <div
-        style={{
-          border: "solid black",
-          position: "relative",
-          backgroundColor: "var(--vscode-panel-background)",
-        }}
-      >
-        <h4>{props.data.type}</h4>
-        <Handle
-          position={Position.Left}
-          type="target"
-          style={{ left: -9, width: 10, height: 10, backgroundColor: "#512888" }}
-        />
-        <VariablesList variables={variables} />
-      </div>
-    </>
+    <div className="variables-node">
+      {/* <h4>{props.data.type}</h4> */}
+      <Handle
+        position={Position.Left}
+        type="target"
+        style={{ left: -9, width: 10, height: 10, backgroundColor: "#512888" }}
+      />
+      <VariablesList variables={variables} />
+    </div>
   );
 };

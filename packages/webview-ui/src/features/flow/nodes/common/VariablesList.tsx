@@ -14,7 +14,7 @@ export const VariablesList = (props: { variables: DP.Variable[] }) => {
               <Handle
                 type="source"
                 position={Position.Right}
-                id={`handle-${variable.name}`}
+                id={variable.name}
                 style={{ backgroundColor: "#512888", width: 10, height: 10 }}
               />
             </div>

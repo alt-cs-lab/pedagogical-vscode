@@ -1,21 +1,6 @@
 import { EntityState, PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { DebugProtocol as DP } from "@vscode/debugprotocol";
-import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesReferenceEntity, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./debugAdapters/default/entities";
-
-/** `DP.Thread` with an added `stackFrameIds` array */
-export type SessionThread = DP.Thread & { stackFrameIds: number[] };
-
-/** `DP.StackFrame` with an added `scopeVariableReferences` array */
-export type SessionStackFrame = DP.StackFrame & { scopeVariableReferences: number[] };
-
-/** Same as `DP.Scope` */
-export type SessionScope = DP.Scope;
-
-/**
- * Record where each key (property) is a variable reference number
- * and each value is an array of variables
- */
-export type SessionVariableRefs = Record<number, DP.Variable[]>;
+import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./debugAdapters/default/entities";
+import { fetchThreads, fetchStackTrace, fetchScopes, fetchVariables, fetchSessionState } from "./debugAdapters/default/thunks";
 
 type SessionsState = Record<string, Session>;
 
@@ -26,7 +11,7 @@ export type Session = {
   threads: EntityState<ThreadEntity>;
   stackFrames: EntityState<StackFrameEntity>;
   scopes: EntityState<ScopeEntity>;
-  variableRefs: EntityState<VariablesReferenceEntity>;
+  variables: EntityState<VariablesEntity>;
 };
 
 const initialState: SessionsState = {};
@@ -38,10 +23,10 @@ export const sessionsSlice = createSlice({
     debuggerPaused: (state, action: PayloadAction<{ sessionId: string }>) => {
       state[action.payload.sessionId] = {
         ...state[action.payload.sessionId],
-        threads: threadsAdapter.getInitialState(),
-        stackFrames: stackFramesAdapter.getInitialState(),
-        scopes: scopesAdapter.getInitialState(),
-        variableRefs: variablesAdapter.getInitialState(),
+        // threads: threadsAdapter.getInitialState(),
+        // stackFrames: stackFramesAdapter.getInitialState(),
+        // scopes: scopesAdapter.getInitialState(),
+        // variables: variablesAdapter.getInitialState(),
       };
     },
 
@@ -53,62 +38,54 @@ export const sessionsSlice = createSlice({
         threads: threadsAdapter.getInitialState(),
         stackFrames: stackFramesAdapter.getInitialState(),
         scopes: scopesAdapter.getInitialState(),
-        variableRefs: variablesAdapter.getInitialState(),
+        variables: variablesAdapter.getInitialState(),
       };
     },
 
     removeSession: (state, action: PayloadAction<{ id: string }>) => {
       delete state[action.payload.id];
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchSessionState.fulfilled, (state, action) => {
+      const session = state[action.meta.arg.sessionId];
+      threadsAdapter.setAll(session.threads, action.payload.threads);
+      stackFramesAdapter.setAll(session.stackFrames, action.payload.stackFrames);
+      scopesAdapter.setAll(session.scopes, action.payload.scopes);
+      variablesAdapter.setAll(session.variables, action.payload.variables);
+    });
 
-    // updateSession: (state, action: PayloadAction<Partial<Session>>) => {
-    //   if (action.payload.id === undefined) { return; }
-    //   state[action.payload.id] = {
-    //     ...state[action.payload.id],
-    //     ...action.payload,
-    //   };
-    // },
+    builder.addCase(fetchThreads.fulfilled, (state, action) => {
+      const session = state[action.meta.arg.sessionId];
+      threadsAdapter.upsertMany(session.threads, action.payload.threads);
+    });
 
-    // clearSession: (state, action: PayloadAction<{ id: string }>) => {
-    //   state[action.payload.id] = {
-    //     ...state[action.payload.id],
-    //     threads: [],
-    //     stackFrames: [],
-    //     scopes: [],
-    //     variableRefs: {},
-    //   };
-    // },
+    builder.addCase(fetchStackTrace.fulfilled, (state, action) => {
+      const session = state[action.meta.arg.sessionId];
+      stackFramesAdapter.upsertMany(session.stackFrames, action.payload.stackFrames);
 
-    // addThreads: (state, action: PayloadAction<{ id: string; threads: SessionThread[] }>) => {
-    //   const session = state[action.payload.id];
-    //   session.threads = [...session.threads, ...action.payload.threads];
-    // },
+      const newFrameIds = action.payload.stackFrames.map((frame) => frame.id);
+      session.threads.entities[action.meta.arg.threadId]?.stackFrameIds.push(...newFrameIds);
+    });
 
-    // addStackTrace: (state, action: PayloadAction<{ id: string; frames: SessionStackFrame[] }>) => {
-    //   const session = state[action.payload.id];
-    //   session.stackFrames = [...session.stackFrames, ...action.payload.frames];
-    // },
+    builder.addCase(fetchScopes.fulfilled, (state, action) => {
+      const session = state[action.meta.arg.sessionId];
+      scopesAdapter.upsertMany(session.scopes, action.payload.scopes);
 
-    // addScopes: (state, action: PayloadAction<{ id: string; scopes: DP.Scope[] }>) => {
-    //   const session = state[action.payload.id];
-    //   session.scopes = [...session.scopes, ...action.payload.scopes];
-    // },
+      const frameId = action.meta.arg.frameId;
+      const newScopeIds = action.payload.scopes.map((scope) => scope.pedagogId);
+      session.stackFrames.entities[frameId]?.scopeIds.push(...newScopeIds);
+    });
 
-    // addVariables: (state, action: PayloadAction<{ id: string; ref: number, variables: DP.Variable[] }>) => {
-    //   const session = state[action.payload.id];
-    //   session.variableRefs[action.payload.ref] = action.payload.variables;
-    // },
+    builder.addCase(fetchVariables.fulfilled, (state, action) => {
+      const session = state[action.meta.arg.sessionId];
+      variablesAdapter.upsertOne(session.variables, action.payload);
+    });
   },
 });
 
 export const {
-  // addScopes,
-  // addStackTrace,
-  // addThreads,
-  // addVariables,
-  // clearSession,
   addSession,
-  // updateSession,
   removeSession,
   debuggerPaused,
 } = sessionsSlice.actions;

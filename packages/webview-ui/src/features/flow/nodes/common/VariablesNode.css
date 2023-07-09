@@ -1,0 +1,7 @@
+.variables-node {
+    border: solid black;
+    position: relative;
+    background-color: var(--vscode-panel-background);
+    min-width: 80px;
+    min-height: 20px;
+}
