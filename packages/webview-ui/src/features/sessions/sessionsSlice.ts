@@ -1,6 +1,6 @@
 import { EntityState, PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./debugAdapters/default/entities";
-import { fetchThreads, fetchStackTrace, fetchScopes, fetchVariables, fetchSessionState } from "./debugAdapters/default/thunks";
+import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./debugAdapters/entities";
+import { fetchThreads, fetchStackTrace, fetchScopes, fetchVariables, fetchSessionState } from "./debugAdapters/thunks";
 
 type SessionsState = Record<string, Session>;
 

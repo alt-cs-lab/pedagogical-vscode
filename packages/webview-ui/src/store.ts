@@ -2,7 +2,7 @@ import { configureStore, createListenerMiddleware } from "@reduxjs/toolkit";
 import { devToolsEnhancer } from "@redux-devtools/remote";
 import { flowSlice } from "./features/flow/flowSlice";
 import { sessionsSlice } from "./features/sessions/sessionsSlice";
-import { startMessageObserver } from "./services/messageObserver";
+import { startMessageObserver } from "./util/messageObserver";
 import { startDebugListener } from "./features/sessions/debugAdapters/listener";
 
 const scriptData = document.getElementById("scriptData") as any;

@@ -1,6 +1,6 @@
 import { NodeProps, Handle, Position } from "reactflow";
 import { VariablesList } from "./VariablesList";
-import { variableSelectors } from "../../../sessions/debugAdapters/default/entities";
+import { variableSelectors } from "../../../sessions/debugAdapters/entities";
 import { useAppSelector } from "../../../../hooks";
 
 import "./VariablesNode.css";

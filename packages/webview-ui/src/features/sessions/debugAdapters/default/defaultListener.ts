@@ -1,5 +1,5 @@
 import { addListener } from "@reduxjs/toolkit";
-import { fetchScopes, fetchSessionState, fetchStackTrace, fetchThreads, fetchVariables, isFetchFulfilledAction } from "./thunks";
+import { fetchScopes, fetchSessionState, fetchStackTrace, fetchThreads, fetchVariables, isFetchFulfilledAction } from "../thunks";
 import { debuggerPaused, removeSession } from "../../sessionsSlice";
 import { buildFlow } from "../../../flow/builders/default";
 

@@ -1,6 +1,6 @@
 import { DebugNode } from "../nodes";
 import { Edge } from "reactflow";
-import { variableSelectors } from "../../sessions/debugAdapters/default/entities";
+import { variableSelectors } from "../../sessions/debugAdapters/entities";
 import { RootState } from "../../../store";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { Session } from "../../sessions/sessionsSlice";

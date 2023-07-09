@@ -1,7 +1,7 @@
 import { DebugEvent, VsCodeMessage } from "shared";
 import { store } from "../store";
 import { addSession, debuggerPaused, removeSession } from "../features/sessions/sessionsSlice";
-import { messageController } from "../util";
+import { messageController } from ".";
 
 export function startMessageObserver() {
   messageController.addObserver(messageObserver);

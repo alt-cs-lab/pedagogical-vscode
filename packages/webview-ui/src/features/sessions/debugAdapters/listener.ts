@@ -1,6 +1,6 @@
 import { ListenerMiddlewareInstance } from "@reduxjs/toolkit";
 import { addSession } from "../sessionsSlice";
-import { addDefaultListener } from "./default/listeners";
+import { addDefaultListener } from "./default/defaultListener";
 
 export function startDebugListener(listenerMiddleware: ListenerMiddlewareInstance) {
   listenerMiddleware.startListening({
