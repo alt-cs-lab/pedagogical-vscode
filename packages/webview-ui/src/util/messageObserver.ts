@@ -10,11 +10,15 @@ export function startMessageObserver() {
 function messageObserver(msg: VsCodeMessage) {
   switch (msg.type) {
     case "sessionStartedEvent":
-      store.dispatch(addSession(msg.data));
+      store.dispatch(addSession({
+        sessionId: msg.data.id,
+        name: msg.data.name,
+        type: msg.data.type,
+      }));
       return;
-    
+
     case "sessionStoppedEvent":
-      store.dispatch(removeSession(msg.data));
+      store.dispatch(removeSession({ sessionId: msg.data.id }));
       return;
 
     case "debugEvent":

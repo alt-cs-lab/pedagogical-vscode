@@ -2,9 +2,17 @@ import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { debugApi } from "./debugApi";
 import { createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
 import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, toScopeEntities, toStackFrameEntities, toThreadEntities, toVariablesEntity } from "./entities";
+import { RootState } from "../../../store";
 
 type WithSessionId<T> = T & {
   sessionId: string,
+};
+
+type FetchThunkConfig = {
+  state: RootState,
+  pendingMeta: { debugType: string },
+  fulfilledMeta: { debugType: string },
+  rejectedMeta: { debugType: string },
 };
 
 type FetchSessionStateArgs = WithSessionId<unknown>;
@@ -14,9 +22,11 @@ type FetchSessionStateReturn = {
   scopes: ScopeEntity[],
   variables: VariablesEntity[],
 };
-export const fetchSessionState = createAsyncThunk<FetchSessionStateReturn, FetchSessionStateArgs>(
+export const fetchSessionState = createAsyncThunk<FetchSessionStateReturn, FetchSessionStateArgs, FetchThunkConfig>(
   "debugAdapter/session",
-  async (args) => {
+  async (args, thunkApi) => {
+    const debugType = thunkApi.getState().sessions[args.sessionId].type;
+
     const threadsResp = await debugApi.getThreads(args.sessionId);
     const threads = toThreadEntities(threadsResp.threads);
 
@@ -47,7 +57,7 @@ export const fetchSessionState = createAsyncThunk<FetchSessionStateReturn, Fetch
       if (!refsFetched.has(ref)) {
         const variablesArgs: DP.VariablesArguments = { variablesReference: ref };
         const variablesResp = await debugApi.getVariables(args.sessionId, variablesArgs);
-        
+
         // TODO: this is only good for the python debugger
         const filteredVariables = variablesResp.variables.filter((variable) =>(
           !variable.name.endsWith(" variables") && !variable.presentationHint?.lazy
@@ -63,12 +73,18 @@ export const fetchSessionState = createAsyncThunk<FetchSessionStateReturn, Fetch
       ref = refsToFetch.shift();
     }
 
-    return {
+    return thunkApi.fulfillWithValue({
       threads,
       stackFrames,
       scopes,
       variables,
-    };
+    }, { debugType });
+  },
+  {
+    getPendingMeta: (base, thunkApi) => {
+      const debugType = thunkApi.getState().sessions[base.arg.sessionId].type;
+      return { debugType };
+    }
   }
 );
 

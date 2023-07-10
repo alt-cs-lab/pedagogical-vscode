@@ -1,13 +1,19 @@
-import { ListenerMiddlewareInstance } from "@reduxjs/toolkit";
-import { addSession } from "../sessionsSlice";
+import { ListenerMiddlewareInstance, PayloadAction } from "@reduxjs/toolkit";
 import { addDefaultListener } from "./default/defaultListener";
+import { PayloadActionWithDebugType, addSession } from "../sessionsSlice";
+
+function hasMetaDebugType(action: PayloadAction<any, string, any>): action is PayloadActionWithDebugType<any> {
+  return action.meta?.debugType !== undefined;
+}
 
 export function startDebugListener(listenerMiddleware: ListenerMiddlewareInstance) {
   listenerMiddleware.startListening({
-    actionCreator: addSession,
+    matcher: hasMetaDebugType,
     effect: (action, api) => {
-      // TODO: change listener based on debugger type
-      api.dispatch(addDefaultListener(action.payload.id));
+      // TODO: switch on debug type
+      if (addSession.match(action)) {
+        api.dispatch(addDefaultListener(action.payload.sessionId));
+      }
     },
   });
 }

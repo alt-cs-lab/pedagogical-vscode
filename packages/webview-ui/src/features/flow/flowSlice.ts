@@ -3,15 +3,18 @@ import { applyNodeChanges, NodeChange, Node, Edge } from "reactflow";
 // import { SessionState } from "../../services/debugAdapterApi";
 import { DebugNode } from "./nodes";
 import { buildFlow } from "./builders/default";
+import { removeSession } from "../sessions/sessionsSlice";
 
 export type FlowState = {
   nodes: DebugNode[];
   edges: Edge[];
+  currentSessionId: string;
 };
 
 const initialState: FlowState = {
   nodes: [],
   edges: [],
+  currentSessionId: "",
 };
 
 export const flowSlice = createSlice({
@@ -24,12 +27,18 @@ export const flowSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(buildFlow.fulfilled, (state, action) => {
+      state.currentSessionId = action.meta.arg.sessionId;
       state.nodes = action.payload.nodes;
       state.edges = action.payload.edges;
     });
     builder.addCase(buildFlow.rejected, (_state, action) => {
       console.log("build flow state failed!!!!");
       console.log(action);
+    });
+    builder.addCase(removeSession, (state, action) => {
+      if (state.currentSessionId === action.payload.sessionId) {
+        state.currentSessionId = "";
+      }
     });
   }
 });

@@ -2,6 +2,8 @@ import { EntityState, PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./debugAdapters/entities";
 import { fetchThreads, fetchStackTrace, fetchScopes, fetchVariables, fetchSessionState } from "./debugAdapters/thunks";
 
+export type PayloadActionWithDebugType<P = void> = PayloadAction<P, string, { debugType: string }>;
+
 type SessionsState = Record<string, Session>;
 
 export type Session = {
@@ -30,20 +32,25 @@ export const sessionsSlice = createSlice({
       };
     },
 
-    addSession: (state, action: PayloadAction<Pick<Session, "name" | "type" | "id">>) => {
-      state[action.payload.id] = {
-        id: action.payload.id,
-        name: action.payload.name,
-        type: action.payload.type,
-        threads: threadsAdapter.getInitialState(),
-        stackFrames: stackFramesAdapter.getInitialState(),
-        scopes: scopesAdapter.getInitialState(),
-        variables: variablesAdapter.getInitialState(),
-      };
+    addSession: {
+      reducer(state, action: PayloadActionWithDebugType<{ sessionId: string, name: string, type: string }>) {
+        state[action.payload.sessionId] = {
+          id: action.payload.sessionId,
+          name: action.payload.name,
+          type: action.payload.type,
+          threads: threadsAdapter.getInitialState(),
+          stackFrames: stackFramesAdapter.getInitialState(),
+          scopes: scopesAdapter.getInitialState(),
+          variables: variablesAdapter.getInitialState(),
+        };
+      },
+      prepare(payload: { sessionId: string, name: string, type: string }) {
+        return { payload, meta: { debugType: payload.type } };
+      }
     },
 
-    removeSession: (state, action: PayloadAction<{ id: string }>) => {
-      delete state[action.payload.id];
+    removeSession: (state, action: PayloadAction<{ sessionId: string }>) => {
+      delete state[action.payload.sessionId];
     },
   },
   extraReducers: (builder) => {

@@ -2,6 +2,8 @@ import { NodeProps, Handle, Position } from "reactflow";
 import { VariablesList } from "./VariablesList";
 import { variableSelectors } from "../../../sessions/debugAdapters/entities";
 import { useAppSelector } from "../../../../hooks";
+import { Session } from "../../../sessions/sessionsSlice";
+import { useMemo } from "react";
 
 import "./VariablesNode.css";
 
@@ -11,8 +13,10 @@ export type VariablesData = {
 };
 
 export const VariablesNode = (props: NodeProps<VariablesData>) => {
-  const session = useAppSelector((state) => state.sessions[props.data.sessionId]);
-  const variable = variableSelectors.selectById(session, props.data.variableId);
+  const session: Session | undefined = useAppSelector((state) => state.sessions[props.data.sessionId]);
+  const variable = useMemo(() => (
+    session ? variableSelectors.selectById(session, props.data.variableId) : undefined
+  ), [props.data.variableId]);
   if (variable === undefined) {
     return null;
   }

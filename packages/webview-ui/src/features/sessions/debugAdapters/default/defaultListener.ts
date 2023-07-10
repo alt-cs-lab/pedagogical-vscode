@@ -16,7 +16,7 @@ export function addDefaultListener(sessionId: string) {
       // we could also switch based on action.type,
       // but these match functions give us type assertion
       if (debuggerPaused.match(action)) {
-        api.dispatch(fetchSessionState({ sessionId }));
+        api.dispatch(fetchSessionState({ sessionId }) as any); // TODO: fix any
       }
 
       else if (fetchSessionState.fulfilled.match(action)) {
@@ -28,7 +28,7 @@ export function addDefaultListener(sessionId: string) {
           api.dispatch(fetchStackTrace({ sessionId, threadId: thread.id }));
         }
       }
-      
+
       else if (fetchStackTrace.fulfilled.match(action)) {
         for (const frame of action.payload.stackFrames) {
           api.dispatch(fetchScopes({ sessionId, frameId: frame.id }));
