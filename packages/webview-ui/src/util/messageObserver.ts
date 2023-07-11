@@ -10,16 +10,16 @@ export function startMessageObserver() {
 function messageObserver(msg: VsCodeMessage) {
   switch (msg.type) {
     case "sessionStartedEvent":
-      store.dispatch(addSession({
-        sessionId: msg.data.id,
-        name: msg.data.name,
-        type: msg.data.type,
-      }));
+      store.dispatch(addSession(msg.data));
       return;
 
-    case "sessionStoppedEvent":
-      store.dispatch(removeSession({ sessionId: msg.data.id }));
+    case "sessionStoppedEvent": {
+      const session = store.getState().sessions[msg.data.id];
+      if (session) {
+        store.dispatch(removeSession(session.id, session.debugType));
+      }
       return;
+    }
 
     case "debugEvent":
       handleDebugEvent(msg.data.sessionId, msg.data.event);
@@ -30,8 +30,10 @@ function messageObserver(msg: VsCodeMessage) {
 function handleDebugEvent(sessionId: string, event: DebugEvent) {
   switch (event.event) {
     case "stopped": {
-      // const session = store.getState().sessions[sessionId];
-      store.dispatch(debuggerPaused({ sessionId: sessionId }));
+      const session = store.getState().sessions[sessionId];
+      if (session) {
+        store.dispatch(debuggerPaused(session.id, session.debugType));
+      }
       return;
     }
   }

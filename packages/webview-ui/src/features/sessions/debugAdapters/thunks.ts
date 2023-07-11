@@ -10,9 +10,9 @@ type WithSessionId<T> = T & {
 
 type FetchThunkConfig = {
   state: RootState,
-  pendingMeta: { debugType: string },
-  fulfilledMeta: { debugType: string },
-  rejectedMeta: { debugType: string },
+  pendingMeta: { sessionId: string, debugType: string },
+  fulfilledMeta: { sessionId: string, debugType: string },
+  rejectedMeta: { sessionId: string, debugType: string },
 };
 
 type FetchSessionStateArgs = WithSessionId<unknown>;
@@ -25,7 +25,7 @@ type FetchSessionStateReturn = {
 export const fetchSessionState = createAsyncThunk<FetchSessionStateReturn, FetchSessionStateArgs, FetchThunkConfig>(
   "debugAdapter/session",
   async (args, thunkApi) => {
-    const debugType = thunkApi.getState().sessions[args.sessionId].type;
+    const session = thunkApi.getState().sessions[args.sessionId];
 
     const threadsResp = await debugApi.getThreads(args.sessionId);
     const threads = toThreadEntities(threadsResp.threads);
@@ -78,12 +78,12 @@ export const fetchSessionState = createAsyncThunk<FetchSessionStateReturn, Fetch
       stackFrames,
       scopes,
       variables,
-    }, { debugType });
+    }, { sessionId: session.id, debugType: session.debugType });
   },
   {
     getPendingMeta: (base, thunkApi) => {
-      const debugType = thunkApi.getState().sessions[base.arg.sessionId].type;
-      return { debugType };
+      const session = thunkApi.getState().sessions[base.arg.sessionId];
+      return { sessionId: session.id, debugType: session.debugType };
     }
   }
 );

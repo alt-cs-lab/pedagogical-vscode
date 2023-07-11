@@ -1,22 +1,24 @@
-import { addListener } from "@reduxjs/toolkit";
-import { fetchScopes, fetchSessionState, fetchStackTrace, fetchThreads, fetchVariables, isFetchFulfilledAction } from "../thunks";
-import { debuggerPaused, removeSession } from "../../sessionsSlice";
+import { fetchScopes, fetchSessionState, fetchStackTrace, fetchThreads, fetchVariables } from "../thunks";
+import { DebugSessionAction, debuggerPaused, removeSession } from "../../sessionsSlice";
 import { buildFlow } from "../../../flow/builders/default";
+import { AppListenerMiddlewareInstance } from "../listeners";
 
-export function addDefaultListener(sessionId: string) {
-  return addListener({
-    predicate: (action) => {
-      let actionSessionId: string | undefined = action.payload?.sessionId;
-      if (actionSessionId === undefined && isFetchFulfilledAction(action)) {
-        actionSessionId = action.meta.arg.sessionId;
-      }
-      return sessionId === actionSessionId;
-    },
+// TODO: actual predicate
+function defaultDebugActionMatcher(action: DebugSessionAction): action is DebugSessionAction {
+  return action.meta.debugType !== undefined;
+}
+
+export function registerDefaultDebugListener(middleware: AppListenerMiddlewareInstance) {
+  middleware.startListening({
+    // alternatively, start a listener for each action with the matcher isAllOf(<debug matcher>, <action matcher>)
+    matcher: defaultDebugActionMatcher,
     effect: (action, api) => {
+      const sessionId = action.meta.sessionId;
+
       // we could also switch based on action.type,
       // but these match functions give us type assertion
       if (debuggerPaused.match(action)) {
-        api.dispatch(fetchSessionState({ sessionId }) as any); // TODO: fix any
+        api.dispatch(fetchSessionState({ sessionId })); // TODO: fix any
       }
 
       else if (fetchSessionState.fulfilled.match(action)) {

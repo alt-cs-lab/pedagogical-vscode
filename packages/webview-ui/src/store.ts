@@ -3,7 +3,7 @@ import { devToolsEnhancer } from "@redux-devtools/remote";
 import { flowSlice } from "./features/flow/flowSlice";
 import { sessionsSlice } from "./features/sessions/sessionsSlice";
 import { startMessageObserver } from "./util/messageObserver";
-import { startDebugListener } from "./features/sessions/debugAdapters/listener";
+import { AppListenerMiddlewareInstance, registerDebugListeners } from "./features/sessions/debugAdapters/listeners";
 
 const scriptData = document.getElementById("scriptData") as any;
 const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
@@ -28,7 +28,7 @@ export const store = configureStore({
 });
 
 startMessageObserver();
-startDebugListener(listenerMiddleware);
+registerDebugListeners(listenerMiddleware as AppListenerMiddlewareInstance);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

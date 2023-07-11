@@ -9,19 +9,34 @@ const edgeId = (sourceId: string | number, sourceName: string, targetId: string 
   return `${sourceId}[${sourceName}]-${targetId}`;
 };
 
+type BuildFlowThunkConfig = {
+  state: RootState,
+  pendingMeta: { sessionId: string, debugType: string },
+  fulfilledMeta: { sessionId: string, debugType: string },
+  rejectedMeta: { sessionId: string, debugType: string },
+};
+
 type BuildFlowArgs = { sessionId: string };
 type BuildFlowReturn = {
   nodes: DebugNode[];
   edges: Edge[];
 };
-export const buildFlow = createAsyncThunk<BuildFlowReturn, BuildFlowArgs>(
+export const buildFlow = createAsyncThunk<BuildFlowReturn, BuildFlowArgs, BuildFlowThunkConfig>(
   "flow/build",
   (args, thunkApi) => {
     // TODO: different builders for different debugger types
     // TODO: incremental changes so position data isn't changed
     const state = thunkApi.getState() as RootState;
-    return defaultFlowBuilder(state.sessions[args.sessionId]);
+    const session = state.sessions[args.sessionId];
+    const result = defaultFlowBuilder(session);
+    return thunkApi.fulfillWithValue(result, { sessionId: session.id, debugType: session.debugType });
   },
+  {
+    getPendingMeta: (base, thunkApi) => {
+      const session = thunkApi.getState().sessions[base.arg.sessionId];
+      return { sessionId: session.id, debugType: session.debugType };
+    }
+  }
 );
 
 export function defaultFlowBuilder(session: Session): BuildFlowReturn {

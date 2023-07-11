@@ -36,7 +36,7 @@ export const flowSlice = createSlice({
       console.log(action);
     });
     builder.addCase(removeSession, (state, action) => {
-      if (state.currentSessionId === action.payload.sessionId) {
+      if (state.currentSessionId === action.meta.sessionId) {
         state.currentSessionId = "";
       }
     });

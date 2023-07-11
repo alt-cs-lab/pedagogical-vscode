@@ -1,0 +1,2 @@
+# Ignore all files in this directory so we can test files without committing them
+*
