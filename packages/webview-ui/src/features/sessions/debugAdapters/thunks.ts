@@ -1,7 +1,7 @@
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { debugApi } from "./debugApi";
 import { createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
-import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, toScopeEntities, toStackFrameEntities, toThreadEntities, toVariablesEntity } from "./entities";
+import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, toScopeEntities, toStackFrameEntities, toThreadEntities, toVariablesEntity } from "../entities";
 import { RootState } from "../../../store";
 
 type WithSessionId<T> = T & {

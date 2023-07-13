@@ -1,5 +1,5 @@
 import { EntityState, PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./debugAdapters/entities";
+import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./entities";
 import { sessionsSliceExtraReducers } from "./debugAdapters/reducers";
 
 /** PayloadAction that has `sessionId` and `debugType` in its meta property */

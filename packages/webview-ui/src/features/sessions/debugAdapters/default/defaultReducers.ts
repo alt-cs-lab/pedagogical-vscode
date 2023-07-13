@@ -15,7 +15,7 @@ import {
   StackFrameEntity,
   ScopeEntity,
   VariablesEntity,
-} from "../entities";
+} from "../../entities";
 import { SessionReducerMapBuilder } from "../reducers";
 
 function defaultSetSessionState(
