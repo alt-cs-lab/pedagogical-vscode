@@ -1,6 +1,5 @@
 import { EntityState, PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./entities";
-import { sessionsSliceExtraReducers } from "./debugAdapters/reducers";
 
 /** PayloadAction that has `sessionId` and `debugType` in its meta property */
 export type DebugSessionAction<P = void> = PayloadAction<P, string, { sessionId: string, debugType: string }>;
@@ -19,12 +18,19 @@ export type Session = {
 
 const initialState: SessionsState = {};
 
+type SetSessionPayload = {
+  threads: ThreadEntity[],
+  stackFrames: StackFrameEntity[],
+  scopes: ScopeEntity[],
+  variables: VariablesEntity[],
+};
+
 export const sessionsSlice = createSlice({
   name: "sessions",
   initialState: initialState,
   reducers: {
     debuggerPaused: {
-      reducer: (_state, _action: PayloadAction<void>) => undefined,
+      reducer: (_state, _action: DebugSessionAction<void>) => undefined,
       prepare(sessionId: string, debugType: string) {
         return { payload: undefined, meta: { sessionId, debugType } };
       }
@@ -47,6 +53,19 @@ export const sessionsSlice = createSlice({
       }
     },
 
+    setAllSession: {
+      reducer(state, action: DebugSessionAction<SetSessionPayload>) {
+        const session = state[action.meta.sessionId];
+        threadsAdapter.setAll(session.threads, action.payload.threads);
+        stackFramesAdapter.setAll(session.stackFrames, action.payload.stackFrames);
+        scopesAdapter.setAll(session.scopes, action.payload.scopes);
+        variablesAdapter.setAll(session.variables, action.payload.variables);
+      },
+      prepare(sessionId: string, debugType: string, payload: SetSessionPayload) {
+        return { payload, meta: { sessionId, debugType }};
+      }
+    },
+
     removeSession: {
       reducer(state, action: DebugSessionAction<void>) {
         delete state[action.meta.sessionId];
@@ -56,11 +75,12 @@ export const sessionsSlice = createSlice({
       }
     },
   },
-  extraReducers: sessionsSliceExtraReducers,
+  // extraReducers: sessionsSliceExtraReducers,
 });
 
 export const {
   addSession,
+  setAllSession,
   removeSession,
   debuggerPaused,
 } = sessionsSlice.actions;

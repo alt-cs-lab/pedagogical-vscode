@@ -1,21 +1,6 @@
 import { Session } from "../../sessionsSlice";
-import {
-  fetchScopes,
-  fetchSessionState,
-  fetchStackTrace,
-  fetchThreads,
-  fetchVariables,
-} from "../thunks";
-import {
-  threadsAdapter,
-  stackFramesAdapter,
-  scopesAdapter,
-  variablesAdapter,
-  ThreadEntity,
-  StackFrameEntity,
-  ScopeEntity,
-  VariablesEntity,
-} from "../../entities";
+import { fetchScopes, fetchStackTrace, fetchThreads, fetchVariables } from "../thunks";
+import { threadsAdapter, stackFramesAdapter, scopesAdapter, variablesAdapter, ThreadEntity, StackFrameEntity, ScopeEntity, VariablesEntity } from "../../entities";
 import { SessionReducerMapBuilder } from "../reducers";
 
 function defaultSetSessionState(
@@ -33,12 +18,13 @@ function defaultSetSessionState(
   variablesAdapter.setAll(session.variables, payload.variables);
 }
 
+/**
+ * Registers all reducers handled by the default when the debug type is not registered.
+ *
+ * These matchers all last after all other matchers fail. If you'd like to reuse some logic from here,
+ * simply don't add a matcher for the action in your debugger's reducer and this will run.
+ */
 export const defaultReducerMapBuilder: SessionReducerMapBuilder = (builder) => {
-  builder.addMatcher(fetchSessionState.fulfilled.match, (state, action) => {
-    const session = state[action.meta.arg.sessionId];
-    defaultSetSessionState(session, action.payload);
-  });
-
   builder.addMatcher(fetchThreads.fulfilled.match, (state, action) => {
     const session = state[action.meta.arg.sessionId];
     threadsAdapter.upsertMany(session.threads, action.payload.threads);
