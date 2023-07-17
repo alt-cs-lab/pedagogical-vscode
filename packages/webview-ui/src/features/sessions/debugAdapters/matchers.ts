@@ -1,16 +1,12 @@
 import { AnyAction } from "@reduxjs/toolkit";
-import { DebugSessionAction} from "../sessionsSlice";
+import { DebugSessionAction } from "../sessionsSlice";
+import { isUnknownDebugType } from "./strategies";
 
-const registeredDebugTypes: Set<string> = new Set([
-  //"python"
-]);
-
-export function isUnknownDebugType(
+export function unknownDebugTypeMatcher(
   action: AnyAction
 ): action is DebugSessionAction {
   return (
-    isDebugSessionAction(action) &&
-    !registeredDebugTypes.has(action.meta.debugType)
+    isDebugSessionAction(action) && isUnknownDebugType(action.meta.debugType)
   );
 }
 
@@ -18,4 +14,10 @@ export function isDebugSessionAction<DebugType extends string = string>(
   action: AnyAction
 ): action is DebugSessionAction {
   return (action.meta?.debugType satisfies DebugType) && action.meta?.sessionId;
+}
+
+export function debugTypeMatcher(debugType: string) {
+  return <A extends AnyAction>(action: A): action is DebugSessionAction & A => {
+    return isDebugSessionAction(action) && action.meta.debugType === debugType;
+  };
 }

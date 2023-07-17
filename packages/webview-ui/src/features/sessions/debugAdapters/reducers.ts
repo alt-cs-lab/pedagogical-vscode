@@ -1,6 +1,5 @@
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
 import { SessionsState } from "../sessionsSlice";
-import { defaultReducerMapBuilder } from "./default/defaultReducers";
 
 export type SessionReducerMapBuilder =
   (builder: Pick<ActionReducerMapBuilder<SessionsState>, "addMatcher">) => void;
@@ -13,7 +12,4 @@ export function sessionsSliceExtraReducers(builder: ActionReducerMapBuilder<Sess
   for (const reducerMapBuilder of reducerMapBuilders) {
     reducerMapBuilder(builder);
   }
-
-  // default matchers as last resort
-  defaultReducerMapBuilder(builder);
 }

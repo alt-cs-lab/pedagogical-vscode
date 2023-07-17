@@ -18,7 +18,7 @@ export type Session = {
 
 const initialState: SessionsState = {};
 
-type SetSessionPayload = {
+export type SetSessionPayload = {
   threads: ThreadEntity[],
   stackFrames: StackFrameEntity[],
   scopes: ScopeEntity[],

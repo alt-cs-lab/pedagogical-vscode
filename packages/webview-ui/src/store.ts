@@ -4,7 +4,7 @@ import { flowSlice } from "./features/flow/flowSlice";
 import { sessionsSlice } from "./features/sessions/sessionsSlice";
 import { startMessageObserver } from "./util/messageObserver";
 import { registerDebugListeners } from "./features/sessions/debugAdapters/listeners";
-import { AppListenerMiddlewareInstance, appListenerMiddleware } from "./listenerMiddleware";
+import { appListenerMiddleware } from "./listenerMiddleware";
 
 const scriptData = document.getElementById("scriptData") as any;
 const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
@@ -27,7 +27,7 @@ export const store = configureStore({
 });
 
 startMessageObserver();
-registerDebugListeners(appListenerMiddleware as AppListenerMiddlewareInstance);
+registerDebugListeners();
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

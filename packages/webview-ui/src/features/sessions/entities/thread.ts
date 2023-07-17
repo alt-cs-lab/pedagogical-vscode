@@ -9,3 +9,10 @@ export type ThreadEntity = DP.Thread & {
 export const threadsAdapter = createEntityAdapter<ThreadEntity>();
 
 export const threadSelectors = threadsAdapter.getSelectors((session: Session) => session.threads);
+
+export function toThreadEntities(threads: DP.Thread[]): ThreadEntity[] {
+  return threads.map((thread) => ({
+    ...thread,
+    stackFrameIds: [],
+  }));
+}
