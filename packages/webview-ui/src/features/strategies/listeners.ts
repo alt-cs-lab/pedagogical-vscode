@@ -1,6 +1,6 @@
 import { AnyAction, ListenerEffect, isAllOf } from "@reduxjs/toolkit";
-import { AppDispatch, RootState } from "../../../store";
-import { appStartListening } from "../../../listenerMiddleware";
+import { AppDispatch, RootState } from "../../store";
+import { appStartListening } from "../../listenerMiddleware";
 import { debugTypeMatcher, unknownDebugTypeMatcher } from "./matchers";
 import { strategiesByDebugType } from "./strategies";
 

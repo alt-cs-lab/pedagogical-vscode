@@ -3,7 +3,7 @@ import { devToolsEnhancer } from "@redux-devtools/remote";
 import { flowSlice } from "./features/flow/flowSlice";
 import { sessionsSlice } from "./features/sessions/sessionsSlice";
 import { startMessageObserver } from "./util/messageObserver";
-import { registerDebugListeners } from "./features/sessions/debugAdapters/listeners";
+import { registerDebugListeners } from "./features/strategies/listeners";
 import { appListenerMiddleware } from "./listenerMiddleware";
 
 const scriptData = document.getElementById("scriptData") as any;

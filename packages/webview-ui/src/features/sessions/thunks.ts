@@ -1,7 +1,7 @@
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { debugApi } from "./debugApi";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { AppDispatch, RootState } from "../../../store";
+import { AppDispatch, RootState } from "../../store";
 
 export type WithSessionId<T> = T & {
   sessionId: string,

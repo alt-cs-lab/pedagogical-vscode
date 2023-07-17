@@ -4,7 +4,7 @@ import {
   fetchStackTraceThunk,
   fetchThreadsThunk,
   fetchVariablesThunk,
-} from "../thunks";
+} from "../../../sessions/thunks";
 import {
   ScopeEntity,
   StackFrameEntity,
@@ -13,13 +13,13 @@ import {
   toStackFrameEntities,
   toThreadEntities,
   toVariablesEntity,
-} from "../../entities";
+} from "../../../sessions/entities";
 import {
   FetchScopesStrategy,
   FetchStackTracesStrategy,
   FetchThreadsStrategy,
   FetchVariablesStrategy,
-} from "../strategies";
+} from "../../strategies";
 
 /**
  * Default: fetch all threads

@@ -1,7 +1,7 @@
 import { buildFlow } from "../../../flow/builders/default";
-import { debuggerPaused, setAllSession } from "../../sessionsSlice";
-import { getStrategies } from "../strategies";
-import { buildAppListener } from "../listeners";
+import { debuggerPaused, setAllSession } from "../../../sessions/sessionsSlice";
+import { getStrategies } from "../../strategies";
+import { buildAppListener } from "../../listeners";
 
 export const defaultDebuggerPausedListener = buildAppListener(
   debuggerPaused.match,

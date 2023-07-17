@@ -1,5 +1,5 @@
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
-import { SessionsState } from "../sessionsSlice";
+import { SessionsState } from "../sessions/sessionsSlice";
 
 export type SessionReducerMapBuilder =
   (builder: Pick<ActionReducerMapBuilder<SessionsState>, "addMatcher">) => void;

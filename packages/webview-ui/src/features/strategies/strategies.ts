@@ -1,13 +1,12 @@
-import { AppListenerEffectApi } from "../../../listenerMiddleware";
+import { AppListenerEffectApi } from "../../listenerMiddleware";
 import {
   ScopeEntity,
   StackFrameEntity,
   ThreadEntity,
   VariablesEntity,
-} from "../entities";
-import { defaultStrategies } from "./default";
+} from "../sessions/entities";
+import { defaultStrategies, pythonStrategies } from "./debugAdapters";
 import { MatchActionListener } from "./listeners";
-import { pythonStrategies } from "./python";
 
 export type FetchThreadsStrategy = (
   api: AppListenerEffectApi,

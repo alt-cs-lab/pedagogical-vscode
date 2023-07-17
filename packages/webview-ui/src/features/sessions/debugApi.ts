@@ -1,5 +1,5 @@
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
-import { messageController } from "../../../util/messageController";
+import { messageController } from "../../util/messageController";
 import { VsCodeMessage } from "shared";
 
 export const debugApi = {

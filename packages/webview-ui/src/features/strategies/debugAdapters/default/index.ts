@@ -1,4 +1,4 @@
-import { DebugTypeStrategies } from "../strategies";
+import { DebugTypeStrategies } from "../../strategies";
 import { defaultDebuggerPausedListener } from "./defaultDebuggerPausedListener";
 import {
   defaultFetchThreadsStrategy,

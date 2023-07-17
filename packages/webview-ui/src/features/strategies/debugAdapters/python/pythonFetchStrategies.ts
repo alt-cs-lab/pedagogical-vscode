@@ -1,6 +1,6 @@
-import { VariablesEntity, toVariablesEntity } from "../../entities";
-import { FetchVariablesStrategy } from "../strategies";
-import { fetchVariablesThunk } from "../thunks";
+import { VariablesEntity, toVariablesEntity } from "../../../sessions/entities";
+import { FetchVariablesStrategy } from "../../strategies";
+import { fetchVariablesThunk } from "../../../sessions/thunks";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 
 export const pythonFetchVariablesStrategy: FetchVariablesStrategy = async (api, sessionId, scopes) => {
