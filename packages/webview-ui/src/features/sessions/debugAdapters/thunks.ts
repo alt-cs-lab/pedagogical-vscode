@@ -1,8 +1,9 @@
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { debugApi } from "./debugApi";
 import { createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
-import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, toScopeEntities, toStackFrameEntities, toThreadEntities, toVariablesEntity } from "../entities";
+import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity } from "../entities";
 import { AppDispatch, RootState } from "../../../store";
+import { getStrategies } from "./strategies";
 
 export type WithSessionId<T> = T & {
   sessionId: string,
@@ -23,9 +24,11 @@ export const fetchThreads = createAsyncThunk<FetchThreadsReturn, FetchThreadsArg
   "debugAdapter/threads",
   async (args, api) => {
     const session = api.getState().sessions[args.sessionId];
+    const strategies = getStrategies(session.debugType);
     const resp = await debugApi.getThreads(args.sessionId);
+    const threads = resp.threads.filter(strategies.filterThreads).map(strategies.toThreadEntity);
     return api.fulfillWithValue(
-      { threads: toThreadEntities(resp.threads) },
+      { threads },
       { sessionId: session.id, debugType: session.debugType },
     );
   },
@@ -45,9 +48,13 @@ export const fetchStackTrace = createAsyncThunk<FetchStackTraceReturn, FetchStac
   "debugAdapter/stackTrace",
   async (args, api) => {
     const session = api.getState().sessions[args.sessionId];
+    const strategies = getStrategies(session.debugType);
     const resp = await debugApi.getStackTrace(args.sessionId, args);
+    const stackFrames = resp.stackFrames.filter(strategies.filterStackFrames).map(
+      (frame) => strategies.toStackFrameEntity(frame, args.threadId)
+    );
     return api.fulfillWithValue(
-      { stackFrames: toStackFrameEntities(args.threadId, resp.stackFrames) },
+      { stackFrames },
       { sessionId: session.id, debugType: session.debugType },
     );
   },
@@ -68,9 +75,15 @@ export const fetchScopes = createAsyncThunk<FetchScopesReturn, FetchScopesArgs, 
   "debugAdapter/scopes",
   async (args, api) => {
     const session = api.getState().sessions[args.sessionId];
+    const strategies = getStrategies(session.debugType);
     const resp = await debugApi.getScopes(args.sessionId, args);
+    const scopes = resp.scopes.filter(
+      strategies.filterScopes
+    ).map(
+      (scope) => strategies.toScopeEntity(scope, args.frameId)
+    );
     return api.fulfillWithValue(
-      { scopes: toScopeEntities(args.frameId, resp.scopes) },
+      { scopes },
       { sessionId: session.id, debugType: session.debugType },
     );
   },
@@ -91,9 +104,12 @@ export const fetchVariables = createAsyncThunk<FetchVariablesReturn, FetchVariab
   "debugAdapter/variables",
   async (args, api) => {
     const session = api.getState().sessions[args.sessionId];
+    const strategies = getStrategies(session.debugType);
     const resp = await debugApi.getVariables(args.sessionId, args);
+    const filteredVariables = resp.variables.filter(strategies.filterVariables);
+    const variablesEntity = strategies.toVariablesEntity(args, filteredVariables);
     return api.fulfillWithValue(
-      toVariablesEntity(args, resp.variables),
+      variablesEntity,
       { sessionId: session.id, debugType: session.debugType },
     );
   },

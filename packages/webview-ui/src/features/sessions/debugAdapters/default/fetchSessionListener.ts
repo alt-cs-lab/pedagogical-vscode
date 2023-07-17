@@ -5,7 +5,7 @@ import { debuggerPaused, setAllSession } from "../../sessionsSlice";
 import { appStartListening } from "../../../../listenerMiddleware";
 import { assert } from "../../../../util";
 import { fetchScopes, fetchStackTrace, fetchThreads, fetchVariables } from "../thunks";
-import { ScopeEntity, StackFrameEntity, VariablesEntity, toScopeEntities, toStackFrameEntities, toThreadEntities, toVariablesEntity } from "../../entities";
+import { ScopeEntity, StackFrameEntity, VariablesEntity } from "../../entities";
 import { buildFlow } from "../../../flow/builders/default";
 import { AppListenerEffectApi } from "../../../../listenerMiddleware";
 
@@ -19,7 +19,7 @@ async function defaultFetchSessionListener(action: ReturnType<typeof debuggerPau
   // fetch threads and wait to be fulfilled
   // TODO: handle reject
   const threadsResult = await api.dispatch(fetchThreads({ sessionId })).unwrap();
-  const threads = toThreadEntities(threadsResult.threads);
+  const threads = threadsResult.threads;
 
   // fetch stack frames for each thread
   const stackFrames: StackFrameEntity[] = [];
@@ -28,9 +28,9 @@ async function defaultFetchSessionListener(action: ReturnType<typeof debuggerPau
       sessionId,
       threadId: thread.id
     })).unwrap();
-    const frameEntities = toStackFrameEntities(thread.id, stackTraceResult.stackFrames);
-    stackFrames.push(...frameEntities);
-    thread.stackFrameIds = frameEntities.map((frame) => frame.id);
+    const frames = stackTraceResult.stackFrames;
+    stackFrames.push(...frames);
+    thread.stackFrameIds = frames.map((frame) => frame.id);
   }
 
   // fetch scopes for each stack frame
@@ -40,10 +40,8 @@ async function defaultFetchSessionListener(action: ReturnType<typeof debuggerPau
       sessionId,
       frameId: frame.id,
     })).unwrap();
+    const scopeEntities = scopesResult.scopes;
 
-    // by default, ignore scopes that don't begin with "Local"
-    const scopesFiltered = scopesResult.scopes.filter((scope) => scope.name.startsWith("Local"));
-    const scopeEntities = toScopeEntities(frame.id, scopesFiltered);
     scopes.push(...scopeEntities);
     frame.scopeIds = scopeEntities.map((scope) => scope.pedagogId);
   }
@@ -60,17 +58,11 @@ async function defaultFetchSessionListener(action: ReturnType<typeof debuggerPau
   while (ref) {
     if (!refsFetched.has(ref)) {
       const variablesArgs: DP.VariablesArguments = { variablesReference: ref };
-      const variablesResult = await api.dispatch(fetchVariables({
+      const variablesEntity = await api.dispatch(fetchVariables({
         sessionId,
         ...variablesArgs,
       })).unwrap();
 
-      // TODO: this is only good for the python debugger
-      const filteredVariables = variablesResult.variables.filter((variable) => (
-        !variable.name.endsWith(" variables") && !variable.presentationHint?.lazy
-      ));
-
-      const variablesEntity = toVariablesEntity(variablesArgs, filteredVariables);
       variables.push(variablesEntity);
 
       // fetch child variables as long as reference > 0

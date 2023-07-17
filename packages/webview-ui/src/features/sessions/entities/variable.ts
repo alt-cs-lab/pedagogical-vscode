@@ -11,14 +11,6 @@ export const variablesAdapter = createEntityAdapter<VariablesEntity>({
   selectId: (variable) => variable.pedagogId,
 });
 
-export function toVariablesEntity(args: DP.VariablesArguments, variables: DP.Variable[]): VariablesEntity {
-  return {
-    pedagogId: args.variablesReference.toString(),
-    ...args,
-    variables,
-  };
-}
-
 export const variableSelectors = {
   ...variablesAdapter.getSelectors((session: Session) => session.variables),
   selectReferences: (session: Session) => Object.values(session.variables.entities).map((v) => v!.variablesReference),
