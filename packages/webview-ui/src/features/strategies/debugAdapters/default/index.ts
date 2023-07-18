@@ -1,4 +1,5 @@
 import { DebugTypeStrategies } from "../../strategies";
+import { defaultBuildFlowListener } from "./defaultBuildFlowListener";
 import { defaultDebuggerPausedListener } from "./defaultDebuggerPausedListener";
 import {
   defaultFetchThreadsStrategy,
@@ -8,7 +9,10 @@ import {
 } from "./defaultFetchStrategies";
 
 export const defaultStrategies: DebugTypeStrategies = {
-  listeners: [defaultDebuggerPausedListener],
+  getListeners: [
+    defaultDebuggerPausedListener,
+    defaultBuildFlowListener,
+  ],
 
   fetchThreads: defaultFetchThreadsStrategy,
   fetchStackTraces: defaultFetchStackTraceStrategy,

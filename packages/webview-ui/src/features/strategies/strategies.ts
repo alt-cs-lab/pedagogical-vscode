@@ -32,7 +32,7 @@ export type FetchVariablesStrategy = (
 ) => Promise<VariablesEntity[]>;
 
 export interface DebugTypeStrategies {
-  listeners: MatchActionListener[];
+  getListeners: MatchActionListener[];
 
   fetchThreads: FetchThreadsStrategy;
   fetchStackTraces: FetchStackTracesStrategy;

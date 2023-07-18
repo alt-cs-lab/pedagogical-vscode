@@ -1,5 +1,6 @@
 import { EntityState, PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./entities";
+import { EdgeEntity, NodeEntity, ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity, edgeSelectors, edgesAdapter, nodeSelectors, nodesAdapter, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "./entities";
+import { EdgeChange, NodeChange, applyEdgeChanges, applyNodeChanges } from "reactflow";
 
 /** PayloadAction that has `sessionId` and `debugType` in its meta property */
 export type DebugSessionAction<P = void> = PayloadAction<P, string, { sessionId: string, debugType: string }>;
@@ -14,11 +15,13 @@ export type Session = {
   stackFrames: EntityState<StackFrameEntity>;
   scopes: EntityState<ScopeEntity>;
   variables: EntityState<VariablesEntity>;
+  nodes: EntityState<NodeEntity>;
+  edges: EntityState<EdgeEntity>;
 };
 
 const initialState: SessionsState = {};
 
-export type SetSessionPayload = {
+export type SetAllDebugObjectsPayload = {
   threads: ThreadEntity[],
   stackFrames: StackFrameEntity[],
   scopes: ScopeEntity[],
@@ -36,6 +39,13 @@ export const sessionsSlice = createSlice({
       }
     },
 
+    buildFlow: {
+      reducer: (_state, _action: DebugSessionAction<void>) => undefined,
+      prepare(sessionId: string, debugType: string) {
+        return { payload: undefined, meta: { sessionId, debugType } };
+      }
+    },
+
     addSession: {
       reducer(state, action: DebugSessionAction<{ id: string, name: string, type: string }>) {
         state[action.payload.id] = {
@@ -46,6 +56,8 @@ export const sessionsSlice = createSlice({
           stackFrames: stackFramesAdapter.getInitialState(),
           scopes: scopesAdapter.getInitialState(),
           variables: variablesAdapter.getInitialState(),
+          nodes: nodesAdapter.getInitialState(),
+          edges: edgesAdapter.getInitialState(),
         };
       },
       prepare(payload: { id: string, name: string, type: string }) {
@@ -53,17 +65,40 @@ export const sessionsSlice = createSlice({
       }
     },
 
-    setAllSession: {
-      reducer(state, action: DebugSessionAction<SetSessionPayload>) {
+    setAllDebugObjects: {
+      reducer(state, action: DebugSessionAction<SetAllDebugObjectsPayload>) {
         const session = state[action.meta.sessionId];
         threadsAdapter.setAll(session.threads, action.payload.threads);
         stackFramesAdapter.setAll(session.stackFrames, action.payload.stackFrames);
         scopesAdapter.setAll(session.scopes, action.payload.scopes);
         variablesAdapter.setAll(session.variables, action.payload.variables);
       },
-      prepare(sessionId: string, debugType: string, payload: SetSessionPayload) {
-        return { payload, meta: { sessionId, debugType }};
+      prepare(sessionId: string, debugType: string, payload: SetAllDebugObjectsPayload) {
+        return { payload, meta: { sessionId, debugType } };
       }
+    },
+
+    setAllFlowObjects: {
+      reducer(state, action: DebugSessionAction<{ nodes: NodeEntity[], edges: EdgeEntity[] }>) {
+        const session = state[action.meta.sessionId];
+        nodesAdapter.setAll(session.nodes, action.payload.nodes);
+        edgesAdapter.setAll(session.edges, action.payload.edges);
+      },
+      prepare(sessionId: string, debugType: string, payload: { nodes: NodeEntity[], edges: EdgeEntity[] }) {
+        return { payload, meta: { sessionId, debugType } };
+      }
+    },
+
+    nodesChanged: (state, action: PayloadAction<{ sessionId: string, changes: NodeChange[] }>) => {
+      const session = state[action.payload.sessionId];
+      const updatedNodes = applyNodeChanges(action.payload.changes, nodeSelectors.selectAll(session));
+      nodesAdapter.setAll(session.nodes, updatedNodes as NodeEntity[]);
+    },
+
+    edgesChanged: (state, action: PayloadAction<{ sessionId: string, changes: EdgeChange[] }>) => {
+      const session = state[action.payload.sessionId];
+      const updatedEdges = applyEdgeChanges(action.payload.changes, edgeSelectors.selectAll(session));
+      edgesAdapter.setAll(session.edges, updatedEdges as EdgeEntity[]);
     },
 
     removeSession: {
@@ -75,12 +110,15 @@ export const sessionsSlice = createSlice({
       }
     },
   },
-  // extraReducers: sessionsSliceExtraReducers,
 });
 
 export const {
   addSession,
-  setAllSession,
+  buildFlow,
+  setAllDebugObjects,
+  setAllFlowObjects,
   removeSession,
   debuggerPaused,
+  nodesChanged,
+  edgesChanged,
 } = sessionsSlice.actions;

@@ -19,7 +19,7 @@ export type FetchThreadsArgs = WithSessionId<unknown>;
 export type FetchThreadsReturn = DP.ThreadsResponse["body"];
 
 export const fetchThreadsThunk = createAsyncThunk<FetchThreadsReturn, FetchThreadsArgs, FetchThunkConfig>(
-  "debugAdapter/threads",
+  "sessions/fetch/threads",
   async (args, api) => {
     const session = api.getState().sessions[args.sessionId];
     const resp = await debugApi.getThreads(args.sessionId);
@@ -41,7 +41,7 @@ export const fetchThreadsThunk = createAsyncThunk<FetchThreadsReturn, FetchThrea
 export type FetchStackTraceArgs = WithSessionId<DP.StackTraceArguments>;
 export type FetchStackTraceReturn = DP.StackTraceResponse["body"];
 export const fetchStackTraceThunk = createAsyncThunk<FetchStackTraceReturn, FetchStackTraceArgs, FetchThunkConfig>(
-  "debugAdapter/stackTrace",
+  "sessions/fetch/stackTrace",
   async (args, api) => {
     const session = api.getState().sessions[args.sessionId];
     const resp = await debugApi.getStackTrace(args.sessionId, args);
@@ -64,7 +64,7 @@ export const fetchStackTraceThunk = createAsyncThunk<FetchStackTraceReturn, Fetc
 export type FetchScopesArgs = WithSessionId<DP.ScopesArguments>;
 export type FetchScopesReturn = DP.ScopesResponse["body"];
 export const fetchScopesThunk = createAsyncThunk<FetchScopesReturn, FetchScopesArgs, FetchThunkConfig>(
-  "debugAdapter/scopes",
+  "sessions/fetch/scopes",
   async (args, api) => {
     const session = api.getState().sessions[args.sessionId];
     const resp = await debugApi.getScopes(args.sessionId, args);

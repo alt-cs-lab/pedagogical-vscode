@@ -5,14 +5,14 @@ import { debugTypeMatcher, unknownDebugTypeMatcher } from "./matchers";
 import { strategiesByDebugType } from "./strategies";
 
 export interface MatchActionListener {
-  matcher: (action: any) => action is any,
-  effect: ListenerEffect<any, RootState, AppDispatch>,
+  matcher: (action: any) => action is any;
+  effect: ListenerEffect<any, RootState, AppDispatch>;
 }
 
 /** Build an match action listener that can be passed to startListening or addListener. */
 export function buildAppListener<MA extends AnyAction>(
   matcher: (action: any) => action is MA,
-  effect: ListenerEffect<MA, RootState, AppDispatch>,
+  effect: ListenerEffect<MA, RootState, AppDispatch>
 ): MatchActionListener {
   return { matcher, effect };
 }
@@ -26,10 +26,10 @@ export function buildAppListener<MA extends AnyAction>(
 export function registerDebugListeners() {
   for (const debugType in strategiesByDebugType) {
     const extraMatcher = debugType === "default"
-      ? unknownDebugTypeMatcher
-      : debugTypeMatcher(debugType);
+        ? unknownDebugTypeMatcher
+        : debugTypeMatcher(debugType);
 
-    for (const listener of strategiesByDebugType[debugType].listeners) {
+    for (const listener of strategiesByDebugType[debugType].getListeners) {
       appStartListening({
         matcher: isAllOf(listener.matcher, extraMatcher),
         effect: listener.effect,

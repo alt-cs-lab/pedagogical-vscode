@@ -1,5 +1,4 @@
-import { buildFlow } from "../../../flow/builders/default";
-import { debuggerPaused, setAllSession } from "../../../sessions/sessionsSlice";
+import { buildFlow, debuggerPaused, setAllDebugObjects } from "../../../sessions/sessionsSlice";
 import { getStrategies } from "../../strategies";
 import { buildAppListener } from "../../listeners";
 
@@ -20,7 +19,7 @@ export const defaultDebuggerPausedListener = buildAppListener(
 
     // done fetching everything, now we can set the session state and dispatch buildFlow
     const payload = { threads, stackFrames, scopes, variables };
-    api.dispatch(setAllSession(sessionId, debugType, payload));
-    api.dispatch(buildFlow({ sessionId }));
+    api.dispatch(setAllDebugObjects(sessionId, debugType, payload));
+    api.dispatch(buildFlow(sessionId, debugType));
   }
 );
