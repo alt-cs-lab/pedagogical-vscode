@@ -2,6 +2,12 @@ import { buildFlow, debuggerPaused, setAllDebugObjects } from "../../../sessions
 import { getStrategies } from "../../strategies";
 import { buildAppListener } from "../../listeners";
 
+/**
+ * Listener that runs with `debuggerPaused` is dispatched.
+ * 
+ * This fetches objects from the debug adapter based on the strategies defined for the debug type.
+ * After that, it sets the objects in the session state and dispatches `buildFlow` to build the flow objects.
+ */
 export const defaultDebuggerPausedListener = buildAppListener(
   debuggerPaused.match,
   async (action, api) => {

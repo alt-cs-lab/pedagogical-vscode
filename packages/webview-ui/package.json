@@ -13,6 +13,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.7",
+    "reactflow": "^11.7.3",
+    "redux": "^4.2.1",
     "shared": "workspace:*"
   },
   "devDependencies": {
@@ -34,7 +36,6 @@
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "esbuild": "0.18.2",
     "prop-types": "^15.8.1",
-    "reactflow": "^11.7.3",
     "shared": "workspace:*",
     "storybook": "^7.0.22",
     "typescript": "^4.4.4",

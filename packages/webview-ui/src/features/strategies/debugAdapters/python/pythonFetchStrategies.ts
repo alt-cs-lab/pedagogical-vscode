@@ -1,5 +1,5 @@
 import { VariablesEntity, toVariablesEntity } from "../../../sessions/entities";
-import { FetchVariablesStrategy } from "../../strategies";
+import { FetchVariablesStrategy } from "../../strategyTypes";
 import { fetchVariablesThunk } from "../../../sessions/thunks";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 

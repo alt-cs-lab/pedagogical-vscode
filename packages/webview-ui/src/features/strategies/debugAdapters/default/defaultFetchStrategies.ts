@@ -18,8 +18,8 @@ import {
   FetchScopesStrategy,
   FetchStackTracesStrategy,
   FetchThreadsStrategy,
-  FetchVariablesStrategy,
-} from "../../strategies";
+  FetchVariablesStrategy
+} from "../../strategyTypes";
 
 /**
  * Default: fetch all threads

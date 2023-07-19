@@ -1,51 +1,19 @@
-import { AppListenerEffectApi } from "../../listenerMiddleware";
-import {
-  ScopeEntity,
-  StackFrameEntity,
-  ThreadEntity,
-  VariablesEntity,
-} from "../sessions/entities";
+import { DebugTypeStrategies } from "./strategyTypes";
 import { defaultStrategies, pythonStrategies } from "./debugAdapters";
-import { MatchActionListener } from "./listeners";
 
-export type FetchThreadsStrategy = (
-  api: AppListenerEffectApi,
-  sessionId: string
-) => Promise<ThreadEntity[]>;
-
-export type FetchStackTracesStrategy = (
-  api: AppListenerEffectApi,
-  sessionId: string,
-  threads: ThreadEntity[]
-) => Promise<StackFrameEntity[]>;
-
-export type FetchScopesStrategy = (
-  api: AppListenerEffectApi,
-  sessionId: string,
-  stackFrames: StackFrameEntity[]
-) => Promise<ScopeEntity[]>;
-
-export type FetchVariablesStrategy = (
-  api: AppListenerEffectApi,
-  sessionId: string,
-  scopes: ScopeEntity[]
-) => Promise<VariablesEntity[]>;
-
-export interface DebugTypeStrategies {
-  getListeners: MatchActionListener[];
-
-  fetchThreads: FetchThreadsStrategy;
-  fetchStackTraces: FetchStackTracesStrategy;
-  fetchScopes: FetchScopesStrategy;
-  fetchVariables: FetchVariablesStrategy;
-}
-
+/**
+ * Collection of strategies for each debug type.
+ * Each key is the `debugType` string given by the `DebugSession` in vscode.
+ */
 export const strategiesByDebugType: Record<string, DebugTypeStrategies> = {
   python: pythonStrategies,
-
   default: defaultStrategies,
 };
 
+/**
+ * Get the strategies for the given debug type.
+ * If the debug type is not registered, defaultStrategies will be returned.
+ */
 export function getStrategies(
   debugType: string
 ): DebugTypeStrategies {
