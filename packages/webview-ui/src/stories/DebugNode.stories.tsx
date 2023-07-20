@@ -23,41 +23,29 @@ export const Variables: Story = {
   args: {
     type: "commonVariables",
     data: {
-      variables: [
+      type: "MyVariableType",
+      variablesListItems: [
         {
           name: "i",
           value: "2",
-          type: "int",
-          variablesReference: 0,
+          showHandle: false,
         },
         {
           name: "n",
           value: "10",
-          type: "int",
-          variablesReference: 0,
+          showHandle: false,
         },
         {
           name: "nums",
           value: "[0, 1]",
-          type: "list",
-          variablesReference: 6,
+          showHandle: true,
         },
         {
           name: "more_nums",
           value: "[2, 3, 4, 5]",
-          type: "list",
-          variablesReference: 7,
+          showHandle: true,
         },
       ],
     },
   },
 };
-
-// export const StackFrame: Story = {
-//   args: {
-//     type: "stackFrame",
-//     data: {
-//       name: "<module>",
-//     },
-//   },
-// };

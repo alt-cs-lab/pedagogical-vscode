@@ -1,16 +1,49 @@
 .variables-list {
+  border-radius: 10px;
   list-style-type: none;
   padding-left: 0;
   margin: 0;
 }
 
 .variables-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 10px;
   background-color: var(--vscode-panel-background);
 }
 
 .variables-item:nth-child(odd) {
   background-color: var(--vscode-tree-tableOddRowsBackground);
+}
+
+.variables-item:last-child {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.variables-item-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.variables-item-name {
+  margin: 5px 10px;
+  width: max-content;
+  flex-grow: 1;
+  font-family: var(--vscode-editor-font-family);
+}
+
+.variables-item-value {
+  margin: 5px 10px 5px 0;
+  width: max-content;
+  font-family: var(--vscode-editor-font-family);
+}
+
+.variables-item-handle-container {
+  position: relative;
+}
+
+.variables-item-handle {
+  width: 10px !important;
+  height: 10px !important;
+  right: -8px !important;
+  background-color: #512888 !important;
 }

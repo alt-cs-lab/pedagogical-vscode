@@ -1,26 +1,37 @@
-import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { Handle, Position } from "reactflow";
 
 import "./VariablesList.css";
 
-export const VariablesList = (props: { variables: DP.Variable[] }) => {
+export type VariablesListItem = {
+  name: string;
+  value: string;
+  showHandle: boolean;
+};
+
+type VariablesListProps = {
+  items: VariablesListItem[];
+};
+
+export const VariablesList = (props: VariablesListProps) => {
   return (
     <ul className="variables-list">
-      {props.variables.map((variable) => (
-        <li className="variables-item" key={variable.name}>
-          <pre style={{ margin: "5px 0" }}>{variable.name}:</pre>
-          {variable.variablesReference ? (
-            <div style={{ position: "relative", marginLeft: 25, left: -3 }}>
-              <Handle
-                type="source"
-                position={Position.Right}
-                id={variable.name}
-                style={{ backgroundColor: "#512888", width: 10, height: 10 }}
-              />
+      {props.items.map((item) => (
+        <li className="variables-item" key={item.name}>
+          <div className="variables-item-flex">
+            <pre className="variables-item-name">{item.name}:</pre>
+            <div className="variables-item-handle-container">
+              {item.showHandle ? (
+                <Handle
+                  className="variables-item-handle"
+                  type="source"
+                  position={Position.Right}
+                  id={item.name}
+                />
+              ) : (
+                <code className="variables-item-value">{item.value}</code>
+              )}
             </div>
-          ) : variable.value ? (
-            <pre style={{ margin: "5px 0" }}>{variable.value}</pre>
-          ) : null}
+          </div>
         </li>
       ))}
     </ul>
