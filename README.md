@@ -41,7 +41,7 @@ The webview is not loaded until it needs to, so the first breakpoint you set mig
 
 ### Using Redux Devtools
 
-Redux Devtools is a very useful tool when debugging Redux stores. store in `webview-ui` is configured to connect to a devtools server if the extension is in development mode. Run this command (either before or after starting the extension) to start Redux Devtools:
+Redux Devtools is a very useful tool when debugging Redux stores. The store in `webview-ui` is configured to connect to a devtools server if the extension is in development mode. Run this command (either before or after starting the extension) to start Redux Devtools:
 
 ```sh
 yarn redux-devtools
