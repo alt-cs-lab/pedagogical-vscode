@@ -38,13 +38,15 @@ export function buildAppListener<MA extends AnyAction>(
 export function registerDebugListeners() {
   for (const debugType in strategiesByDebugType) {
     const extraMatcher = debugType === "default"
-        ? unknownDebugTypeMatcher
-        : debugTypeMatcher(debugType);
+      ? unknownDebugTypeMatcher
+      : debugTypeMatcher(debugType);
 
     for (const listener of strategiesByDebugType[debugType].listeners) {
       appStartListening({
         matcher: isAllOf(listener.matcher, extraMatcher),
-        effect: listener.effect,
+        // startListening will not add the same effect function more than once
+        // use an anonymous arrow function to get around that
+        effect: (action, api) => listener.effect(action, api),
       });
     }
   }
