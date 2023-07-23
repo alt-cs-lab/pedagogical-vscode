@@ -29,5 +29,5 @@ export const store = configureStore({
 startMessageObserver();
 registerDebugListeners();
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof store.getState> & Record<string, unknown>;
 export type AppDispatch = typeof store.dispatch;

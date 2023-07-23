@@ -1,6 +1,5 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
-import { Session } from "../sessionsSlice";
 
 export type ThreadEntity = DP.Thread & {
   stackFrameIds: number[];
@@ -8,7 +7,7 @@ export type ThreadEntity = DP.Thread & {
 
 export const threadsAdapter = createEntityAdapter<ThreadEntity>();
 
-export const threadSelectors = threadsAdapter.getSelectors((session: Session) => session.threads);
+export const threadSelectors = threadsAdapter.getSelectors();
 
 export function toThreadEntities(threads: DP.Thread[]): ThreadEntity[] {
   return threads.map((thread) => ({

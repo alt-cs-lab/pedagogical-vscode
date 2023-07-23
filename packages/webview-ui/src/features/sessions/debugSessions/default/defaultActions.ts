@@ -1,3 +1,4 @@
+import { NodeChange } from "reactflow";
 import { ThreadEntity, StackFrameEntity, ScopeEntity, VariablesEntity, NodeEntity, EdgeEntity } from "../../entities";
 import { createSessionAction } from "../sessionAction";
 
@@ -17,4 +18,16 @@ type SetAllFlowObjectsPayload = {
 };
 export const setAllFlowObjects = createSessionAction<SetAllFlowObjectsPayload>(
   "session/setAllFlowObjects",
+);
+
+export const debuggerPaused = createSessionAction(
+  "session/debuggerPaused",
+);
+
+export const buildFlow = createSessionAction(
+  "session/buildFlow",
+);
+
+export const nodesChanged = createSessionAction<{ changes: NodeChange[] }>(
+  "session/nodesChanged",
 );

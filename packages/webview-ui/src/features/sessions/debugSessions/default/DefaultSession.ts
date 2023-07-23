@@ -1,8 +1,19 @@
 import BaseSession from "../BaseSession";
 import { createReducer } from "@reduxjs/toolkit";
-import { edgesAdapter, nodesAdapter, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "../../entities";
+import {
+  edgesAdapter,
+  nodesAdapter,
+  scopesAdapter,
+  stackFramesAdapter,
+  threadsAdapter,
+  variablesAdapter,
+} from "../../entities";
 import * as defaultActions from "./defaultActions";
 import * as defaultReducers from "./defaultReducers";
+import { AppAddListener, AppListenerEffect } from "../../../../listenerMiddleware";
+import { matcherWithId } from "../sessionMatchers";
+import defaultStrategies from "./strategies";
+import DefaultComponent from "./DefaultComponent";
 
 export type DefaultSessionState = DefaultSession["initialState"];
 
@@ -17,7 +28,7 @@ export default class DefaultSession extends BaseSession {
     edges: edgesAdapter.getInitialState(),
   };
 
-  reducer = createReducer(this.initialState, (builder) => {
+  override getReducer = () => createReducer(this.initialState, (builder) => {
     // set all debug adapter objects
     builder.addCase(
       defaultActions.setAllDebugObjects,
@@ -31,11 +42,36 @@ export default class DefaultSession extends BaseSession {
     );
   });
 
-  component = () => null;
+  override component = DefaultComponent;
 
-  addListeners = () => [];
+  override addListeners = (addListener: AppAddListener) => [
+    addListener({
+      matcher: matcherWithId(this.id, defaultActions.debuggerPaused.match),
+      effect: this.debuggerPausedListenerEffect,
+    }),
+  ];
 
   constructor(id: string) {
     super(id);
   }
+
+  strategies = defaultStrategies;
+
+  //#region listener effects
+  debuggerPausedListenerEffect: AppListenerEffect<
+    typeof defaultActions.debuggerPaused
+  > = async (_action, api) => {
+    const payload = await this.strategies.fetchSession(this.id, this.strategies);
+    api.dispatch(defaultActions.setAllDebugObjects(this.id, payload));
+    api.dispatch(defaultActions.buildFlow(this.id));
+  };
+
+  buildFlowListenerEffect: AppListenerEffect<
+    typeof defaultActions.buildFlow
+  > = async (_action, api) => {
+    const state = api.getState()[this.id] as DefaultSessionState;
+    const { nodes, edges } = await this.strategies.buildFlow(state);
+    api.dispatch(defaultActions.setAllFlowObjects(this.id, { nodes, edges }));
+  };
+  //#endregion listener effects
 }
