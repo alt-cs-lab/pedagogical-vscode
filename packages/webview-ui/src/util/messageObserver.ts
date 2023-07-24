@@ -1,7 +1,8 @@
 import { DebugEvent, VsCodeMessage } from "shared";
 import { store } from "../store";
-import { addSession, debuggerPaused, removeSession } from "../features/sessions/sessionsSlice";
 import { messageController } from ".";
+import { addSession, removeSession } from "../features/sessions/sessionsSlice";
+import { debuggerPaused } from "../features/sessions/debugSessions/default/defaultActions";
 
 export function startMessageObserver() {
   messageController.addObserver(messageObserver);
@@ -10,14 +11,17 @@ export function startMessageObserver() {
 function messageObserver(msg: VsCodeMessage) {
   switch (msg.type) {
     case "sessionStartedEvent":
-      store.dispatch(addSession(msg.data));
+      store.dispatch(addSession({
+        session: {
+          id: msg.data.id,
+          name: msg.data.name,
+          debugType: msg.data.type,
+        }
+      }));
       return;
 
     case "sessionStoppedEvent": {
-      const session = store.getState().sessions[msg.data.id];
-      if (session) {
-        store.dispatch(removeSession(session.id, session.debugType));
-      }
+      store.dispatch(removeSession({ sessionId: msg.data.id }));
       return;
     }
 

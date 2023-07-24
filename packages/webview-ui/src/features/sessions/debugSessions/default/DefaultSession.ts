@@ -28,7 +28,7 @@ export default class DefaultSession extends BaseSession {
     edges: edgesAdapter.getInitialState(),
   };
 
-  override getReducer = () => createReducer(this.initialState, (builder) => {
+  override reducer = createReducer(this.initialState, (builder) => {
     // set all debug adapter objects
     builder.addCase(
       defaultActions.setAllDebugObjects,
