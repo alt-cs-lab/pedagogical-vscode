@@ -150,7 +150,8 @@ export class PedagogicalPanel {
           case "debugRequest":
             this._handleDebugRequest(message.data.sessionId, message.data.req, message.msgSeq);
             break;
-          default:
+          case "showError":
+            window.showErrorMessage(`Pedagogical error: ${message.data.msg}`);
             break;
         }
       },

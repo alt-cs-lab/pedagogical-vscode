@@ -41,9 +41,15 @@ export default class DefaultSession extends BaseSession {
       defaultActions.setAllFlowObjects,
       defaultReducers.setAllFlowObjectsReducer,
     );
+
+    // apply node changes from react flow
+    builder.addCase(
+      defaultActions.nodesChanged,
+      defaultReducers.nodesChangedReducer,
+    );
   });
 
-  override component = DefaultComponent;
+  override component = (props: { sessionId: string }) => DefaultComponent(props);
 
   override addListeners = (addListener: AppAddListener) => [
     addListener({

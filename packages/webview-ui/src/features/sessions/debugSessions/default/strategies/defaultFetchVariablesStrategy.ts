@@ -19,11 +19,9 @@ async function defaultFetchVariablesStrategy(
   const refsFetched: number[] = [];
 
   let numFetches = 0;
-
   let ref = refsToFetch.shift();
   while (ref && numFetches <= maxFetches) {
     const args: DP.VariablesArguments = { variablesReference: ref };
-    // const resp = await debugApi.getVariables(sessionId, args);
     const resp = await debugApi.debugRequestAsync(sessionId, {
       command: "variables",
       args,

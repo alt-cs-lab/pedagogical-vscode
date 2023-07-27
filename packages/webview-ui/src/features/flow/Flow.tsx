@@ -2,8 +2,6 @@ import ReactFlow, { Controls, Background } from "reactflow";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { nodeTypes } from "./nodes";
 import { useMemo } from "react";
-
-import "reactflow/dist/style.css";
 // import { nodesChanged } from "../sessions/sessionsSlice";
 import { edgeSelectors, nodeSelectors } from "../sessions/entities";
 
