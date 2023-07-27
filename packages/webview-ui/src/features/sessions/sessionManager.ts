@@ -15,6 +15,7 @@ const sessionManager = {
   listenerUnsubscribersMap: new Map<string, UnsubscribeListener[]>(),
 
   createSession(sessionId: string, type: string) {
+    console.log(`creating ${type} session: ${sessionId}`);
     const SessionClass = sessionByDebugType[type]
       ? sessionByDebugType[type]
       : sessionByDebugType["default"];
@@ -28,6 +29,7 @@ const sessionManager = {
     );
     const unsubscribers = [];
     for (const addListenerAction of addListenerActions) {
+      console.log(addListenerAction);
       unsubscribers.push(store.dispatch(addListenerAction));
     }
     this.listenerUnsubscribersMap.set(sessionId, unsubscribers);
@@ -70,7 +72,7 @@ const sessionManager = {
         action.payload.sessionId,
       ),
     });
-  }
+  },
 };
 
 export default sessionManager;

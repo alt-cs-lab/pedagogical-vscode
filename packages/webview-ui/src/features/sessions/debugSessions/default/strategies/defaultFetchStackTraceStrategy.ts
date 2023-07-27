@@ -1,4 +1,4 @@
-import { debugApi } from "../../../debugApi";
+import debugApi from "../../../debugApi";
 import { StackFrameEntity, toStackFrameEntities } from "../../../entities";
 
 /**
@@ -11,10 +11,13 @@ async function defaultFetchStackTraceStrategy(
   sessionId: string,
   threadId: number
 ): Promise<StackFrameEntity[]> {
-  const stackTraceResult = await debugApi.getStackTrace(sessionId, { threadId });
+  const resp = await debugApi.debugRequestAsync(sessionId, {
+    command: "stackTrace",
+    args: { threadId },
+  });
 
   // filter out "subtle" and "label" frames
-  const frames = stackTraceResult.stackFrames.filter(
+  const frames = resp.body.stackFrames.filter(
     (frame) =>
       frame.presentationHint !== "subtle" &&
       frame.presentationHint !== "label"

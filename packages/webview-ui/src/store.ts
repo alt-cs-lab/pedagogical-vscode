@@ -5,25 +5,31 @@ import { startMessageObserver } from "./util/messageObserver";
 import { registerDebugListeners } from "./features/strategies/listeners";
 import { appListenerMiddleware } from "./listenerMiddleware";
 import sessionManager from "./features/sessions/sessionManager";
+import sessionsSlice from "./features/sessions/sessionsSlice";
 
 const scriptData = document.getElementById("scriptData") as any;
-const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
+const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment;
 
 export const staticReducer: Record<string, Reducer> = {
-  // [sessionsSlice.name]: sessionsSlice.reducer,
+  [sessionsSlice.name]: sessionsSlice.reducer,
   [flowSlice.name]: flowSlice.reducer,
 };
 
 export const store = configureStore({
   reducer: staticReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(appListenerMiddleware.middleware),
-  devTools: isEnvDevelopment,
+  middleware: (getDefaultMiddleware) => (
+    getDefaultMiddleware().prepend(appListenerMiddleware.middleware)
+  ),
+  devTools: isDevEnvironment,
   enhancers: [
     devToolsEnhancer({
       hostname: "localhost",
       port: 8000,
       secure: false,
-      realtime: isEnvDevelopment,
+      realtime: isDevEnvironment,
+
+      // disable hot reload because it re-triggers all actions after replaceReducer
+      shouldHotReload: false,
     }),
   ],
 });

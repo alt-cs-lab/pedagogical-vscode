@@ -20,10 +20,6 @@ export const setAllFlowObjects = createSessionAction<SetAllFlowObjectsPayload>(
   "session/setAllFlowObjects",
 );
 
-export const debuggerPaused = createSessionAction(
-  "session/debuggerPaused",
-);
-
 export const buildFlow = createSessionAction(
   "session/buildFlow",
 );

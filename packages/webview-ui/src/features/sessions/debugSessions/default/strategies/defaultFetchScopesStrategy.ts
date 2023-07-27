@@ -1,4 +1,4 @@
-import { debugApi } from "../../../debugApi";
+import debugApi from "../../../debugApi";
 import { ScopeEntity } from "../../../entities";
 
 /**
@@ -10,10 +10,13 @@ async function defaultFetchScopesStrategy(
   sessionId: string,
   frameId: number
 ): Promise<ScopeEntity[]> {
-  const scopesResult = await debugApi.getScopes(sessionId, { frameId });
+  const resp = await debugApi.debugRequestAsync(sessionId, {
+    command: "scopes",
+    args: { frameId },
+  });
 
   // only keep names that begin with "Local"
-  const scopes = scopesResult.scopes.filter(
+  const scopes = resp.body.scopes.filter(
     (scope) => scope.name.startsWith("Local")
   );
 

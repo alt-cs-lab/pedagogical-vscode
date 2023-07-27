@@ -18,15 +18,15 @@ export const flowSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(addSession, (state, action) => {
-      state.currentSessionId = action.payload.id;
-    });
+    // builder.addCase(addSession, (state, action) => {
+    //   state.currentSessionId = action.payload.id;
+    // });
 
-    builder.addCase(removeSession, (state, action) => {
-      if (state.currentSessionId === action.meta.sessionId) {
-        state.currentSessionId = "";
-      }
-    });
+    // builder.addCase(removeSession, (state, action) => {
+    //   if (state.currentSessionId === action.meta.sessionId) {
+    //     state.currentSessionId = "";
+    //   }
+    // });
   }
 });
 

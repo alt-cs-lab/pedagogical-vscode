@@ -25,13 +25,13 @@
  */
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 
-export type DebugRequestType<Command extends string, Arguments> = {
+type DebugRequestType<Command extends string, Arguments> = {
   command: Command;
   args: Arguments;
 };
 
 /** The command and args for a request sent to the debug adapter. */
-export type DebugRequest =
+type AnyDebugRequest =
   | DebugRequestType<"cancel", DP.CancelArguments | undefined>
   | DebugRequestType<"runInTerminal", DP.RunInTerminalRequestArguments>
   | DebugRequestType<"startDebugging", DP.StartDebuggingRequestArguments>
@@ -77,18 +77,22 @@ export type DebugRequest =
   | DebugRequestType<"writeMemory", DP.WriteMemoryArguments>
   | DebugRequestType<"disassemble", DP.DisassembleArguments>;
 
-export type DebugRequestCommand = DebugRequest["command"];
+/** The command string that can be found in a debug request or response */
+export type DebugCommand = AnyDebugRequest["command"];
 
-export type DebugResponseType<
-  Command extends DebugRequest["command"],
+/** The request arguments associated with a debug adapter command */
+export type DebugRequest<C extends DebugCommand = DebugCommand> = Extract<AnyDebugRequest, { command: C }>;
+
+type DebugResponseType<
+  Command extends DebugCommand,
   Response extends DP.Response
 > = {
   command: Command,
-  body: Response["body"],
+  body: Response extends { body: unknown } ? Response["body"] : never,
 };
 
 /** A message from the debug adapter responding to a request */
-export type DebugResponse =
+type AnyDebugResponse =
   | DebugResponseType<"cancel", DP.CancelResponse>
   | DebugResponseType<"runInTerminal", DP.RunInTerminalResponse>
   | DebugResponseType<"startDebugging", DP.StartDebuggingResponse>
@@ -134,13 +138,16 @@ export type DebugResponse =
   | DebugResponseType<"writeMemory", DP.WriteMemoryResponse>
   | DebugResponseType<"disassemble", DP.DisassembleResponse>;
 
-export type DebugEventType<EventString extends string, EventType extends DP.Event> = {
+/** The response body associated with a debug adapter command */
+export type DebugResponse<C extends DebugCommand = DebugCommand> = Extract<AnyDebugResponse, { command: C }>;
+
+type DebugEventType<EventString extends string, EventType extends DP.Event> = {
   event: EventString;
-  body: EventType["body"];
+  body: EventType extends { body: unknown } ? EventType["body"] : never;
 };
 
 /** An event emitted by the debug adapter */
-export type DebugEvent =
+type AnyDebugEvent =
   | DebugEventType<"initialized", DP.InitializedEvent>
   | DebugEventType<"stopped", DP.StoppedEvent>
   | DebugEventType<"continued", DP.ContinuedEvent>
@@ -158,3 +165,9 @@ export type DebugEvent =
   | DebugEventType<"progressEnd", DP.ProgressEndEvent>
   | DebugEventType<"invalidated", DP.InvalidatedEvent>
   | DebugEventType<"memory", DP.MemoryEvent>;
+
+/** The string describing the type of debug event */
+export type DebugEventName = AnyDebugEvent["event"];
+
+/** The body type associated with a given debug event string type */
+export type DebugEvent<E extends DebugEventName = DebugEventName> = Extract<AnyDebugEvent, { event: E }>;

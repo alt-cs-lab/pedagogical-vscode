@@ -1,4 +1,4 @@
-import type { DebugEvent, DebugRequest, DebugResponse } from "./debugProtocol";
+import type { DebugRequest, DebugResponse, DebugEvent } from "./debugProtocol";
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import type { DebugSession } from "vscode";
 

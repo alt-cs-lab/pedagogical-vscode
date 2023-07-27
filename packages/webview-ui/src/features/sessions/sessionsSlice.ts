@@ -15,3 +15,4 @@ const sessionsSlice = createSlice({
 });
 
 export const { addSession, removeSession } = sessionsSlice.actions;
+export default sessionsSlice;

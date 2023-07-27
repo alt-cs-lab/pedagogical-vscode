@@ -14,6 +14,7 @@ import { AppAddListener, AppListenerEffect } from "../../../../listenerMiddlewar
 import { matcherWithId } from "../sessionMatchers";
 import defaultStrategies from "./strategies";
 import DefaultComponent from "./DefaultComponent";
+import { debugEventAction } from "../../debugEventActions";
 
 export type DefaultSessionState = DefaultSession["initialState"];
 
@@ -46,9 +47,14 @@ export default class DefaultSession extends BaseSession {
 
   override addListeners = (addListener: AppAddListener) => [
     addListener({
-      matcher: matcherWithId(this.id, defaultActions.debuggerPaused.match),
-      effect: this.debuggerPausedListenerEffect,
+      matcher: matcherWithId(this.id, debugEventAction.stopped.match),
+      effect: this.debuggerStoppedEffect,
     }),
+
+    addListener({
+      matcher: matcherWithId(this.id, defaultActions.buildFlow.match),
+      effect: this.buildFlowEffect,
+    })
   ];
 
   constructor(id: string) {
@@ -58,18 +64,18 @@ export default class DefaultSession extends BaseSession {
   strategies = defaultStrategies;
 
   //#region listener effects
-  debuggerPausedListenerEffect: AppListenerEffect<
-    typeof defaultActions.debuggerPaused
+  debuggerStoppedEffect: AppListenerEffect<
+    typeof debugEventAction.stopped
   > = async (_action, api) => {
     const payload = await this.strategies.fetchSession(this.id, this.strategies);
     api.dispatch(defaultActions.setAllDebugObjects(this.id, payload));
     api.dispatch(defaultActions.buildFlow(this.id));
   };
 
-  buildFlowListenerEffect: AppListenerEffect<
+  buildFlowEffect: AppListenerEffect<
     typeof defaultActions.buildFlow
   > = async (_action, api) => {
-    const state = api.getState()[this.id] as DefaultSessionState;
+    const state = api.getState()[this.id] satisfies DefaultSessionState;
     const { nodes, edges } = await this.strategies.buildFlow(state);
     api.dispatch(defaultActions.setAllFlowObjects(this.id, { nodes, edges }));
   };

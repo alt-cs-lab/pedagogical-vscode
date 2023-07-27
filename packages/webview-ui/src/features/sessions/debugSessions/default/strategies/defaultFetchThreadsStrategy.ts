@@ -1,4 +1,4 @@
-import { debugApi } from "../../../debugApi";
+import debugApi from "../../../debugApi";
 import { ThreadEntity, toThreadEntities } from "../../../entities";
 
 /**
@@ -7,6 +7,10 @@ import { ThreadEntity, toThreadEntities } from "../../../entities";
 export default async function defaultFetchThreadsStrategy(
   sessionId: string
 ): Promise<ThreadEntity[]> {
-  const threadsResult = await debugApi.getThreads(sessionId);
-  return toThreadEntities(threadsResult.threads);
+  const resp = await debugApi.debugRequestAsync(sessionId, {
+      command: "threads",
+      args: undefined,
+    }
+  );
+  return toThreadEntities(resp.body.threads);
 }

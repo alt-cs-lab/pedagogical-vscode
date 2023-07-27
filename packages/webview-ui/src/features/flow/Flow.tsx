@@ -4,7 +4,7 @@ import { nodeTypes } from "./nodes";
 import { useMemo } from "react";
 
 import "reactflow/dist/style.css";
-import { nodesChanged } from "../sessions/sessionsSlice";
+// import { nodesChanged } from "../sessions/sessionsSlice";
 import { edgeSelectors, nodeSelectors } from "../sessions/entities";
 
 export const Flow = () => {
@@ -26,7 +26,7 @@ export const Flow = () => {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={(changes) => dispatch(nodesChanged({ sessionId, changes }))}
+        // onNodesChange={(changes) => dispatch(nodesChanged({ sessionId, changes }))}
         nodeTypes={nodeTypesMemo}
       >
         <Background />
