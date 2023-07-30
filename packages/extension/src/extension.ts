@@ -1,6 +1,7 @@
 import { commands, debug, ExtensionContext } from "vscode";
 import { PedagogicalPanel } from "./panels/PedagogicalPanel";
 import { debugTrackerFactory } from "./debugTracker";
+import { DebugSessionController } from "./debugSessionController";
 
 export function activate(context: ExtensionContext) {
   const disposables = [
@@ -12,6 +13,10 @@ export function activate(context: ExtensionContext) {
     debug.registerDebugAdapterTrackerFactory(
       "*", // can also be specific debuggers (e.g. "python")
       debugTrackerFactory
+    ),
+    debug.onDidChangeActiveDebugSession(
+      DebugSessionController.activeSessionChangeListener,
+      DebugSessionController,
     ),
   ];
 

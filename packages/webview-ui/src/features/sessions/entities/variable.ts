@@ -1,6 +1,5 @@
-import { createEntityAdapter } from "@reduxjs/toolkit";
+import { EntityState, createEntityAdapter } from "@reduxjs/toolkit";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
-import { Session } from "../sessionsSlice";
 
 export type VariablesEntity = DP.VariablesArguments & {
   pedagogId: string;
@@ -20,9 +19,12 @@ export function toVariablesEntity(args: DP.VariablesArguments, variables: DP.Var
 }
 
 export const variableSelectors = {
-  ...variablesAdapter.getSelectors((session: Session) => session.variables),
-  selectReferences: (session: Session) => Object.values(session.variables.entities).map((v) => v!.variablesReference),
-  selectByReference: (session: Session, reference: number) => (
-    Object.values(session.variables.entities).find((v) => v?.variablesReference === reference)
-  ),
+  ...variablesAdapter.getSelectors(),
+  selectReferences: (
+    state: EntityState<VariablesEntity>
+  ) => Object.values(state.entities).map((v) => v!.variablesReference),
+  selectByReference: (
+    state: EntityState<VariablesEntity>,
+    reference: number
+  ) => Object.values(state.entities).find((v) => v?.variablesReference === reference),
 };

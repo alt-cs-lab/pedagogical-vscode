@@ -1,33 +1,43 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { Reducer, configureStore } from "@reduxjs/toolkit";
 import { devToolsEnhancer } from "@redux-devtools/remote";
-import { flowSlice } from "./features/flow/flowSlice";
-import { sessionsSlice } from "./features/sessions/sessionsSlice";
 import { startMessageObserver } from "./util/messageObserver";
-import { registerDebugListeners } from "./features/strategies/listeners";
 import { appListenerMiddleware } from "./listenerMiddleware";
+import sessionManager from "./features/sessions/sessionManager";
+import sessionsSlice from "./features/sessions/sessionsSlice";
 
 const scriptData = document.getElementById("scriptData") as any;
-const isEnvDevelopment = JSON.parse(scriptData.text).isEnvDevelopment;
+const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment;
+
+type StoreReducerType = {
+  [sessionsSlice.name]: typeof sessionsSlice.reducer,
+  [k: string]: Reducer,
+}
+
+export const staticReducer: StoreReducerType = {
+  [sessionsSlice.name]: sessionsSlice.reducer,
+};
 
 export const store = configureStore({
-  reducer: {
-    [sessionsSlice.name]: sessionsSlice.reducer,
-    [flowSlice.name]: flowSlice.reducer,
-  },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(appListenerMiddleware.middleware),
-  devTools: isEnvDevelopment,
+  reducer: staticReducer,
+  middleware: (getDefaultMiddleware) => (
+    getDefaultMiddleware().prepend(appListenerMiddleware.middleware)
+  ),
+  devTools: isDevEnvironment,
   enhancers: [
     devToolsEnhancer({
       hostname: "localhost",
       port: 8000,
       secure: false,
-      realtime: isEnvDevelopment,
+      realtime: isDevEnvironment,
+      // disable hot reload because it re-triggers all actions after replaceReducer
+      shouldHotReload: false,
     }),
   ],
 });
 
 startMessageObserver();
-registerDebugListeners();
+sessionManager.startListeners();
+// registerDebugListeners();
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

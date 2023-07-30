@@ -1,4 +1,4 @@
-import type { DebugEvent, DebugRequest, DebugResponse } from "./debugProtocol";
+import type { DebugRequest, DebugResponse, DebugEvent } from "./debugProtocol";
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import type { DebugSession } from "vscode";
 
@@ -14,7 +14,9 @@ export type VsCodeMessage =
   | MessageData<"debugEvent", { sessionId: string, event: DebugEvent }>
   | MessageData<"debugError", DebugProtocol.ErrorResponse["body"]>
   | MessageData<"sessionStartedEvent", Pick<DebugSession, "name" | "type" | "id">>
-  | MessageData<"sessionStoppedEvent", { id: string }>;
+  | MessageData<"sessionStoppedEvent", { id: string }>
+  | MessageData<"activeSessionChangedEvent", { id: string | null }>
+  | MessageData<"showError", { msg: string | undefined }>;
 
 export type WebviewMessageType = VsCodeMessage["type"];
 export type WebviewMessageData = VsCodeMessage["data"];

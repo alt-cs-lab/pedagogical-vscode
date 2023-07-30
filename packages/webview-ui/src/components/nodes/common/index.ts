@@ -1,4 +1,4 @@
-import { VariablesNode } from "./VariablesNode";
+import VariablesNode from "./VariablesNode";
 
 export const commonNodeTypes = {
   commonVariables: VariablesNode,

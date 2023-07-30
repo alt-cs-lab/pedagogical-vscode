@@ -150,7 +150,8 @@ export class PedagogicalPanel {
           case "debugRequest":
             this._handleDebugRequest(message.data.sessionId, message.data.req, message.msgSeq);
             break;
-          default:
+          case "showError":
+            window.showErrorMessage(`Pedagogical error: ${message.data.msg}`);
             break;
         }
       },
@@ -196,6 +197,12 @@ export class PedagogicalPanel {
           data: { sessionId: msg.session.id, event: msg.data.event },
         });
         break;
+
+      case "activeSessionChanged":
+        this._postWebviewMessage({
+          type: "activeSessionChangedEvent",
+          data: { id: msg.session ? msg.session.id : null },
+        });
     }
   };
 }

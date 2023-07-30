@@ -1,49 +1,22 @@
-import { DebugProtocol as DP } from "@vscode/debugprotocol";
-import { messageController } from "../../util/messageController";
-import { VsCodeMessage } from "shared";
+import { DebugCommand, DebugRequest, DebugResponse } from "shared";
+import { messageController } from "../../util";
 
-export const debugApi = {
-  async getThreads(sessionId: string): Promise<DP.ThreadsResponse["body"]> {
-    const resp: VsCodeMessage = await messageController.postRequestAsync({
+const debugApi = {
+  async debugRequestAsync<C extends DebugCommand>(
+    sessionId: string,
+    options: DebugRequest<C>
+  ): Promise<DebugResponse<C>> {
+    const result = await messageController.postRequestAndWaitAsync({
       type: "debugRequest",
-      data: { sessionId, req: { command: "threads", args: undefined } },
+      data: { sessionId, req: options },
     });
-    if (resp.type !== "debugResponse") {
-      throw new Error(`Expected debugResponse, got ${resp.type} instead`);
+    if (result.type === "debugError") {
+      throw new Error(`error from debug adapter: ${result.data.error}`);
+    } else if (result.type !== "debugResponse") {
+      throw new Error(`Expected debugResponse, got ${result.type} instead`);
     }
-    return resp.data.resp.body as DP.ThreadsResponse["body"];
-  },
-
-  async getStackTrace(sessionId: string, args: DP.StackTraceArguments): Promise<DP.StackTraceResponse["body"]> {
-    const resp = await messageController.postRequestAsync({
-      type: "debugRequest",
-      data: { sessionId, req: { command: "stackTrace", args } },
-    });
-    if (resp.type !== "debugResponse") {
-      throw new Error(`Expected debugResponse, got ${resp.type} instead`);
-    }
-    return resp.data.resp.body as DP.StackTraceResponse["body"];
-  },
-
-  async getScopes(sessionId: string, args: DP.ScopesArguments): Promise<DP.ScopesResponse["body"]> {
-    const resp = await messageController.postRequestAsync({
-      type: "debugRequest",
-      data: { sessionId, req: { command: "scopes", args } },
-    });
-    if (resp.type !== "debugResponse") {
-      throw new Error(`Expected debugResponse, got ${resp.type} instead`);
-    }
-    return resp.data.resp.body as DP.ScopesResponse["body"];
-  },
-
-  async getVariables(sessionId: string, args: DP.VariablesArguments): Promise<DP.VariablesResponse["body"]> {
-    const resp = await messageController.postRequestAsync({
-      type: "debugRequest",
-      data: { sessionId, req: { command: "variables", args } },
-    });
-    if (resp.type !== "debugResponse") {
-      throw new Error(`Expected debugResponse, got ${resp.type} instead`);
-    }
-    return resp.data.resp.body as DP.VariablesResponse["body"];
+    return result.data.resp as DebugResponse<C>;
   },
 };
+
+export default debugApi;

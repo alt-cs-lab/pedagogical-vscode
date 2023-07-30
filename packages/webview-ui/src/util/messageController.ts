@@ -9,7 +9,7 @@ type PromiseCallbacks = {
 
 /**
  * Class to help handle messages sent between this webview and vscode.
- * Use {@link postRequestAsync} to send a message and wait for a response.
+ * Use {@link postRequestAndWaitAsync} to send a message and wait for a response.
  */
 class VsCodeMessageController {
   /** Map that resolves a response sequence number to its promise callbacks */
@@ -44,12 +44,20 @@ class VsCodeMessageController {
   };
 
   /**
+   * Post a message to the extension WebViewPanel without waiting for a response.
+   * @param message The message to post.
+   */
+  postMessage(message: VsCodeMessage) {
+    vscode.postMessage(message);
+  }
+
+  /**
    * Post a message to the extension WebViewPanel and asynchronously wait for a response.
    * @param message The message to post.
    * @param timeout The time in ms to wait for a response before the promis is rejected.
    * @returns A Promise, resolved and returning a message response, or rejected due to an error or timeout.
    */
-  postRequestAsync(message: VsCodeMessage, timeout = 1000): Promise<VsCodeMessage> {
+  postRequestAndWaitAsync(message: VsCodeMessage, timeout = 1000): Promise<VsCodeMessage> {
     const msgSeq = ++this.msgSeqCounter;
 
     return new Promise((resolve, reject) => {
