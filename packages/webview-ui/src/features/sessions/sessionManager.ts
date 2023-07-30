@@ -4,9 +4,11 @@ import { UnsubscribeListener, addListener, combineReducers } from "@reduxjs/tool
 import { AppAddListener, appStartListening } from "../../listenerMiddleware";
 import { staticReducer, store } from "../../store";
 import { addSession, removeSession, setCurrentSession } from "./sessionsSlice";
+import PythonSession from "./debugSessions/python/PythonSession";
 
 const sessionByDebugType: Record<string, new (id: string) => BaseSession> = {
-  default: DefaultSession
+  python: PythonSession,
+  default: DefaultSession,
 };
 
 class SessionManager {
@@ -19,7 +21,7 @@ class SessionManager {
     const SessionClass = sessionByDebugType[type]
       ? sessionByDebugType[type]
       : sessionByDebugType["default"];
-    
+
     const session = new SessionClass(sessionId);
     this._sessions.push(session);
 
@@ -46,7 +48,7 @@ class SessionManager {
     const unsubscribers = this._listenerUnsubscribersMap.get(sessionId);
     unsubscribers?.forEach((unsub) => unsub({ cancelActive: true }));
     this._listenerUnsubscribersMap.delete(sessionId);
-    
+
     this.updateReducer();
   }
 

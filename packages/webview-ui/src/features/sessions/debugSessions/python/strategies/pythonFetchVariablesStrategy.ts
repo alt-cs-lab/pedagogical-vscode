@@ -1,16 +1,8 @@
+import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import debugApi from "../../../debugApi";
 import { VariablesEntity, toVariablesEntity } from "../../../entities";
-import { DebugProtocol as DP } from "@vscode/debugprotocol";
 
-/**
- * Fetch variables using the given reference numbers.
- *
- * By default this fetches all nested variables and uses the variable's reference number
- * as its id. You will probably want to override this, because you might not want to fetch
- * every variable and you should probably use a different id because variablesReference
- * has a limited lifetime.
- */
-export default async function defaultFetchVariablesStrategy(
+export default async function pythonFetchVariablesStrategy(
   sessionId: string,
   refsToFetch: number[],
   maxFetches = 100,
@@ -30,6 +22,11 @@ export default async function defaultFetchVariablesStrategy(
     // by default the variable id is it's variablesReference number
     // not ideal because variablesReference has a limited lifetime
     const entity = toVariablesEntity(args, resp.body.variables);
+
+    // for now, filter out "[special/function/class] variables"
+    entity.variables = entity.variables.filter(
+      (variable) => !variable.name.endsWith(" variables")
+    );
     variables.push(entity);
 
     // add child variables to queue
