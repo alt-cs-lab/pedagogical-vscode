@@ -1,4 +1,4 @@
-import { VariablesListItem } from "../../../../flow/nodes/common/VariablesList";
+import { VariablesListItem } from "../../../../../components/nodes/common/VariablesList";
 import { NodeEntity, EdgeEntity, VariablesEntity, stackFrameSelectors, scopeSelectors, variableSelectors, nodeSelectors } from "../../../entities";
 import { DefaultSessionState } from "../DefaultSession";
 

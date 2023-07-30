@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { ReactFlowProvider } from "reactflow";
-import { DebugNodeContainer } from "../components/nodes/common";
+import { DebugNodeContainer } from "../components/nodes";
 
 // default export determines wehre story goes in the story list
 const meta: Meta<typeof DebugNodeContainer> = {

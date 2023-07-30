@@ -3,7 +3,7 @@ import { DefaultSessionState } from "./DefaultSession";
 import { nodesChanged, setAllDebugObjects, setAllFlowObjects } from "./defaultActions";
 import { threadsAdapter, stackFramesAdapter, scopesAdapter, variablesAdapter, edgesAdapter, nodesAdapter, nodeSelectors } from "../../entities";
 import { applyNodeChanges } from "reactflow";
-import { DebugNode } from "../../../../components/nodes/common";
+import { PedagogNode } from "../../../../components/nodes";
 
 /** case reducer for an action creator */
 type CR<A extends ActionCreator<AnyAction>> = CaseReducer<
@@ -25,5 +25,5 @@ export const setAllFlowObjectsReducer: CR<typeof setAllFlowObjects> = (state, ac
 
 export const nodesChangedReducer: CR<typeof nodesChanged> = (state, action) => {
   const changedNodes = applyNodeChanges(action.payload.changes, nodeSelectors.selectAll(state.nodes));
-  nodesAdapter.setAll(state.nodes, changedNodes as DebugNode[]);
+  nodesAdapter.setAll(state.nodes, changedNodes as PedagogNode[]);
 };
