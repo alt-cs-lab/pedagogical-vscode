@@ -11,8 +11,8 @@ const initialState: SessionManagerState = {
   sessions: sessionsAdapter.getInitialState(),
 };
 
-const sessionManagerSlice = createSlice({
-  name: "sessionManager",
+const sessionsSlice = createSlice({
+  name: "sessions",
   initialState: initialState,
   reducers: {
     addSession: (state, action: PayloadAction<{ session: SessionEntity }>) => {
@@ -21,11 +21,11 @@ const sessionManagerSlice = createSlice({
     removeSession: (state, action: PayloadAction<{ sessionId: string }>) => {
       sessionsAdapter.removeOne(state.sessions, action.payload.sessionId);
       if (action.payload.sessionId === state.currentSessionId) {
-        state.currentSessionId = null;
+        state.currentSessionId = state.sessions.ids.length > 0 ? state.sessions.ids[0].toString() : null;
       }
     },
-    setCurrentSession: (state, action: PayloadAction<{ sessionId: string }>) => {
-      if (state.sessions.ids.includes(action.payload.sessionId)) {
+    setCurrentSession: (state, action: PayloadAction<{ sessionId: string | null }>) => {
+      if (action.payload.sessionId === null || state.sessions.ids.includes(action.payload.sessionId)) {
         state.currentSessionId = action.payload.sessionId;
       } else {
         console.error(`tried to change to session ${action.payload.sessionId}, but it doesn't exist!`);
@@ -34,5 +34,5 @@ const sessionManagerSlice = createSlice({
   },
 });
 
-export const { addSession, removeSession, setCurrentSession } = sessionManagerSlice.actions;
-export default sessionManagerSlice;
+export const { addSession, removeSession, setCurrentSession } = sessionsSlice.actions;
+export default sessionsSlice;

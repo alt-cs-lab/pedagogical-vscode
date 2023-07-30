@@ -1,9 +1,9 @@
 import BaseSession from "./debugSessions/BaseSession";
 import DefaultSession from "./debugSessions/default/DefaultSession";
-import { UnsubscribeListener, addListener, combineReducers } from "@reduxjs/toolkit";
+import { AnyAction, Reducer, UnsubscribeListener, addListener, combineReducers, createReducer } from "@reduxjs/toolkit";
 import { AppAddListener, appStartListening } from "../../listenerMiddleware";
 import { staticReducer, store } from "../../store";
-import { addSession, removeSession, setCurrentSession } from "./sessionsSlice";
+import { addSession, removeSession } from "./sessionsSlice";
 import PythonSession from "./debugSessions/python/PythonSession";
 
 const sessionByDebugType: Record<string, new (id: string) => BaseSession> = {
@@ -16,6 +16,8 @@ class SessionManager {
 
   private _listenerUnsubscribersMap = new Map<string, UnsubscribeListener[]>();
 
+  private _reducersMap = new Map<string, Reducer>();
+
   createSession(sessionId: string, type: string) {
     console.log(`creating ${type} session: ${sessionId}`);
     const SessionClass = sessionByDebugType[type]
@@ -24,6 +26,13 @@ class SessionManager {
 
     const session = new SessionClass(sessionId);
     this._sessions.push(session);
+
+    const reducerWithIdMatcher = createReducer(session.initialState, (builder) => {
+      builder.addMatcher(
+        (action: AnyAction) => action.meta?.sessionId === session.id, session.reducer
+      );
+    });
+    this._reducersMap.set(session.id, reducerWithIdMatcher);
 
     // add listeners and save unsubscribers
     const addListenerActions = session.addListeners(
@@ -39,10 +48,13 @@ class SessionManager {
     this.updateReducer();
   }
 
-  deleteSession(sessionId: string) {
+  removeSession(sessionId: string) {
     this._sessions = this._sessions.filter(
       (session) => session.id !== sessionId
     );
+
+    // delete reducer
+    this._reducersMap.delete(sessionId);
 
     // stop listeners
     const unsubscribers = this._listenerUnsubscribersMap.get(sessionId);
@@ -53,10 +65,10 @@ class SessionManager {
   }
 
   updateReducer() {
-    const reducer = this._sessions.reduce(
-      (acc, session) => ({ ...acc, [session.id]: session.reducer }),
-      staticReducer,
-    );
+    const reducer = {
+      ...staticReducer,
+      ...Object.fromEntries(this._reducersMap),
+    };
     store.replaceReducer(combineReducers(reducer));
   }
 
@@ -68,12 +80,12 @@ class SessionManager {
           action.payload.session.id,
           action.payload.session.debugType,
         );
-        store.dispatch(setCurrentSession({ sessionId: action.payload.session.id }));
+        // store.dispatch(setCurrentSession({ sessionId: action.payload.session.id }));
       },
     });
     appStartListening({
       actionCreator: removeSession,
-      effect: (action) => this.deleteSession(
+      effect: (action) => this.removeSession(
         action.payload.sessionId,
       ),
     });

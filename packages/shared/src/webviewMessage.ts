@@ -15,6 +15,7 @@ export type VsCodeMessage =
   | MessageData<"debugError", DebugProtocol.ErrorResponse["body"]>
   | MessageData<"sessionStartedEvent", Pick<DebugSession, "name" | "type" | "id">>
   | MessageData<"sessionStoppedEvent", { id: string }>
+  | MessageData<"activeSessionChangedEvent", { id: string | null }>
   | MessageData<"showError", { msg: string | undefined }>;
 
 export type WebviewMessageType = VsCodeMessage["type"];

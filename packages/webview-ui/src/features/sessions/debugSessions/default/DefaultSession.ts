@@ -13,13 +13,13 @@ import * as defaultReducers from "./defaultReducers";
 import { AppAddListener, AppListenerEffect } from "../../../../listenerMiddleware";
 import { matcherWithId } from "../sessionMatchers";
 import defaultStrategies from "./strategies";
-import DefaultComponent from "./DefaultComponent";
+import { getDefaultFlowComponent } from "./DefaultFlowComponent";
 import { debugEventAction } from "../../debugEventActions";
 
 export type DefaultSessionState = DefaultSession["initialState"];
 
 export default class DefaultSession extends BaseSession {
-  readonly initialState = {
+  override readonly initialState = {
     name: "",
     threads: threadsAdapter.getInitialState(),
     stackFrames: stackFramesAdapter.getInitialState(),
@@ -49,7 +49,7 @@ export default class DefaultSession extends BaseSession {
     );
   });
 
-  override component = (props: { sessionId: string }) => DefaultComponent(props);
+  override component = getDefaultFlowComponent();
 
   override addListeners = (addListener: AppAddListener) => [
     addListener({

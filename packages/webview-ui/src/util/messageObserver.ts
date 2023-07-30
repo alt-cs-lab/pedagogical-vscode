@@ -1,7 +1,7 @@
 import { DebugEvent, VsCodeMessage } from "shared";
 import { store } from "../store";
 import { messageController } from ".";
-import { addSession, removeSession } from "../features/sessions/sessionsSlice";
+import { addSession, removeSession, setCurrentSession } from "../features/sessions/sessionsSlice";
 import { debugEventAction } from "../features/sessions/debugEventActions";
 
 export function startMessageObserver() {
@@ -10,7 +10,7 @@ export function startMessageObserver() {
 
 function messageObserver(msg: VsCodeMessage) {
   switch (msg.type) {
-    case "sessionStartedEvent":
+    case "sessionStartedEvent": {
       store.dispatch(addSession({
         session: {
           id: msg.data.id,
@@ -19,15 +19,22 @@ function messageObserver(msg: VsCodeMessage) {
         }
       }));
       return;
+    }
 
     case "sessionStoppedEvent": {
       store.dispatch(removeSession({ sessionId: msg.data.id }));
       return;
     }
 
-    case "debugEvent":
+    case "activeSessionChangedEvent": {
+      store.dispatch(setCurrentSession({ sessionId: msg.data.id }));
+      return;
+    }
+
+    case "debugEvent": {
       handleDebugEvent(msg.data.sessionId, msg.data.event);
       return;
+    }
   }
 }
 

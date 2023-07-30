@@ -3,18 +3,18 @@ import { devToolsEnhancer } from "@redux-devtools/remote";
 import { startMessageObserver } from "./util/messageObserver";
 import { appListenerMiddleware } from "./listenerMiddleware";
 import sessionManager from "./features/sessions/sessionManager";
-import sessionManagerSlice from "./features/sessions/sessionsSlice";
+import sessionsSlice from "./features/sessions/sessionsSlice";
 
 const scriptData = document.getElementById("scriptData") as any;
 const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment;
 
 type StoreReducerType = {
-  [sessionManagerSlice.name]: typeof sessionManagerSlice.reducer,
+  [sessionsSlice.name]: typeof sessionsSlice.reducer,
   [k: string]: Reducer,
 }
 
 export const staticReducer: StoreReducerType = {
-  [sessionManagerSlice.name]: sessionManagerSlice.reducer,
+  [sessionsSlice.name]: sessionsSlice.reducer,
 };
 
 export const store = configureStore({

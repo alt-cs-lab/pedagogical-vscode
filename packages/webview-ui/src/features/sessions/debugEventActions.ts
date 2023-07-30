@@ -1,14 +1,13 @@
 import { DebugEventName, DebugEvent } from "shared";
 import { createSessionAction } from "./debugSessions/sessionAction";
 
-function generateDebugEventAC<
-  E extends DebugEventName>(event: E) {
+function generateDebugEventAC<E extends string & DebugEventName>(event: E) {
   return createSessionAction<DebugEvent<E>>(`debugEvent/${event}`);
 }
 
 /**
  * Actions related to debug adapter events.
- * 
+ *
  * If you need to dispatch a specific action with a generic event,
  * index this object to get the correct action creator.
  */

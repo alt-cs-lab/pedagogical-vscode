@@ -31,6 +31,10 @@ export class DebugSessionController {
     this.notify({ type: "debugEvent", session, data: { event } });
   }
 
+  static activeSessionChangeListener(session: DebugSession | undefined) {
+    this.notify({ type: "activeSessionChanged", session });
+  }
+
   static async sendDebugRequest(sessionId: string, req: DebugRequest): Promise<DebugResponse> {
     const session = this.sessions.find((s) => s.id === sessionId);
     if (session === undefined) {
@@ -46,4 +50,5 @@ export type DebugSessionMessageListener = (msg: DebugSessionMessage) => void;
 type DebugSessionMessage =
   | { type: "started", session: DebugSession }
   | { type: "stopped", session: DebugSession }
-  | { type: "debugEvent", session: DebugSession, data: { event: DebugEvent } };
+  | { type: "debugEvent", session: DebugSession, data: { event: DebugEvent } }
+  | { type: "activeSessionChanged", session: DebugSession | undefined };

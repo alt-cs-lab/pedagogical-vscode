@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
 import { edgesAdapter, nodesAdapter } from "../../entities";
 import { DefaultSessionState } from "./DefaultSession";
@@ -6,22 +5,15 @@ import { Background, Controls, ReactFlow } from "reactflow";
 import { nodesChanged } from "./defaultActions";
 import { nodeTypes } from "../../../flow/nodes";
 
-const DefaultComponent = (props: { sessionId: string }) => {
+const DefaultFlow = (props: { sessionId: string }) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state[props.sessionId]) as DefaultSessionState;
 
-  const nodeSelectors = useMemo(() => nodesAdapter.getSelectors(), []);
-  const edgeSelectors = useMemo(() => edgesAdapter.getSelectors(), []);
+  const nodeSelectors = nodesAdapter.getSelectors();
+  const edgeSelectors = edgesAdapter.getSelectors();
 
-  const nodes = useMemo(
-    () => nodeSelectors.selectAll(state.nodes),
-    [state.nodes.entities],
-  );
-
-  const edges = useMemo(
-    () => edgeSelectors.selectAll(state.edges),
-    [state.edges.entities],
-  );
+  const nodes = nodeSelectors.selectAll(state.nodes);
+  const edges = edgeSelectors.selectAll(state.edges);
 
   return (
     <ReactFlow
@@ -36,4 +28,6 @@ const DefaultComponent = (props: { sessionId: string }) => {
   );
 };
 
-export default DefaultComponent;
+export function getDefaultFlowComponent() {
+  return (props: { sessionId: string }) => DefaultFlow(props);
+}

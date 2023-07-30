@@ -197,6 +197,12 @@ export class PedagogicalPanel {
           data: { sessionId: msg.session.id, event: msg.data.event },
         });
         break;
+
+      case "activeSessionChanged":
+        this._postWebviewMessage({
+          type: "activeSessionChangedEvent",
+          data: { id: msg.session ? msg.session.id : null },
+        });
     }
   };
 }

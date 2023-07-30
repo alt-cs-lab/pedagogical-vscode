@@ -4,6 +4,7 @@ import { AppAddListener } from "../../../listenerMiddleware";
 
 export default abstract class BaseSession {
   readonly id: string;
+  abstract readonly initialState: unknown;
   abstract reducer: Reducer;
   abstract component: FunctionComponent<{ sessionId: string }>;
   abstract addListeners(addListener: AppAddListener): ReturnType<AppAddListener>[];
@@ -12,4 +13,3 @@ export default abstract class BaseSession {
     this.id = id;
   }
 }
-
