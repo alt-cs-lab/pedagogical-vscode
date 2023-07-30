@@ -3,7 +3,7 @@ import { DefaultSessionState } from "./DefaultSession";
 import { nodesChanged, setAllDebugObjects, setAllFlowObjects } from "./defaultActions";
 import { threadsAdapter, stackFramesAdapter, scopesAdapter, variablesAdapter, edgesAdapter, nodesAdapter, nodeSelectors } from "../../entities";
 import { applyNodeChanges } from "reactflow";
-import { DebugNode } from "../../../flow/nodes";
+import { DebugNode } from "../../../../components/nodes/common";
 
 /** case reducer for an action creator */
 type CR<A extends ActionCreator<AnyAction>> = CaseReducer<

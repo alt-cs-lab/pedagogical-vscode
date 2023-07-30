@@ -8,7 +8,7 @@ export type VariablesData = {
   variablesListItems: VariablesListItem[];
 };
 
-export const VariablesNode = (props: NodeProps<VariablesData>) => {
+export default function VariablesNode(props: NodeProps<VariablesData>) {
   return (
     <div className="variables-node">
       <div className="variables-node-type">{props.data.type}</div>
@@ -20,4 +20,4 @@ export const VariablesNode = (props: NodeProps<VariablesData>) => {
       <VariablesList items={props.data.variablesListItems} />
     </div>
   );
-};
+}

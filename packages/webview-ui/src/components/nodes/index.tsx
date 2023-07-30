@@ -10,10 +10,10 @@ type NodeFrom<TypeName extends keyof typeof nodeTypes> = Node<
   TypeName
 >;
 
-export type DebugNode = NodeFrom<keyof typeof nodeTypes>;
+export type PedagogNode = NodeFrom<keyof typeof nodeTypes>;
 
 /** container used for stories */
-export const DebugNodeContainer = (props: DebugNode) => {
+export const DebugNodeContainer = (props: PedagogNode) => {
   if (props.type === undefined) {
     return null;
   }

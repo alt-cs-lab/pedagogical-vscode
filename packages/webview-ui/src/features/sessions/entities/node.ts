@@ -1,5 +1,5 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
-import { DebugNode } from "../../flow/nodes";
+import { DebugNode } from "../../../components/nodes/common";
 
 export type NodeEntity = DebugNode;
 
