@@ -13,7 +13,7 @@ export default abstract class BaseSession {
    * The initial state of a session.
    * This will be added to the root state as the value corresponding to the session id.
    */
-  abstract readonly initialState: unknown;
+  readonly initialState: unknown;
 
   /**
    * The reducer to use for a session.
@@ -65,7 +65,10 @@ export default abstract class BaseSession {
    *
    * @param id debug session id given by vscode
    */
-  constructor(id: string) {
+  constructor(id: string, initialState?: unknown) {
     this.id = id;
+    if (initialState) {
+      this.initialState = initialState;
+    }
   }
 }

@@ -11,11 +11,14 @@ const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment;
 type StoreReducerType = {
   [sessionsSlice.name]: typeof sessionsSlice.reducer,
   [k: string]: Reducer,
-}
+};
 
 export const staticReducer: StoreReducerType = {
   [sessionsSlice.name]: sessionsSlice.reducer,
 };
+
+// TODO: initialize the sessions in sessionManager first,
+// then configure store with the resulting reducer and preloadedState.
 
 export const store = configureStore({
   reducer: staticReducer,
@@ -36,7 +39,9 @@ export const store = configureStore({
 });
 
 startMessageObserver();
-sessionManager.startListeners();
+// sessionManager.initialize().then(() => {
+//   sessionManager.startListeners();
+// });
 // registerDebugListeners();
 
 export type RootState = ReturnType<typeof store.getState>;

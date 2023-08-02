@@ -18,6 +18,7 @@
       }
     ]
   },
+  "activationEvents": ["onDebug"],
   "scripts": {
     "vscode:prepublish": "yarn build",
     "watch": "concurrently 'yarn workspace extension watch' 'yarn workspace webview-ui watch'",

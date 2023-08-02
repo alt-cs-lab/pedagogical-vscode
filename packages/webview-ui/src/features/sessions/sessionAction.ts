@@ -17,7 +17,7 @@ export type SessionAction<
  * Returns an action creator that takes arguments for a sessionId and a payload.
  * The resulting action will have a `sessionId` in its `meta` property, which is required
  * by all session actions.
- * 
+ *
  * This is a helper method that calls `createAction` with a prepare function argument.
  * Use `createAction` manually if you want to customize the prepare function.
  */

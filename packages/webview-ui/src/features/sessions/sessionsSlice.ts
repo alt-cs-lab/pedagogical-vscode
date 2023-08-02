@@ -24,7 +24,11 @@ const sessionsSlice = createSlice({
         state.currentSessionId = state.sessions.ids.length > 0 ? state.sessions.ids[0].toString() : null;
       }
     },
-    setCurrentSession: (state, action: PayloadAction<{ sessionId: string | null }>) => {
+    setAllSessions: (state, action: PayloadAction<{ sessions: SessionEntity[], currentSessionId: string | null }>) => {
+      sessionsAdapter.setAll(state.sessions, action.payload.sessions);
+      state.currentSessionId = action.payload.currentSessionId;
+    },
+    setCurrentSessionId: (state, action: PayloadAction<{ sessionId: string | null }>) => {
       if (action.payload.sessionId === null || state.sessions.ids.includes(action.payload.sessionId)) {
         state.currentSessionId = action.payload.sessionId;
       } else {
@@ -34,5 +38,10 @@ const sessionsSlice = createSlice({
   },
 });
 
-export const { addSession, removeSession, setCurrentSession } = sessionsSlice.actions;
+export const {
+  addSession,
+  removeSession,
+  setAllSessions,
+  setCurrentSessionId,
+} = sessionsSlice.actions;
 export default sessionsSlice;

@@ -8,6 +8,7 @@ import {
   ExtensionContext,
   ExtensionMode,
   DebugSession,
+  debug,
 } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
@@ -150,13 +151,31 @@ export class PedagogicalPanel {
           case "debugRequest":
             this._handleDebugRequest(message.data.sessionId, message.data.req, message.msgSeq);
             break;
+
           case "showError":
             window.showErrorMessage(`Pedagogical error: ${message.data.msg}`);
             break;
+
+          case "getAllSessionsRequest": {
+            const respData: VsCodeMessage<"getAllSessionsResponse">["data"] = {
+              activeSessionId: debug.activeDebugSession ? debug.activeDebugSession.id : null,
+              sessions: this._sessions.map((val) => ({
+                id: val.id,
+                name: val.name,
+                type: val.type,
+              })),
+            };
+            this._postWebviewMessage({
+              type: "getAllSessionsResponse",
+              data: respData,
+              msgSeq: message.msgSeq,
+            });
+            break;
+          }
         }
       },
       undefined,
-      this._disposables
+      this._disposables,
     );
   }
 

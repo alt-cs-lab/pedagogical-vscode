@@ -1,6 +1,12 @@
 import BaseSession from "../BaseSession";
-import { createReducer } from "@reduxjs/toolkit";
+import { EntityState, createReducer } from "@reduxjs/toolkit";
 import {
+  EdgeEntity,
+  NodeEntity,
+  ScopeEntity,
+  StackFrameEntity,
+  ThreadEntity,
+  VariablesEntity,
   edgesAdapter,
   nodesAdapter,
   scopesAdapter,
@@ -11,15 +17,25 @@ import {
 import * as defaultActions from "./defaultActions";
 import * as defaultReducers from "./defaultReducers";
 import { AppAddListener, AppListenerEffect } from "../../../../listenerMiddleware";
-import { matcherWithId } from "../sessionMatchers";
+import { matcherWithId } from "../../sessionMatchers";
 import defaultStrategies from "./strategies";
 import { getDefaultFlowComponent } from "./DefaultFlowComponent";
 import { debugEventAction } from "../../debugEventActions";
 
-export type DefaultSessionState = DefaultSession["initialState"];
+export type DefaultSessionState = {
+  name: string;
+  threads: EntityState<ThreadEntity>;
+  stackFrames: EntityState<StackFrameEntity>;
+  scopes: EntityState<ScopeEntity>;
+  variables: EntityState<VariablesEntity>;
+  nodes: EntityState<NodeEntity>;
+  edges: EntityState<EdgeEntity>;
+  lastStop: number;
+  lastFetch: number;
+};
 
 export default class DefaultSession extends BaseSession {
-  override readonly initialState = {
+  override readonly initialState: DefaultSessionState = {
     name: "",
     threads: threadsAdapter.getInitialState(),
     stackFrames: stackFramesAdapter.getInitialState(),
@@ -27,6 +43,8 @@ export default class DefaultSession extends BaseSession {
     variables: variablesAdapter.getInitialState(),
     nodes: nodesAdapter.getInitialState(),
     edges: edgesAdapter.getInitialState(),
+    lastStop: 0,
+    lastFetch: 0,
   };
 
   override reducer = createReducer(this.initialState, (builder) => {
@@ -47,6 +65,14 @@ export default class DefaultSession extends BaseSession {
       defaultActions.nodesChanged,
       defaultReducers.nodesChangedReducer,
     );
+
+    // update last stop and last fetch
+    builder.addCase(defaultActions.updateLastStop, (state, action) => {
+      state.lastStop = action.payload.lastStop;
+    });
+    builder.addCase(defaultActions.updateLastFetch, (state, action) => {
+      state.lastFetch = action.payload.lastFetch;
+    });
   });
 
   override component = getDefaultFlowComponent();
@@ -63,8 +89,11 @@ export default class DefaultSession extends BaseSession {
     })
   ];
 
-  constructor(id: string) {
-    super(id);
+  constructor(id: string, initialState?: DefaultSessionState) {
+    super(id, initialState);
+    if (this.initialState.lastStop > this.initialState.lastFetch) {
+      // TODO
+    }
   }
 
   strategies = defaultStrategies;
