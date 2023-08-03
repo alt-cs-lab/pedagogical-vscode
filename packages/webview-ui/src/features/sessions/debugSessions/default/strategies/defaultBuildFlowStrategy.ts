@@ -1,12 +1,12 @@
 import { VariablesListItem } from "../../../../../components/nodes/common/VariablesList";
 import { NodeEntity, EdgeEntity, VariablesEntity, stackFrameSelectors, scopeSelectors, variableSelectors, nodeSelectors } from "../../../entities";
-import { DefaultSessionState } from "../DefaultSession";
+import { BaseSessionState } from "../../BaseSession";
 
 const edgeId = (sourceId: string | number, sourceName: string, targetId: string | number) =>
   `${sourceId}[${sourceName}]-${targetId}`;
 
 async function defaultBuildFlowStrategy(
-  state: Pick<DefaultSessionState, "threads" | "stackFrames" | "scopes" | "variables" | "nodes" | "edges">,
+  state: Pick<BaseSessionState, "threads" | "stackFrames" | "scopes" | "variables" | "nodes" | "edges">,
 ): Promise<{ nodes: NodeEntity[], edges: EdgeEntity[] }> {
   const nodes: NodeEntity[] = [];
   const edges: EdgeEntity[] = [];

@@ -1,19 +1,5 @@
-import BaseSession from "../BaseSession";
-import { EntityState, createReducer } from "@reduxjs/toolkit";
-import {
-  EdgeEntity,
-  NodeEntity,
-  ScopeEntity,
-  StackFrameEntity,
-  ThreadEntity,
-  VariablesEntity,
-  edgesAdapter,
-  nodesAdapter,
-  scopesAdapter,
-  stackFramesAdapter,
-  threadsAdapter,
-  variablesAdapter,
-} from "../../entities";
+import BaseSession, { BaseSessionState } from "../BaseSession";
+import { createReducer } from "@reduxjs/toolkit";
 import * as defaultActions from "./defaultActions";
 import * as defaultReducers from "./defaultReducers";
 import { AppAddListener, AppListenerEffect } from "../../../../listenerMiddleware";
@@ -21,32 +7,9 @@ import { matcherWithId } from "../../sessionMatchers";
 import defaultStrategies from "./strategies";
 import { getDefaultFlowComponent } from "./DefaultFlowComponent";
 import { debugEventAction } from "../../debugEventActions";
-
-export type DefaultSessionState = {
-  name: string;
-  threads: EntityState<ThreadEntity>;
-  stackFrames: EntityState<StackFrameEntity>;
-  scopes: EntityState<ScopeEntity>;
-  variables: EntityState<VariablesEntity>;
-  nodes: EntityState<NodeEntity>;
-  edges: EntityState<EdgeEntity>;
-  lastStop: number;
-  lastFetch: number;
-};
+import { sessionsInitialized } from "../../sessionManager";
 
 export default class DefaultSession extends BaseSession {
-  override readonly initialState: DefaultSessionState = {
-    name: "",
-    threads: threadsAdapter.getInitialState(),
-    stackFrames: stackFramesAdapter.getInitialState(),
-    scopes: scopesAdapter.getInitialState(),
-    variables: variablesAdapter.getInitialState(),
-    nodes: nodesAdapter.getInitialState(),
-    edges: edgesAdapter.getInitialState(),
-    lastStop: 0,
-    lastFetch: 0,
-  };
-
   override reducer = createReducer(this.initialState, (builder) => {
     // set all debug adapter objects
     builder.addCase(
@@ -67,8 +30,8 @@ export default class DefaultSession extends BaseSession {
     );
 
     // update last stop and last fetch
-    builder.addCase(defaultActions.updateLastStop, (state, action) => {
-      state.lastStop = action.payload.lastStop;
+    builder.addCase(defaultActions.updateLastPause, (state, action) => {
+      state.lastPause = action.payload.lastPause;
     });
     builder.addCase(defaultActions.updateLastFetch, (state, action) => {
       state.lastFetch = action.payload.lastFetch;
@@ -79,38 +42,41 @@ export default class DefaultSession extends BaseSession {
 
   override addListeners = (addListener: AppAddListener) => [
     addListener({
+      predicate: (action) => sessionsInitialized.match(action) && this.fetchAfterInitialize,
+      effect: (act, api) => this.debuggerStoppedEffect(act, api),
+    }),
+
+    addListener({
       matcher: matcherWithId(this.id, debugEventAction.stopped.match),
-      effect: this.debuggerStoppedEffect,
+      effect: (act, api) => this.debuggerStoppedEffect(act, api),
     }),
 
     addListener({
       matcher: matcherWithId(this.id, defaultActions.buildFlow.match),
-      effect: this.buildFlowEffect,
-    })
+      effect: (act, api) => this.buildFlowEffect(act, api),
+    }),
   ];
 
-  constructor(id: string, initialState?: DefaultSessionState) {
+  constructor(id: string, initialState?: BaseSessionState) {
     super(id, initialState);
-    if (this.initialState.lastStop > this.initialState.lastFetch) {
-      // TODO
+    if (this.initialState.lastPause > this.initialState.lastFetch) {
+      this.fetchAfterInitialize = true;
     }
   }
 
   strategies = defaultStrategies;
 
   //#region listener effects
-  debuggerStoppedEffect: AppListenerEffect<
-    typeof debugEventAction.stopped
-  > = async (_action, api) => {
+  debuggerStoppedEffect: AppListenerEffect = async (_action, api) => {
+    api.dispatch(defaultActions.updateLastPause(this.id));
     const payload = await this.strategies.fetchSession(this.id, this.strategies);
+    api.dispatch(defaultActions.updateLastFetch(this.id));
     api.dispatch(defaultActions.setAllDebugObjects(this.id, payload));
     api.dispatch(defaultActions.buildFlow(this.id));
   };
 
-  buildFlowEffect: AppListenerEffect<
-    typeof defaultActions.buildFlow
-  > = async (_action, api) => {
-    const state = api.getState()[this.id] satisfies DefaultSessionState;
+  buildFlowEffect: AppListenerEffect = async (_action, api) => {
+    const state = api.getState()[this.id] as BaseSessionState;
     const { nodes, edges } = await this.strategies.buildFlow(state);
     api.dispatch(defaultActions.setAllFlowObjects(this.id, { nodes, edges }));
   };

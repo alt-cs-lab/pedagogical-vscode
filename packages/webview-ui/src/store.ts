@@ -4,11 +4,18 @@ import { startMessageObserver } from "./util/messageObserver";
 import { appListenerMiddleware } from "./listenerMiddleware";
 import sessionManager from "./features/sessions/sessionManager";
 import sessionsSlice from "./features/sessions/sessionsSlice";
+import { BaseSessionState } from "./features/sessions/debugSessions/BaseSession";
 
 const scriptData = document.getElementById("scriptData") as any;
 const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment;
 
-type StoreReducerType = {
+export type StoreState = {
+  [k: string]: BaseSessionState
+} & {
+  [sessionsSlice.name]: ReturnType<typeof sessionsSlice.getInitialState>,
+};
+
+export type StoreReducerType = {
   [sessionsSlice.name]: typeof sessionsSlice.reducer,
   [k: string]: Reducer,
 };
@@ -17,11 +24,14 @@ export const staticReducer: StoreReducerType = {
   [sessionsSlice.name]: sessionsSlice.reducer,
 };
 
-// TODO: initialize the sessions in sessionManager first,
+// initialize the sessions in sessionManager first,
 // then configure store with the resulting reducer and preloadedState.
+// TODO: refactor: create a storeManager instead of just a sessionManager
+const { reducer, initialState } = await sessionManager.initialize();
 
 export const store = configureStore({
-  reducer: staticReducer,
+  reducer: reducer,
+  preloadedState: initialState,
   middleware: (getDefaultMiddleware) => (
     getDefaultMiddleware().prepend(appListenerMiddleware.middleware)
   ),
@@ -38,11 +48,8 @@ export const store = configureStore({
   ],
 });
 
+sessionManager.postInitialize();
 startMessageObserver();
-// sessionManager.initialize().then(() => {
-//   sessionManager.startListeners();
-// });
-// registerDebugListeners();
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

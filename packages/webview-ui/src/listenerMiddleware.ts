@@ -6,7 +6,7 @@ export const appListenerMiddleware = createListenerMiddleware();
 type AppStartListening = TypedStartListening<RootState, AppDispatch>;
 export type AppAddListener = TypedAddListener<RootState, AppDispatch>;
 export type AppListenerMiddlewareInstance = ListenerMiddlewareInstance<RootState, AppDispatch>;
-export type AppListenerEffect<A extends AnyAction | ActionCreator<AnyAction>> = ListenerEffect<
+export type AppListenerEffect<A extends AnyAction | ActionCreator<AnyAction> = AnyAction> = ListenerEffect<
   A extends ActionCreator<AnyAction> ? ReturnType<A> : A,
   RootState,
   AppDispatch

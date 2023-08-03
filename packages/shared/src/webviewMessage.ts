@@ -10,7 +10,13 @@ type MessageData<T extends string, D> = {
 
 type GetAllSessionsResponse = {
   activeSessionId: string | null;
-  sessions: Pick<DebugSession, "name" | "type" | "id">[];
+  sessions: {
+    name: string,
+    type: string,
+    id: string,
+    status: "running" | "paused",
+    lastPause: number,
+  }[];
 };
 
 type AnyVsCodeMessage =

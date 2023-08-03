@@ -1,7 +1,7 @@
 import { EntityState, PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { SessionEntity, sessionsAdapter } from "./entities";
 
-type SessionManagerState = {
+export type SessionManagerState = {
   currentSessionId: string | null,
   sessions: EntityState<SessionEntity>,
 };

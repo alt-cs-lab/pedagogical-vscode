@@ -29,10 +29,10 @@ export const nodesChanged = createSessionAction<{ changes: NodeChange[] }>(
   "session/nodesChanged",
 );
 
-export const updateLastStop = createAction(
-  "session/updateLastStop",
+export const updateLastPause = createAction(
+  "session/updateLastPause",
   (sessionId: string) => ({
-    payload: { lastStop: Date.now() },
+    payload: { lastPause: Date.now() },
     meta: { sessionId },
   }),
 );

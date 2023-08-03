@@ -1,19 +1,13 @@
-import {
-  Disposable,
-  Webview,
-  WebviewPanel,
-  window,
-  Uri,
-  ViewColumn,
-  ExtensionContext,
-  ExtensionMode,
-  DebugSession,
-  debug,
-} from "vscode";
+import * as vscode from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { VsCodeMessage, DebugRequest } from "shared";
 import { DebugSessionMessageListener, DebugSessionController } from "../debugSessionController";
+
+type DebugSessionWithStatus = Pick<vscode.DebugSession, "id" | "name" | "type"> & {
+  status: "running" | "paused",
+  lastPause: number,
+};
 
 /**
  * This class manages the state and behavior of webview panels.
@@ -27,9 +21,11 @@ import { DebugSessionMessageListener, DebugSessionController } from "../debugSes
  */
 export class PedagogicalPanel {
   public static currentPanel: PedagogicalPanel | undefined;
-  private readonly _panel: WebviewPanel;
-  private _disposables: Disposable[] = [];
-  private _sessions: DebugSession[] = [];
+  private readonly _panel: vscode.WebviewPanel;
+  private _disposables: vscode.Disposable[] = [];
+
+  // TODO: store sessions in DebugSessionController so we don't lose it when disposing the webivew panel
+  private _sessions: DebugSessionWithStatus[] = [];
 
   /**
    * The PedagogicalPanel class private constructor (called only from the render method).
@@ -37,7 +33,7 @@ export class PedagogicalPanel {
    * @param panel A reference to the webview panel
    * @param extensionUri The URI of the directory containing the extension
    */
-  private constructor(panel: WebviewPanel, context: ExtensionContext) {
+  private constructor(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
     this._panel = panel;
 
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
@@ -55,15 +51,15 @@ export class PedagogicalPanel {
    *
    * @param extensionUri The URI of the directory containing the extension.
    */
-  public static render(context: ExtensionContext) {
+  public static render(context: vscode.ExtensionContext) {
     if (PedagogicalPanel.currentPanel) {
       // If the webview panel already exists reveal it
-      PedagogicalPanel.currentPanel._panel.reveal(ViewColumn.Beside);
+      PedagogicalPanel.currentPanel._panel.reveal(vscode.ViewColumn.Beside);
     } else {
       // If a webview panel does not already exist create and show a new one
-      const panel = window.createWebviewPanel("showPedagogicalView", "Pedagogical", ViewColumn.Beside, {
+      const panel = vscode.window.createWebviewPanel("showPedagogicalView", "Pedagogical", vscode.ViewColumn.Beside, {
         enableScripts: true,
-        localResourceRoots: [Uri.joinPath(context.extensionUri, "dist")],
+        localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, "dist")],
       });
 
       PedagogicalPanel.currentPanel = new PedagogicalPanel(panel, context);
@@ -101,7 +97,7 @@ export class PedagogicalPanel {
    * @returns A template string literal containing the HTML that should be
    * rendered within the webview panel
    */
-  private _getWebviewContent(webview: Webview, context: ExtensionContext) {
+  private _getWebviewContent(webview: vscode.Webview, context: vscode.ExtensionContext) {
     // The CSS file from the React build output
     const stylesUri = getUri(webview, context.extensionUri, ["dist", "webview-ui", "assets", "index.css"]);
     // The JS file from the React build output
@@ -109,7 +105,7 @@ export class PedagogicalPanel {
 
     const nonce = getNonce();
 
-    const isEnvDevelopment = context.extensionMode === ExtensionMode.Development;
+    const isEnvDevelopment = context.extensionMode === vscode.ExtensionMode.Development;
 
     // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
     return /*html*/ `
@@ -129,7 +125,7 @@ export class PedagogicalPanel {
         <body>
           <div id="root"></div>
           <script id="scriptData" type="application/json">
-            {"isEnvDevelopment": ${context.extensionMode === ExtensionMode.Development}}
+            {"isEnvDevelopment": ${context.extensionMode === vscode.ExtensionMode.Development}}
           </script>
           <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
         </body>
@@ -144,7 +140,7 @@ export class PedagogicalPanel {
    * @param webview A reference to the extension webview
    * @param context A reference to the extension context
    */
-  private _setWebviewMessageListener(webview: Webview) {
+  private _setWebviewMessageListener(webview: vscode.Webview) {
     webview.onDidReceiveMessage(
       (message: VsCodeMessage) => {
         switch (message.type) {
@@ -153,16 +149,18 @@ export class PedagogicalPanel {
             break;
 
           case "showError":
-            window.showErrorMessage(`Pedagogical error: ${message.data.msg}`);
+            vscode.window.showErrorMessage(`Pedagogical error: ${message.data.msg}`);
             break;
 
           case "getAllSessionsRequest": {
             const respData: VsCodeMessage<"getAllSessionsResponse">["data"] = {
-              activeSessionId: debug.activeDebugSession ? debug.activeDebugSession.id : null,
+              activeSessionId: vscode.debug.activeDebugSession ? vscode.debug.activeDebugSession.id : null,
               sessions: this._sessions.map((val) => ({
                 id: val.id,
                 name: val.name,
                 type: val.type,
+                status: val.status,
+                lastPause: val.lastPause,
               })),
             };
             this._postWebviewMessage({
@@ -194,13 +192,21 @@ export class PedagogicalPanel {
 
   private _onDebugSessionMessage: DebugSessionMessageListener = (msg) => {
     switch (msg.type) {
-      case "started":
-        this._sessions.push(msg.session);
+      case "started": {
+        const sessionWithStatus: DebugSessionWithStatus = {
+          id: msg.session.id,
+          name: msg.session.name,
+          type: msg.session.type,
+          status: "running",
+          lastPause: 0,
+        };
+        this._sessions.push(sessionWithStatus);
         this._postWebviewMessage({
           type: "sessionStartedEvent",
           data: { id: msg.session.id, name: msg.session.name, type: msg.session.type },
         });
         break;
+      }
 
       case "stopped":
         this._sessions = this._sessions.filter((session) => session.id !== msg.session.id);
@@ -210,12 +216,25 @@ export class PedagogicalPanel {
         });
         break;
 
-      case "debugEvent":
+      case "debugEvent": {
+        const session = this._sessions.find((val) => val.id === msg.session.id);
+        if (session === undefined) {
+          return;
+        }
+
+        if (msg.data.event.event === "stopped") {
+          session.status = "paused";
+          session.lastPause = Date.now();
+        } else if (msg.data.event.event === "continued") {
+          session.status = "running";
+        }
+
         this._postWebviewMessage({
           type: "debugEvent",
           data: { sessionId: msg.session.id, event: msg.data.event },
         });
         break;
+      }
 
       case "activeSessionChanged":
         this._postWebviewMessage({

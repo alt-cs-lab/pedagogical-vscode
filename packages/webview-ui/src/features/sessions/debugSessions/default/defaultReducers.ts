@@ -1,13 +1,13 @@
 import { ActionCreator, AnyAction, CaseReducer } from "@reduxjs/toolkit";
-import { DefaultSessionState } from "./DefaultSession";
-import { nodesChanged, setAllDebugObjects, setAllFlowObjects } from "./defaultActions";
+import { nodesChanged, setAllDebugObjects, setAllFlowObjects, updateLastFetch, updateLastPause } from "./defaultActions";
 import { threadsAdapter, stackFramesAdapter, scopesAdapter, variablesAdapter, edgesAdapter, nodesAdapter, nodeSelectors } from "../../entities";
 import { applyNodeChanges } from "reactflow";
 import { PedagogNode } from "../../../../components/nodes";
+import { BaseSessionState } from "../BaseSession";
 
 /** case reducer for an action creator */
 type CR<A extends ActionCreator<AnyAction>> = CaseReducer<
-  DefaultSessionState,
+  BaseSessionState,
   ReturnType<A>
 >;
 
@@ -26,4 +26,12 @@ export const setAllFlowObjectsReducer: CR<typeof setAllFlowObjects> = (state, ac
 export const nodesChangedReducer: CR<typeof nodesChanged> = (state, action) => {
   const changedNodes = applyNodeChanges(action.payload.changes, nodeSelectors.selectAll(state.nodes));
   nodesAdapter.setAll(state.nodes, changedNodes as PedagogNode[]);
+};
+
+export const updateLastStopReducer: CR<typeof updateLastPause> = (state, action) => {
+  state.lastPause = action.payload.lastPause;
+};
+
+export const updateLastFetchReducer: CR<typeof updateLastFetch> = (state, action) => {
+  state.lastFetch = action.payload.lastFetch;
 };
