@@ -14,7 +14,6 @@ type GetAllSessionsResponse = {
     name: string,
     type: string,
     id: string,
-    status: "running" | "paused",
     lastPause: number,
   }[];
 };

@@ -3,16 +3,17 @@ import { devToolsEnhancer } from "@redux-devtools/remote";
 import { startMessageObserver } from "./util/messageObserver";
 import { appListenerMiddleware } from "./listenerMiddleware";
 import sessionManager from "./features/sessions/sessionManager";
-import sessionsSlice from "./features/sessions/sessionsSlice";
+import sessionsSlice, { SessionManagerState } from "./features/sessions/sessionsSlice";
 import { BaseSessionState } from "./features/sessions/debugSessions/BaseSession";
 
 const scriptData = document.getElementById("scriptData") as any;
 const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment;
 
+// TODO: fix this type
+// maybe move the index type into another property
 export type StoreState = {
-  [k: string]: BaseSessionState
-} & {
-  [sessionsSlice.name]: ReturnType<typeof sessionsSlice.getInitialState>,
+  [sessionsSlice.name]: SessionManagerState,
+  [k: string]: BaseSessionState,
 };
 
 export type StoreReducerType = {

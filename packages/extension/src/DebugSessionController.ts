@@ -1,9 +1,10 @@
 import { DebugEvent, DebugRequest, DebugResponse } from "shared";
 import { DebugSession } from "vscode";
 
-export class DebugSessionController {
+export default class DebugSessionController {
   static listeners: DebugSessionMessageListener[] = [];
   static sessions: DebugSession[] = [];
+  static lastPause = new Map<string, number>();
 
   static subscribe(cb: DebugSessionMessageListener) {
     this.listeners.push(cb);
@@ -19,15 +20,20 @@ export class DebugSessionController {
 
   static addSession(session: DebugSession) {
     this.sessions.push(session);
+    this.lastPause.set(session.id, 0);
     this.notify({ type: "started", session });
   }
 
   static removeSession(session: DebugSession) {
     this.sessions = this.sessions.filter((s) => s !== session);
+    this.lastPause.delete(session.id);
     this.notify({ type: "stopped", session });
   }
 
   static notifyEvent(session: DebugSession, event: DebugEvent) {
+    if (event.event === "stopped") {
+      this.lastPause.set(session.id, Date.now());
+    }
     this.notify({ type: "debugEvent", session, data: { event } });
   }
 

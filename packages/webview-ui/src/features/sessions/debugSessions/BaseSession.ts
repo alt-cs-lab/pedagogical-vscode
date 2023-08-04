@@ -11,7 +11,6 @@ export type BaseSessionState = {
   variables: EntityState<VariablesEntity>;
   nodes: EntityState<NodeEntity>;
   edges: EntityState<EdgeEntity>;
-  status: "running";
   lastPause: number;
   lastFetch: number;
 };
@@ -35,7 +34,6 @@ export default abstract class BaseSession {
     variables: variablesAdapter.getInitialState(),
     nodes: nodesAdapter.getInitialState(),
     edges: edgesAdapter.getInitialState(),
-    status: "running",
     lastPause: 0,
     lastFetch: 0,
   };
@@ -95,10 +93,13 @@ export default abstract class BaseSession {
    *
    * @param id debug session id given by vscode
    */
-  constructor(id: string, initialState?: BaseSessionState) {
+  constructor(id: string, preloadedState?: Partial<BaseSessionState>) {
     this.id = id;
-    if (initialState) {
-      this.initialState = initialState;
+    if (preloadedState) {
+      this.initialState = {
+        ...this.initialState,
+        ...preloadedState,
+      };
     }
   }
 }

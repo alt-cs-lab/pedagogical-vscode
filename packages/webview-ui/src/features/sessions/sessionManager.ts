@@ -3,14 +3,13 @@ import DefaultSession from "./debugSessions/default/DefaultSession";
 import { AnyAction, Reducer, UnsubscribeListener, addListener, combineReducers, createAction, createReducer } from "@reduxjs/toolkit";
 import { AppAddListener, AppListenerMiddlewareInstance, appListenerMiddleware, appStartListening } from "../../listenerMiddleware";
 import { StoreState, staticReducer, store } from "../../store";
-import { addSession, removeSession } from "./sessionsSlice";
+import { addSession, removeSession, setAllSessions } from "./sessionsSlice";
 import PythonSession from "./debugSessions/python/PythonSession";
 import { messageController, vscode } from "../../util";
 import { VsCodeMessage } from "shared";
-import { sessionsAdapter } from "./entities";
 import { startStateChangedListener } from "../../stateChangeListener";
 
-const sessionByDebugType: Record<string, new (id: string, initialState?: any) => BaseSession> = {
+const sessionByDebugType: Record<string, new (id: string, preloadedState?: any) => BaseSession> = {
   python: PythonSession,
   default: DefaultSession,
 };
@@ -24,13 +23,15 @@ class SessionManager {
 
   private _reducersMap = new Map<string, Reducer>();
 
-  private _createSession(sessionId: string, type: string, initialState?: unknown): BaseSession {
+  private _getAllSessionsResp: VsCodeMessage<"getAllSessionsResponse"> | undefined;
+
+  private _createSession(sessionId: string, type: string, preloadedState?: Partial<BaseSessionState>): BaseSession {
     console.log(`creating ${type} session: ${sessionId}`);
     const SessionClass = sessionByDebugType[type]
       ? sessionByDebugType[type]
       : sessionByDebugType["default"];
 
-    const session = new SessionClass(sessionId, initialState);
+    const session = new SessionClass(sessionId, preloadedState);
     this._sessions.push(session);
 
     // higher order reducer that matches session id before running the session's reducer
@@ -118,22 +119,15 @@ class SessionManager {
       data: undefined,
     }, 3000) as VsCodeMessage<"getAllSessionsResponse">;
 
-    const activeSessionId = resp.data.activeSessionId;
+    this._getAllSessionsResp = resp;
     const currentSessions = resp.data.sessions;
 
     for (const currentSession of currentSessions) {
-      const initialSessionState: BaseSessionState | undefined = persistedState
-        ? {
-          ...currentSession,
-          ...persistedState[currentSession.id],
-        }
-        : undefined;
+      const initialSessionState: Partial<BaseSessionState> = {
+        ...persistedState ? persistedState[currentSession.id] : undefined,
+        ...currentSession,
+      };
       this._createSession(currentSession.id, currentSession.type, initialSessionState);
-    }
-
-    if (persistedState) {
-      persistedState.sessions.currentSessionId = activeSessionId;
-      sessionsAdapter.setAll(persistedState.sessions.sessions, currentSessions);
     }
 
     return {
@@ -142,10 +136,15 @@ class SessionManager {
     };
   }
 
-  postInitialize() {
+  async postInitialize() {
     // start listeners and actions that we couldn't do without having the store first
-    console.log("post-initialize");
     this.startListeners();
+    if (this._getAllSessionsResp) {
+      store.dispatch(setAllSessions({
+        sessions: this._getAllSessionsResp.data.sessions,
+        currentSessionId: this._getAllSessionsResp.data.activeSessionId,
+      }));
+    }
     store.dispatch(sessionsInitialized());
   }
 }

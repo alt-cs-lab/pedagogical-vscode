@@ -2,12 +2,7 @@ import * as vscode from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { VsCodeMessage, DebugRequest } from "shared";
-import { DebugSessionMessageListener, DebugSessionController } from "../debugSessionController";
-
-type DebugSessionWithStatus = Pick<vscode.DebugSession, "id" | "name" | "type"> & {
-  status: "running" | "paused",
-  lastPause: number,
-};
+import DebugSessionController, { DebugSessionMessageListener } from "../DebugSessionController";
 
 /**
  * This class manages the state and behavior of webview panels.
@@ -23,9 +18,6 @@ export class PedagogicalPanel {
   public static currentPanel: PedagogicalPanel | undefined;
   private readonly _panel: vscode.WebviewPanel;
   private _disposables: vscode.Disposable[] = [];
-
-  // TODO: store sessions in DebugSessionController so we don't lose it when disposing the webivew panel
-  private _sessions: DebugSessionWithStatus[] = [];
 
   /**
    * The PedagogicalPanel class private constructor (called only from the render method).
@@ -155,12 +147,11 @@ export class PedagogicalPanel {
           case "getAllSessionsRequest": {
             const respData: VsCodeMessage<"getAllSessionsResponse">["data"] = {
               activeSessionId: vscode.debug.activeDebugSession ? vscode.debug.activeDebugSession.id : null,
-              sessions: this._sessions.map((val) => ({
+              sessions: DebugSessionController.sessions.map((val) => ({
                 id: val.id,
                 name: val.name,
                 type: val.type,
-                status: val.status,
-                lastPause: val.lastPause,
+                lastPause: DebugSessionController.lastPause.get(val.id)!,
               })),
             };
             this._postWebviewMessage({
@@ -192,49 +183,26 @@ export class PedagogicalPanel {
 
   private _onDebugSessionMessage: DebugSessionMessageListener = (msg) => {
     switch (msg.type) {
-      case "started": {
-        const sessionWithStatus: DebugSessionWithStatus = {
-          id: msg.session.id,
-          name: msg.session.name,
-          type: msg.session.type,
-          status: "running",
-          lastPause: 0,
-        };
-        this._sessions.push(sessionWithStatus);
+      case "started":
         this._postWebviewMessage({
           type: "sessionStartedEvent",
           data: { id: msg.session.id, name: msg.session.name, type: msg.session.type },
         });
         break;
-      }
 
       case "stopped":
-        this._sessions = this._sessions.filter((session) => session.id !== msg.session.id);
         this._postWebviewMessage({
           type: "sessionStoppedEvent",
           data: { id: msg.session.id },
         });
         break;
 
-      case "debugEvent": {
-        const session = this._sessions.find((val) => val.id === msg.session.id);
-        if (session === undefined) {
-          return;
-        }
-
-        if (msg.data.event.event === "stopped") {
-          session.status = "paused";
-          session.lastPause = Date.now();
-        } else if (msg.data.event.event === "continued") {
-          session.status = "running";
-        }
-
+      case "debugEvent":
         this._postWebviewMessage({
           type: "debugEvent",
           data: { sessionId: msg.session.id, event: msg.data.event },
         });
         break;
-      }
 
       case "activeSessionChanged":
         this._postWebviewMessage({
