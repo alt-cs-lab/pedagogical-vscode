@@ -1,4 +1,4 @@
-import { ActionCreator, AnyAction, ListenerEffect, ListenerEffectAPI, ListenerMiddlewareInstance, TypedAddListener, TypedStartListening, createListenerMiddleware } from "@reduxjs/toolkit";
+import { ActionCreator, AnyAction, ListenerEffect, ListenerEffectAPI, ListenerMiddlewareInstance, TypedAddListener, TypedStartListening, addListener, createListenerMiddleware } from "@reduxjs/toolkit";
 import { AppDispatch, RootState } from "./store";
 
 export const appListenerMiddleware = createListenerMiddleware();
@@ -13,4 +13,5 @@ export type AppListenerEffect<A extends AnyAction | ActionCreator<AnyAction> = A
 >;
 export type AppListenerEffectApi = ListenerEffectAPI<RootState, AppDispatch>;
 
+export const appAddListener = addListener as AppAddListener;
 export const appStartListening = appListenerMiddleware.startListening as AppStartListening;

@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { EntityState, Reducer } from "@reduxjs/toolkit";
+import { AnyAction, EntityState, Reducer } from "@reduxjs/toolkit";
 import { AppAddListener } from "../../../listenerMiddleware";
 import { ThreadEntity, StackFrameEntity, ScopeEntity, VariablesEntity, NodeEntity, EdgeEntity, edgesAdapter, nodesAdapter, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "../entities";
 
@@ -51,7 +51,7 @@ export default abstract class BaseSession {
    * You can not reduce based on actions for other sessions. If you need to do that for some reason,
    * use a listener.
    */
-  abstract reducer: Reducer;
+  abstract reducer: Reducer<BaseSessionState, AnyAction>;
 
   /**
    * The react component that will be rendered whenever the debug session is active.

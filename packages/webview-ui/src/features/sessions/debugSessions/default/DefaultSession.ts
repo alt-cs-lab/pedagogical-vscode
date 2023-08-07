@@ -76,7 +76,7 @@ export default class DefaultSession extends BaseSession {
   };
 
   buildFlowEffect: AppListenerEffect = async (_action, api) => {
-    const state = api.getState()[this.id] as BaseSessionState;
+    const state = api.getState().sessions.sessionStates[this.id];
     const { nodes, edges } = await this.strategies.buildFlow(state);
     api.dispatch(defaultActions.setAllFlowObjects(this.id, { nodes, edges }));
   };

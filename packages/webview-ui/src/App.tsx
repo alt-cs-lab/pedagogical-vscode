@@ -1,17 +1,15 @@
-import sessionManager from "./features/sessions/sessionManager";
 import { useAppSelector } from "./hooks";
 
 import "./App.css";
 import "reactflow/dist/style.css";
+import { getSessionComponent } from "./features/sessions/sessionsSlice";
 
 export default function App() {
   const currentSessionId = useAppSelector(
     (state) => state.sessions.currentSessionId
   );
 
-  const SessionComponent = currentSessionId
-    ? sessionManager.getSessionComponent(currentSessionId)
-    : null;
+  const SessionComponent = getSessionComponent(currentSessionId);
 
   return (
     <main>

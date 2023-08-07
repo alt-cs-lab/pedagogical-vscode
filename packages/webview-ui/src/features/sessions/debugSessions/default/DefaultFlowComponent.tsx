@@ -7,7 +7,7 @@ import { BaseSessionState } from "../BaseSession";
 
 const DefaultFlow = (props: { sessionId: string }) => {
   const dispatch = useAppDispatch();
-  const state = useAppSelector((state) => state[props.sessionId]) as BaseSessionState;
+  const state = useAppSelector((state) => state.sessions.sessionStates[props.sessionId]);
 
   const nodeSelectors = nodesAdapter.getSelectors();
   const edgeSelectors = edgesAdapter.getSelectors();

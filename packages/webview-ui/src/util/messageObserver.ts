@@ -12,7 +12,7 @@ function messageObserver(msg: VsCodeMessage) {
   switch (msg.type) {
     case "sessionStartedEvent": {
       store.dispatch(addSession({
-        session: {
+        sessionEntity: {
           id: msg.data.id,
           name: msg.data.name,
           type: msg.data.type,
