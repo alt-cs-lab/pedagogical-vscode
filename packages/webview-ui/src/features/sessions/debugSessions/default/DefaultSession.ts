@@ -7,7 +7,7 @@ import { matcherWithId } from "../../sessionMatchers";
 import defaultStrategies from "./strategies";
 import { getDefaultFlowComponent } from "./DefaultFlowComponent";
 import { debugEventAction } from "../../debugEventActions";
-import { sessionsInitialized } from "../../sessionManager";
+import { sessionsInitialized } from "../../sessionsSlice";
 
 export default class DefaultSession extends BaseSession {
   override reducer = createReducer(this.initialState, (builder) => {

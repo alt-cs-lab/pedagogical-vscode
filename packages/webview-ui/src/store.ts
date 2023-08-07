@@ -1,20 +1,19 @@
-import { ReducersMapObject, StateFromReducersMapObject, configureStore } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import { devToolsEnhancer } from "@redux-devtools/remote";
 import { startMessageObserver } from "./util/messageObserver";
-import { appListenerMiddleware } from "./listenerMiddleware";
+import { AppListenerMiddlewareInstance, appListenerMiddleware } from "./listenerMiddleware";
 import sessionsSlice from "./features/sessions/sessionsSlice";
-import { vscode } from "./util";
+import { startStateChangedListener } from "./stateChangeListener";
 
+// load redux devtools if this is a dev environment
+// there's probably a better way to do this
 const scriptData = document.getElementById("scriptData") as any;
 const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment;
 
-const storeReducer = {
-  [sessionsSlice.name]: sessionsSlice.reducer,
-};
-
 export const store = configureStore({
-  reducer: storeReducer,
-  preloadedState: vscode.getState() as StateFromReducersMapObject<typeof storeReducer> | undefined,
+  reducer: {
+    [sessionsSlice.name]: sessionsSlice.reducer,
+  },
   middleware: (getDefaultMiddleware) => (
     getDefaultMiddleware().prepend(appListenerMiddleware.middleware)
   ),
@@ -32,6 +31,7 @@ export const store = configureStore({
 });
 
 // sessionManager.postInitialize();
+startStateChangedListener(appListenerMiddleware as AppListenerMiddlewareInstance);
 startMessageObserver();
 
 export type RootState = ReturnType<typeof store.getState>;

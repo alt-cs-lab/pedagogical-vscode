@@ -2,8 +2,11 @@ import { EntityState, PayloadAction, UnsubscribeListener, createSlice } from "@r
 import { SessionEntity, sessionsAdapter } from "./entities";
 import BaseSession, { BaseSessionState } from "./debugSessions/BaseSession";
 import { isSessionAction } from "./sessionAction";
-import { getSessionClassByDebugType } from "./sessionManager";
 import { appAddListener, appStartListening } from "../../listenerMiddleware";
+import { messageController, vscode } from "../../util";
+import { RootState, store } from "../../store";
+import { VsCodeMessage } from "shared";
+import { getSessionClassByDebugType } from "./debugSessions";
 
 const sessionInstances = new Map<string, BaseSession>();
 
@@ -11,13 +14,13 @@ const sessionListenerUnsubscribers = new Map<string, UnsubscribeListener[]>();
 
 export type SessionManagerState = {
   currentSessionId: string | null,
-  sessions: EntityState<SessionEntity>,
+  sessionEntities: EntityState<SessionEntity>,
   sessionStates: Record<string, BaseSessionState>,
 };
 
 const initialState: SessionManagerState = {
   currentSessionId: null,
-  sessions: sessionsAdapter.getInitialState(),
+  sessionEntities: sessionsAdapter.getInitialState(),
   sessionStates: {},
 };
 
@@ -25,27 +28,24 @@ const sessionsSlice = createSlice({
   name: "sessions",
   initialState: initialState,
   reducers: {
-    addSession: (state, action: PayloadAction<{ sessionEntity: SessionEntity, preloadedState?: BaseSessionState }>) => {
+    addSession: (state, action: PayloadAction<{ sessionEntity: SessionEntity, preloadedState?: Partial<BaseSessionState> }>) => {
       const SessionClass = getSessionClassByDebugType(action.payload.sessionEntity.type);
       const session = new SessionClass(action.payload.sessionEntity.id, action.payload.preloadedState);
       sessionInstances.set(session.id, session);
 
-      sessionsAdapter.addOne(state.sessions, action.payload.sessionEntity);
+      sessionsAdapter.addOne(state.sessionEntities, action.payload.sessionEntity);
       state.sessionStates[session.id] = session.initialState;
     },
     removeSession: (state, action: PayloadAction<{ sessionId: string }>) => {
       sessionInstances.delete(action.payload.sessionId);
-      sessionsAdapter.removeOne(state.sessions, action.payload.sessionId);
+      sessionsAdapter.removeOne(state.sessionEntities, action.payload.sessionId);
       if (action.payload.sessionId === state.currentSessionId) {
-        state.currentSessionId = state.sessions.ids.length > 0 ? state.sessions.ids[0].toString() : null;
+        state.currentSessionId = state.sessionEntities.ids.length > 0 ? state.sessionEntities.ids[0].toString() : null;
       }
     },
-    setAllSessions: (state, action: PayloadAction<{ sessions: SessionEntity[], currentSessionId: string | null }>) => {
-      sessionsAdapter.setAll(state.sessions, action.payload.sessions);
-      state.currentSessionId = action.payload.currentSessionId;
-    },
+    sessionsInitialized: () => undefined,
     setCurrentSessionId: (state, action: PayloadAction<{ sessionId: string | null }>) => {
-      if (action.payload.sessionId === null || state.sessions.ids.includes(action.payload.sessionId)) {
+      if (action.payload.sessionId === null || state.sessionEntities.ids.includes(action.payload.sessionId)) {
         state.currentSessionId = action.payload.sessionId;
       } else {
         console.error(`tried to change to session ${action.payload.sessionId}, but it doesn't exist!`);
@@ -101,10 +101,52 @@ export function getSessionComponent(sessionId: string | null) {
   return session ? session.component : null;
 }
 
+export async function setInitialSessionManagerState() {
+
+  // get currently running sessions from vscode
+  // this includes name, type, id, and lastPause
+  const resp = await messageController.postRequestAndWaitAsync({
+    type: "getAllSessionsRequest",
+    data: undefined,
+  }, 3000) as VsCodeMessage<"getAllSessionsResponse">;
+  const activeSessionId = resp.data.activeSessionId;
+  const currentSessions = resp.data.sessions;
+
+  // load persisted session states if they exist
+  const preloadedSessionStateResults: Record<string, BaseSessionState> = {};
+  const persistedState = (vscode.getState() as RootState | undefined)?.sessions;
+  if (persistedState) {
+    for (const persistedSessionId of Object.keys(persistedState.sessionStates)) {
+      const currentSession = currentSessions.find((val) => val.id === persistedSessionId);
+      if (currentSession === undefined) {
+        // session was in the stored state, but was closed since then
+        continue;
+      }
+
+      const persistedSession = persistedState.sessionStates[persistedSessionId];
+      preloadedSessionStateResults[persistedSessionId] = {
+        ...persistedSession,
+        lastPause: currentSession.lastPause,
+      };
+    }
+  }
+
+  // now add all current sessions, with preloaded state if it exists
+  for (const currentSession of currentSessions) {
+    const preloadedSessionState: BaseSessionState | undefined = preloadedSessionStateResults[currentSession.id];
+    store.dispatch(addSession({
+      sessionEntity: currentSession satisfies SessionEntity,
+      preloadedState: preloadedSessionState ? preloadedSessionState : currentSession,
+    }));
+  }
+  store.dispatch(setCurrentSessionId({ sessionId: activeSessionId }));
+  store.dispatch(sessionsInitialized());
+}
+
 export const {
   addSession,
   removeSession,
-  setAllSessions,
+  sessionsInitialized,
   setCurrentSessionId,
 } = sessionsSlice.actions;
 export default sessionsSlice;

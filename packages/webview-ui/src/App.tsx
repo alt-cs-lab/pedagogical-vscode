@@ -2,7 +2,9 @@ import { useAppSelector } from "./hooks";
 
 import "./App.css";
 import "reactflow/dist/style.css";
-import { getSessionComponent } from "./features/sessions/sessionsSlice";
+import { getSessionComponent, setInitialSessionManagerState } from "./features/sessions/sessionsSlice";
+
+setInitialSessionManagerState();
 
 export default function App() {
   const currentSessionId = useAppSelector(
