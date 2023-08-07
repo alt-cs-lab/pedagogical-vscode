@@ -3,7 +3,6 @@ import { edgesAdapter, nodesAdapter } from "../../entities";
 import { Background, Controls, ReactFlow } from "reactflow";
 import { nodesChanged } from "./defaultActions";
 import { nodeTypes } from "../../../../components/nodes";
-import { BaseSessionState } from "../BaseSession";
 
 const DefaultFlow = (props: { sessionId: string }) => {
   const dispatch = useAppDispatch();
