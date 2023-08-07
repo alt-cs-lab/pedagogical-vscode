@@ -1,13 +1,12 @@
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
 import { edgesAdapter, nodesAdapter } from "../../entities";
-import { DefaultSessionState } from "./DefaultSession";
 import { Background, Controls, ReactFlow } from "reactflow";
 import { nodesChanged } from "./defaultActions";
 import { nodeTypes } from "../../../../components/nodes";
 
 const DefaultFlow = (props: { sessionId: string }) => {
   const dispatch = useAppDispatch();
-  const state = useAppSelector((state) => state[props.sessionId]) as DefaultSessionState;
+  const state = useAppSelector((state) => state.sessions.sessionStates[props.sessionId]);
 
   const nodeSelectors = nodesAdapter.getSelectors();
   const edgeSelectors = edgesAdapter.getSelectors();

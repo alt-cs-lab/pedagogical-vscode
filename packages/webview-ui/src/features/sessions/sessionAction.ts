@@ -1,4 +1,4 @@
-import { PayloadAction, createAction } from "@reduxjs/toolkit";
+import { AnyAction, PayloadAction, createAction } from "@reduxjs/toolkit";
 
 /**
  * An action for a session. This is a PayloadAction with `sessionId` in its `meta`.
@@ -10,14 +10,16 @@ export type SessionAction<
   P = void,
   T extends string = string,
   M = void,
-  E = never
+  E = void,
 > = PayloadAction<P, T, M & { sessionId: string; }, E>;
+
+type UnknownSessionAction = SessionAction<unknown, string, unknown, unknown>;
 
 /**
  * Returns an action creator that takes arguments for a sessionId and a payload.
  * The resulting action will have a `sessionId` in its `meta` property, which is required
  * by all session actions.
- * 
+ *
  * This is a helper method that calls `createAction` with a prepare function argument.
  * Use `createAction` manually if you want to customize the prepare function.
  */
@@ -32,4 +34,8 @@ export function createSessionAction<
       meta: { sessionId },
     }),
   );
+}
+
+export function isSessionAction(action: AnyAction): action is UnknownSessionAction {
+  return action.meta?.sessionId !== undefined;
 }

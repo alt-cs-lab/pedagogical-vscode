@@ -2,6 +2,7 @@ import * as esbuild from "esbuild";
 
 let ctx = await esbuild.context({
   entryPoints: ["src/index.tsx"],
+  format: "esm", // esm needed for top-level await
   outdir: "../../dist/webview-ui/assets",
   bundle: true,
   minify: true,

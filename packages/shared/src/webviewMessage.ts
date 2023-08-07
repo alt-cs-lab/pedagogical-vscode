@@ -8,7 +8,17 @@ type MessageData<T extends string, D> = {
   msgSeq?: number;
 };
 
-export type VsCodeMessage =
+type GetAllSessionsResponse = {
+  activeSessionId: string | null;
+  sessions: {
+    name: string,
+    type: string,
+    id: string,
+    lastPause: number,
+  }[];
+};
+
+type AnyVsCodeMessage =
   | MessageData<"debugRequest", { sessionId: string, req: DebugRequest }>
   | MessageData<"debugResponse", { sessionId: string, resp: DebugResponse }>
   | MessageData<"debugEvent", { sessionId: string, event: DebugEvent }>
@@ -16,7 +26,9 @@ export type VsCodeMessage =
   | MessageData<"sessionStartedEvent", Pick<DebugSession, "name" | "type" | "id">>
   | MessageData<"sessionStoppedEvent", { id: string }>
   | MessageData<"activeSessionChangedEvent", { id: string | null }>
+  | MessageData<"getAllSessionsRequest", void>
+  | MessageData<"getAllSessionsResponse", GetAllSessionsResponse>
   | MessageData<"showError", { msg: string | undefined }>;
 
-export type WebviewMessageType = VsCodeMessage["type"];
-export type WebviewMessageData = VsCodeMessage["data"];
+export type VsCodeMessageType = AnyVsCodeMessage["type"];
+export type VsCodeMessage<T extends VsCodeMessageType = VsCodeMessageType> = Extract<AnyVsCodeMessage, { type: T }>;

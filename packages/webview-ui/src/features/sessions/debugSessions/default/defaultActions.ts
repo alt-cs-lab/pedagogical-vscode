@@ -1,6 +1,7 @@
 import { NodeChange } from "reactflow";
 import { ThreadEntity, StackFrameEntity, ScopeEntity, VariablesEntity, NodeEntity, EdgeEntity } from "../../entities";
-import { createSessionAction } from "../sessionAction";
+import { createSessionAction } from "../../sessionAction";
+import { createAction } from "@reduxjs/toolkit";
 
 type SetAllDebugObjectsPayload = {
   threads: ThreadEntity[];
@@ -26,4 +27,20 @@ export const buildFlow = createSessionAction(
 
 export const nodesChanged = createSessionAction<{ changes: NodeChange[] }>(
   "session/nodesChanged",
+);
+
+export const updateLastPause = createAction(
+  "session/updateLastPause",
+  (sessionId: string) => ({
+    payload: { lastPause: Date.now() },
+    meta: { sessionId },
+  }),
+);
+
+export const updateLastFetch = createAction(
+  "session/updateLastFetch",
+  (sessionId: string) => ({
+    payload: { lastFetch: Date.now() },
+    meta: { sessionId },
+  }),
 );

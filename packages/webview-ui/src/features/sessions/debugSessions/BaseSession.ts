@@ -1,6 +1,19 @@
 import { FunctionComponent } from "react";
-import { Reducer } from "@reduxjs/toolkit";
+import { AnyAction, EntityState, Reducer } from "@reduxjs/toolkit";
 import { AppAddListener } from "../../../listenerMiddleware";
+import { ThreadEntity, StackFrameEntity, ScopeEntity, VariablesEntity, NodeEntity, EdgeEntity, edgesAdapter, nodesAdapter, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "../entities";
+
+export type BaseSessionState = {
+  name: string;
+  threads: EntityState<ThreadEntity>;
+  stackFrames: EntityState<StackFrameEntity>;
+  scopes: EntityState<ScopeEntity>;
+  variables: EntityState<VariablesEntity>;
+  nodes: EntityState<NodeEntity>;
+  edges: EntityState<EdgeEntity>;
+  lastPause: number;
+  lastFetch: number;
+};
 
 export default abstract class BaseSession {
   /**
@@ -13,7 +26,22 @@ export default abstract class BaseSession {
    * The initial state of a session.
    * This will be added to the root state as the value corresponding to the session id.
    */
-  abstract readonly initialState: unknown;
+  readonly initialState: BaseSessionState = {
+    name: "",
+    threads: threadsAdapter.getInitialState(),
+    stackFrames: stackFramesAdapter.getInitialState(),
+    scopes: scopesAdapter.getInitialState(),
+    variables: variablesAdapter.getInitialState(),
+    nodes: nodesAdapter.getInitialState(),
+    edges: edgesAdapter.getInitialState(),
+    lastPause: 0,
+    lastFetch: 0,
+  };
+
+  /**
+   * Whether this session should be fetched after initialization is complete
+   */
+  fetchAfterInitialize = false;
 
   /**
    * The reducer to use for a session.
@@ -23,7 +51,7 @@ export default abstract class BaseSession {
    * You can not reduce based on actions for other sessions. If you need to do that for some reason,
    * use a listener.
    */
-  abstract reducer: Reducer;
+  abstract reducer: Reducer<BaseSessionState, AnyAction>;
 
   /**
    * The react component that will be rendered whenever the debug session is active.
@@ -65,7 +93,13 @@ export default abstract class BaseSession {
    *
    * @param id debug session id given by vscode
    */
-  constructor(id: string) {
+  constructor(id: string, preloadedState?: Partial<BaseSessionState>) {
     this.id = id;
+    if (preloadedState) {
+      this.initialState = {
+        ...this.initialState,
+        ...preloadedState,
+      };
+    }
   }
 }

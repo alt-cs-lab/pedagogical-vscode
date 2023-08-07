@@ -1,7 +1,7 @@
 import { commands, debug, ExtensionContext } from "vscode";
 import { PedagogicalPanel } from "./panels/PedagogicalPanel";
 import { debugTrackerFactory } from "./debugTracker";
-import { DebugSessionController } from "./debugSessionController";
+import DebugSessionController from "./DebugSessionController";
 
 export function activate(context: ExtensionContext) {
   const disposables = [

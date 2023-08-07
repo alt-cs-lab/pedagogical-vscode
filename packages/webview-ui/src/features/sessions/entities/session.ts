@@ -3,7 +3,7 @@ import { createEntityAdapter } from "@reduxjs/toolkit";
 export type SessionEntity = {
   id: string;
   name: string;
-  debugType: string;
+  type: string;
 };
 
 export const sessionsAdapter = createEntityAdapter<SessionEntity>();

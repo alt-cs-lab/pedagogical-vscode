@@ -1,7 +1,7 @@
 import { DebugEvent, VsCodeMessage } from "shared";
 import { store } from "../store";
 import { messageController } from ".";
-import { addSession, removeSession, setCurrentSession } from "../features/sessions/sessionsSlice";
+import { addSession, removeSession, setCurrentSessionId } from "../features/sessions/sessionsSlice";
 import { debugEventAction } from "../features/sessions/debugEventActions";
 
 export function startMessageObserver() {
@@ -12,10 +12,10 @@ function messageObserver(msg: VsCodeMessage) {
   switch (msg.type) {
     case "sessionStartedEvent": {
       store.dispatch(addSession({
-        session: {
+        sessionEntity: {
           id: msg.data.id,
           name: msg.data.name,
-          debugType: msg.data.type,
+          type: msg.data.type,
         }
       }));
       return;
@@ -27,7 +27,7 @@ function messageObserver(msg: VsCodeMessage) {
     }
 
     case "activeSessionChangedEvent": {
-      store.dispatch(setCurrentSession({ sessionId: msg.data.id }));
+      store.dispatch(setCurrentSessionId({ sessionId: msg.data.id }));
       return;
     }
 
