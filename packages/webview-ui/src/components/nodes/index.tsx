@@ -5,12 +5,14 @@ export const nodeTypes = {
   ...commonNodeTypes
 };
 
-type NodeFrom<TypeName extends keyof typeof nodeTypes> = Node<
-  Parameters<(typeof nodeTypes)[TypeName]>[0]["data"],
-  TypeName
+export type NodeTypes = keyof typeof nodeTypes;
+
+type NodeFrom<Type extends NodeTypes = NodeTypes> = Node<
+  Parameters<(typeof nodeTypes)[Type]>[0]["data"],
+  Type
 >;
 
-export type PedagogNode = NodeFrom<keyof typeof nodeTypes>;
+export type PedagogNode<T extends NodeTypes = NodeTypes> = NodeFrom<T>;
 
 /** container used for stories */
 export const DebugNodeContainer = (props: PedagogNode) => {

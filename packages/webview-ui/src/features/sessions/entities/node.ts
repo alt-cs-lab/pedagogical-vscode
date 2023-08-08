@@ -1,7 +1,7 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
-import { PedagogNode } from "../../../components/nodes";
+import { NodeTypes, PedagogNode } from "../../../components/nodes";
 
-export type NodeEntity = PedagogNode;
+export type NodeEntity<T extends NodeTypes = NodeTypes> = PedagogNode<T>;
 
 export const nodesAdapter = createEntityAdapter<NodeEntity>();
 

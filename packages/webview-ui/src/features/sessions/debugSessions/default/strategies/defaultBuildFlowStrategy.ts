@@ -1,3 +1,4 @@
+import { ScopeData } from "../../../../../components/nodes/common/StackFrameNode";
 import { VariablesListItem } from "../../../../../components/nodes/common/VariablesList";
 import { NodeEntity, EdgeEntity, VariablesEntity, stackFrameSelectors, scopeSelectors, variableSelectors, nodeSelectors } from "../../../entities";
 import { BaseSessionState } from "../../BaseSession";
@@ -19,6 +20,17 @@ async function defaultBuildFlowStrategy(
 
   // start with stack frames and scopes
   for (const frame of stackFrameSelectors.selectAll(state.stackFrames)) {
+    const frameNode: NodeEntity<"commonStackFrame"> = {
+      type: "commonStackFrame",
+      id: `frame-${frame.id}`,
+      position: { x: xy, y: xy },
+      data: {
+        name: "Stack Frame: " + frame.name,
+        scopes: []
+      },
+    };
+    xy += 30;
+
     for (const scopeId of frame.scopeIds) {
       const scope = scopeSelectors.selectById(state.scopes, scopeId);
       if (scope === undefined) {
@@ -29,14 +41,54 @@ async function defaultBuildFlowStrategy(
         state.variables,
         scope.variablesReference
       );
-      if (variablesEntity) {
-        variableNodesToAdd.push({
-          entity: variablesEntity,
-          type: `Stack Frame: ${frame.name} (${scope.name})`
-        });
+      
+      if (variablesEntity === undefined) {
+        continue;
       }
+      
+      const scopeData: ScopeData = {
+        name: frame.scopeIds.length > 1 ? scope.name : undefined,
+        items: [],
+      };
+
+      // create items for variables
+      for (const childVar of variablesEntity.variables) {
+        const childVarEntity = childVar.variablesReference > 0
+          ? variableSelectors.selectByReference(
+            state.variables,
+            childVar.variablesReference
+          )
+          : undefined;
+        
+        const handleId = `${scope.name}[${childVar.name}]`;
+        scopeData.items.push({
+          name: childVar.name,
+          value: childVar.value,
+          showHandle: childVarEntity !== undefined,
+          handleId: handleId
+        });
+
+        // create edge to another node if there is a childVarEntity
+        // create edge from the handle to the childVar's node
+        if (childVarEntity) {
+          const edge: EdgeEntity = {
+            id: edgeId(frameNode.id, handleId, childVarEntity.pedagogId),
+            source: frameNode.id,
+            sourceHandle: handleId,
+            target: childVarEntity.pedagogId,
+          };
+          edges.push(edge);
+  
+          // add childVar to the queue of variable nodes to add
+          variableNodesToAdd.push({ entity: childVarEntity, type: childVar.type });
+        }
+      }
+      frameNode.data.scopes.push(scopeData);
     }
+    nodes.push(frameNode);
   }
+
+  xy = 0;
 
   while (variableNodesToAdd.length > 0) {
     const variable = variableNodesToAdd.shift();
@@ -84,36 +136,32 @@ async function defaultBuildFlowStrategy(
       variableIdsAdded.add(variable.entity.pedagogId);
     }
 
-    // if we already have a node with this id, update it
-    // otherwise, create a new one
-    const nodeId = variable.entity.pedagogId;
-    const existingNode = nodeSelectors.selectById(state.nodes, nodeId);
-    let node: NodeEntity;
-    if (existingNode) {
-      node = {
-        ...existingNode,
-        data: {
-          type: variable.type,
-          variablesListItems,
-        }
-      };
-    } else {
-      node = {
+    const node: NodeEntity = {
         type: "commonVariables",
         data: {
           type: variable.type,
           variablesListItems,
         },
         id: variable.entity.pedagogId,
-        position: { x: xy, y: xy },
+        position: { x: xy+300, y: xy },
       };
-      xy += 20;
-    }
+      xy += 30;
     nodes.push(node);
   }
 
+  // keep position (and other data) of original nodes if they existed
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    const existingNode = nodeSelectors.selectById(state.nodes, node.id);
+    if (existingNode) {
+      nodes[i] = {
+        ...existingNode,
+        data: node.data,
+      };
+    }
+  }
+
   return { nodes, edges };
-  // api.dispatch(setAllFlowObjects(session.id, session.debugType, { nodes, edges }));
 }
 
 export default defaultBuildFlowStrategy;
