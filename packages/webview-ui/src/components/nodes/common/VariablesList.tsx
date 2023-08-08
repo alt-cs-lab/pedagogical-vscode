@@ -6,6 +6,7 @@ export type VariablesListItem = {
   name: string;
   value: string;
   showHandle: boolean;
+  handleId?: string;
 };
 
 type VariablesListProps = {
@@ -25,7 +26,7 @@ export const VariablesList = (props: VariablesListProps) => {
                   className="variables-item-handle"
                   type="source"
                   position={Position.Right}
-                  id={item.name}
+                  id={item.handleId ? item.handleId : item.name}
                 />
               ) : (
                 <code className="variables-item-value">{item.value}</code>

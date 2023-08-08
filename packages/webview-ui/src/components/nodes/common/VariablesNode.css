@@ -1,20 +1,3 @@
-.variables-node {
-  border: 2px solid var(--vscode-widget-border);
-  border-radius: 10px;
-  background-color: var(--vscode-panel-background);
-  min-width: 80px;
-  min-height: 20px;
-}
-
-.selected > .variables-node {
-  border-color: var(--vscode-focusBorder);  
-}
-
-.variables-node-type {
-  font-weight: bold;
-  margin: 5px 10px;
-}
-
 .variables-node-handle {
   left: 0 !important;
   opacity: 0;

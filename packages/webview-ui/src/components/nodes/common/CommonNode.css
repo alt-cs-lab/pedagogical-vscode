@@ -1,0 +1,21 @@
+.common-node {
+  border: 2px solid var(--vscode-widget-border);
+  border-radius: 10px;
+  background-color: var(--vscode-panel-background);
+  min-width: 80px;
+  min-height: 20px;
+}
+
+.selected > .common-node {
+  border-color: var(--vscode-focusBorder);
+}
+
+.common-node-header {
+  font-weight: bold;
+  margin: 5px 10px;
+}
+
+hr {
+  border-style: solid;
+  margin-bottom: 0
+}
