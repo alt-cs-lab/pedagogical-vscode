@@ -25,6 +25,10 @@ export const buildFlow = createSessionAction(
   "session/buildFlow",
 );
 
+export const layoutNodes = createSessionAction(
+  "session/layoutNodes",
+);
+
 export const nodesChanged = createSessionAction<{ changes: NodeChange[] }>(
   "session/nodesChanged",
 );

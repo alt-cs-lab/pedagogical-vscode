@@ -55,6 +55,11 @@ export default class DefaultSession extends BaseSession {
       matcher: matcherWithId(this.id, defaultActions.buildFlow.match),
       effect: (act, api) => this.buildFlowEffect(act, api),
     }),
+
+    addListener({
+      matcher: matcherWithId(this.id, defaultActions.layoutNodes.match),
+      effect: (act, api) => this.layoutNodesEffect(act, api),
+    }),
   ];
 
   constructor(id: string, initialState?: BaseSessionState) {
@@ -70,8 +75,8 @@ export default class DefaultSession extends BaseSession {
   debuggerStoppedEffect: AppListenerEffect = async (_action, api) => {
     api.dispatch(defaultActions.updateLastPause(this.id));
     const payload = await this.strategies.fetchSession(this.id, this.strategies);
-    api.dispatch(defaultActions.updateLastFetch(this.id));
     api.dispatch(defaultActions.setAllDebugObjects(this.id, payload));
+    api.dispatch(defaultActions.updateLastFetch(this.id));
     api.dispatch(defaultActions.buildFlow(this.id));
   };
 
@@ -79,6 +84,12 @@ export default class DefaultSession extends BaseSession {
     const state = api.getState().sessions.sessionStates[this.id];
     const { nodes, edges } = await this.strategies.buildFlow(state);
     api.dispatch(defaultActions.setAllFlowObjects(this.id, { nodes, edges }));
+  };
+
+  layoutNodesEffect: AppListenerEffect = async (_action, api) => {
+    const state = api.getState().sessions.sessionStates[this.id];
+    const changes = this.strategies.layoutFlow(state);
+    api.dispatch(defaultActions.nodesChanged(this.id, { changes }));
   };
   //#endregion listener effects
 }

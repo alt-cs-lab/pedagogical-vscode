@@ -2061,6 +2061,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dagrejs/dagre@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@dagrejs/dagre@npm:1.0.2"
+  dependencies:
+    "@dagrejs/graphlib": 2.1.13
+  checksum: 6146ced6f8e946e83aeba8085967786c9c4e4fadbc94cfb2a6c48007cb8238e0c91e8a4385a7268bd4a5a55050fb2ac2f96d446ccd88de0f4d00a4970a9c2631
+  languageName: node
+  linkType: hard
+
+"@dagrejs/graphlib@npm:2.1.13":
+  version: 2.1.13
+  resolution: "@dagrejs/graphlib@npm:2.1.13"
+  checksum: 7d0732f78675ea1c25e54ad1fb2dcd3b8784705faba328bd44def6f372140197ccdf546d75c33db05555da9b288a00d67f34317215f64233b89e9e59bd79596a
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:^0.5.3":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -15016,6 +15032,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "webview-ui@workspace:packages/webview-ui"
   dependencies:
+    "@dagrejs/dagre": ^1.0.2
     "@redux-devtools/cli": ^2.0.0
     "@redux-devtools/remote": ^0.8.0
     "@reduxjs/toolkit": ^1.9.5

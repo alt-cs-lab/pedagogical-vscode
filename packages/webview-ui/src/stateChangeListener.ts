@@ -14,8 +14,7 @@ export function startStateChangedListener(middleware: AppListenerMiddlewareInsta
         await api.delay(50);
         vscode.setState(api.getState());
       } catch (e) {
-        console.log("listener cancelled!");
-        // nothing
+        // listener was cancelled, do nothing
       }
     }
   });

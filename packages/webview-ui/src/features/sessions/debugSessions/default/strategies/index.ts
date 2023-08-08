@@ -4,6 +4,7 @@ import defaultFetchSessionStrategy from "./defaultFetchSessionStrategy";
 import defaultFetchStackTraceStrategy from "./defaultFetchStackTraceStrategy";
 import defaultFetchThreadsStrategy from "./defaultFetchThreadsStrategy";
 import defaultFetchVariablesStrategy from "./defaultFetchVariablesStrategy";
+import defaultLayoutNodesStrategy from "./defaultLayoutFlowStrategy";
 
 export type DebugSessionStrategies = typeof defaultStrategies;
 
@@ -14,6 +15,7 @@ const defaultStrategies = {
   fetchVariables: defaultFetchVariablesStrategy,
   fetchSession: defaultFetchSessionStrategy,
   buildFlow: defaultBuildFlowStrategy,
+  layoutFlow: defaultLayoutNodesStrategy,
 };
 
 export default defaultStrategies;
