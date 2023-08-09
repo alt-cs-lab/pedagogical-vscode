@@ -2,6 +2,7 @@ import { NodeProps } from "reactflow";
 import { VariablesList, VariablesListItem } from "./VariablesList";
 
 import "./CommonNode.css";
+import "./StackFrameNode.css";
 
 export type StackFrameData = {
   name: string;
@@ -15,7 +16,7 @@ export type ScopeData = {
 
 export default function StackFrameNode(props: NodeProps<StackFrameData>) {
   return (
-    <div className="common-node">
+    <div className="common-node stack-frame-node">
       <div className="common-node-header">{props.data.name}</div>
       {props.data.scopes.map((scopeData) => (
         <>

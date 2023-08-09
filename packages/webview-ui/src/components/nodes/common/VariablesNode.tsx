@@ -11,7 +11,7 @@ export type VariablesData = {
 
 export default function VariablesNode(props: NodeProps<VariablesData>) {
   return (
-    <div className="common-node">
+    <div className="common-node variables-node">
       <div className="common-node-header">{props.data.type}</div>
       <Handle
         className="variables-node-handle"
