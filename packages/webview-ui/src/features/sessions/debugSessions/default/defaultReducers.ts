@@ -28,6 +28,20 @@ export const nodesChangedReducer: CR<typeof defaultActions.nodesChanged> = (stat
   nodesAdapter.setAll(state.nodes, changedNodes as PedagogNode[]);
 };
 
+export const layoutNodesDoneReducer: CR<typeof defaultActions.layoutNodesDone> = (state, action) => {
+  const changedNodes = applyNodeChanges(action.payload.changes, nodeSelectors.selectAll(state.nodes)) as PedagogNode[];
+  
+  // set isLayouted before setting node state
+  // can't add properties to the changed node so we need to copy it first with map
+  nodesAdapter.setAll(state.nodes, changedNodes.map((node) => ({
+    ...node,
+    data: {
+      ...node.data,
+      isLayouted: true,
+    }
+  })));
+};
+
 export const updateLastStopReducer: CR<typeof defaultActions.updateLastPause> = (state, action) => {
   state.lastPause = action.payload.lastPause;
 };

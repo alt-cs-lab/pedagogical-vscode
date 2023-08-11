@@ -1,5 +1,6 @@
 import { Node } from "reactflow";
 import { commonNodeTypes } from "./common";
+import { BaseNodeData } from "./base";
 
 export const nodeTypes = {
   ...commonNodeTypes
@@ -7,10 +8,10 @@ export const nodeTypes = {
 
 export type NodeTypes = keyof typeof nodeTypes;
 
-type NodeFrom<Type extends NodeTypes = NodeTypes> = Node<
-  Parameters<(typeof nodeTypes)[Type]>[0]["data"],
-  Type
->;
+type NodeFrom<
+  Type extends NodeTypes = NodeTypes,
+  NodeData extends BaseNodeData = Parameters<(typeof nodeTypes)[Type]>[0]["data"],
+> = Node<NodeData, Type>;
 
 export type PedagogNode<T extends NodeTypes = NodeTypes> = NodeFrom<T>;
 

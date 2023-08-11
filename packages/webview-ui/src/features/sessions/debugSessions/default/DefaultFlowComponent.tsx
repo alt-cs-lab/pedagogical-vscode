@@ -8,20 +8,7 @@ import {
 } from "reactflow";
 import { layoutNodes, nodesChanged } from "./defaultActions";
 import { nodeTypes } from "../../../../components/nodes";
-import { useEffect, useLayoutEffect } from "react";
-
-// helper component that triggers a callback when react nodes are initialized
-const NodesInitializedHelper = (props: { onNodesInitialized: () => void }) => {
-  const nodesInitialized = useNodesInitialized({
-    includeHiddenNodes: false,
-  });
-  useEffect(() => {
-    if (nodesInitialized) {
-      props.onNodesInitialized();
-    }
-  }, [nodesInitialized]);
-  return <></>;
-};
+import { useEffect } from "react";
 
 const DefaultFlow = (props: { sessionId: string }) => {
   const dispatch = useAppDispatch();
@@ -35,13 +22,12 @@ const DefaultFlow = (props: { sessionId: string }) => {
   const nodes = nodeSelectors.selectAll(state.nodes);
   const edges = edgeSelectors.selectAll(state.edges);
 
-  useLayoutEffect(() => {
-    dispatch(layoutNodes(props.sessionId));
-  }, [state.lastFetch]);
-
-  function onNodesInitialized() {
-    dispatch(layoutNodes(props.sessionId));
-  }
+  const nodesInitialized = useNodesInitialized({ includeHiddenNodes: false });
+  useEffect(() => {
+    if (nodesInitialized) {
+      dispatch(layoutNodes(props.sessionId));
+    }
+  }, [nodesInitialized]);
 
   return (
     <ReactFlow
@@ -52,7 +38,6 @@ const DefaultFlow = (props: { sessionId: string }) => {
       }
       nodeTypes={nodeTypes}
     >
-      <NodesInitializedHelper onNodesInitialized={onNodesInitialized} />
       <Background />
       <Controls />
     </ReactFlow>

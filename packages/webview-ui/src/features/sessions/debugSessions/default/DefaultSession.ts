@@ -29,6 +29,11 @@ export default class DefaultSession extends BaseSession {
       defaultReducers.nodesChangedReducer,
     );
 
+    builder.addCase(
+      defaultActions.layoutNodesDone,
+      defaultReducers.layoutNodesDoneReducer,
+    );
+
     // update last stop and last fetch
     builder.addCase(defaultActions.updateLastPause, (state, action) => {
       state.lastPause = action.payload.lastPause;
@@ -87,9 +92,10 @@ export default class DefaultSession extends BaseSession {
   };
 
   layoutNodesEffect: AppListenerEffect = async (_action, api) => {
+    api.cancelActiveListeners();
     const state = api.getState().sessions.sessionStates[this.id];
-    const changes = this.strategies.layoutFlow(state);
-    api.dispatch(defaultActions.nodesChanged(this.id, { changes }));
+    const changes = await this.strategies.layoutFlow(state);
+    api.dispatch(defaultActions.layoutNodesDone(this.id, { changes }));
   };
   //#endregion listener effects
 }

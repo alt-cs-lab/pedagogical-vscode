@@ -23,7 +23,7 @@ export const Variables: Story = {
   args: {
     type: "commonVariables",
     data: {
-      type: "MyVariableType",
+      name: "MyVariableType",
       variablesListItems: [
         {
           name: "i",

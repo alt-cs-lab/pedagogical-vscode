@@ -2061,22 +2061,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dagrejs/dagre@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@dagrejs/dagre@npm:1.0.2"
-  dependencies:
-    "@dagrejs/graphlib": 2.1.13
-  checksum: 6146ced6f8e946e83aeba8085967786c9c4e4fadbc94cfb2a6c48007cb8238e0c91e8a4385a7268bd4a5a55050fb2ac2f96d446ccd88de0f4d00a4970a9c2631
-  languageName: node
-  linkType: hard
-
-"@dagrejs/graphlib@npm:2.1.13":
-  version: 2.1.13
-  resolution: "@dagrejs/graphlib@npm:2.1.13"
-  checksum: 7d0732f78675ea1c25e54ad1fb2dcd3b8784705faba328bd44def6f372140197ccdf546d75c33db05555da9b288a00d67f34317215f64233b89e9e59bd79596a
-  languageName: node
-  linkType: hard
-
 "@discoveryjs/json-ext@npm:^0.5.3":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -7993,6 +7977,13 @@ __metadata:
   bin:
     electron: cli.js
   checksum: b7e9a4786a86ba0a51e34c405d4101cd4446f43a6ee042df272b4f117a7691b3389c06070cb384cbb91facfc623bc186a4562a60ab04e6aec8b071de1fb6c89c
+  languageName: node
+  linkType: hard
+
+"elkjs@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "elkjs@npm:0.8.2"
+  checksum: ed615c485fa4ac1e858af509df24fdc9f61f2c6576df5f79f6a31c733fda69f235f53cd36af037aa9d2b8a935cb4f823fbd89d784b67f6e51be5100306ea1b39
   languageName: node
   linkType: hard
 
@@ -15032,7 +15023,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "webview-ui@workspace:packages/webview-ui"
   dependencies:
-    "@dagrejs/dagre": ^1.0.2
     "@redux-devtools/cli": ^2.0.0
     "@redux-devtools/remote": ^0.8.0
     "@reduxjs/toolkit": ^1.9.5
@@ -15049,6 +15039,7 @@ __metadata:
     "@types/react-dom": ^18.2.4
     "@types/vscode-webview": ^1.57.0
     "@vscode/webview-ui-toolkit": ^1.2.2
+    elkjs: ^0.8.2
     esbuild: 0.18.2
     prop-types: ^15.8.1
     react: ^18.2.0

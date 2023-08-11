@@ -12,14 +12,18 @@ let ctx = await esbuild.context({
     global: "window",
   },
   logLevel: "info",
+  external: ["web-worker"], // needed because of elkjs
 });
 
 switch (process.argv[2]) {
   case "watch":
     ctx.watch();
     break;
+
   case "build" | undefined:
     ctx.rebuild();
+    break;
+
   default:
     console.error(`unknown command: ${process.argv[2]}`);
     process.exit(1);

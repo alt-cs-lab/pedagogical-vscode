@@ -3,16 +3,16 @@ import { VariablesList, VariablesListItem } from "./VariablesList";
 
 import "./CommonNode.css";
 import "./VariablesNode.css";
+import { BaseNodeData } from "../base";
 
-export type VariablesData = {
-  type?: string;
+export type VariablesData = BaseNodeData & {
   variablesListItems: VariablesListItem[];
 };
 
 export default function VariablesNode(props: NodeProps<VariablesData>) {
   return (
     <div className="common-node variables-node">
-      <div className="common-node-header">{props.data.type}</div>
+      <div className="common-node-header">{props.data.name}</div>
       <Handle
         className="variables-node-handle"
         position={Position.Left}

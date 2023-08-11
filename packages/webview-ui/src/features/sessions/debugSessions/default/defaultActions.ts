@@ -29,6 +29,10 @@ export const layoutNodes = createSessionAction(
   "session/layoutNodes",
 );
 
+export const layoutNodesDone = createSessionAction<{ changes: NodeChange[] }>(
+  "session/layoutNodesDone",
+);
+
 export const nodesChanged = createSessionAction<{ changes: NodeChange[] }>(
   "session/nodesChanged",
 );

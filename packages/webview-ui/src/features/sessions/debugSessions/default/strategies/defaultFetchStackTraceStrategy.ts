@@ -22,6 +22,9 @@ async function defaultFetchStackTraceStrategy(
       frame.presentationHint !== "subtle" &&
       frame.presentationHint !== "label"
   );
+
+  // the root of the stack is at the end of the array, but we want it at the beginning
+  frames.reverse();
   return toStackFrameEntities(threadId, frames);
 }
 

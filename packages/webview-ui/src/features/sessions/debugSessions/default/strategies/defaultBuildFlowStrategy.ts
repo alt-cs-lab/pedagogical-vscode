@@ -16,20 +16,17 @@ async function defaultBuildFlowStrategy(
   const variableNodesToAdd: { entity: VariablesEntity, type: string | undefined }[] = [];
   const variableIdsAdded = new Set<string>();
 
-  let xy = 0;
-
   // start with stack frames and scopes
   for (const frame of stackFrameSelectors.selectAll(state.stackFrames)) {
     const frameNode: NodeEntity<"commonStackFrame"> = {
       type: "commonStackFrame",
       id: `frame-${frame.id}`,
-      position: { x: xy, y: xy },
+      position: { x: 0, y: 0 },
       data: {
         name: "Stack Frame: " + frame.name,
-        scopes: []
+        scopes: [],
       },
     };
-    xy += 30;
 
     for (const scopeId of frame.scopeIds) {
       const scope = scopeSelectors.selectById(state.scopes, scopeId);
@@ -88,8 +85,6 @@ async function defaultBuildFlowStrategy(
     nodes.push(frameNode);
   }
 
-  xy = 0;
-
   while (variableNodesToAdd.length > 0) {
     const variable = variableNodesToAdd.shift();
 
@@ -139,13 +134,12 @@ async function defaultBuildFlowStrategy(
     const node: NodeEntity = {
         type: "commonVariables",
         data: {
-          type: variable.type,
+          name: variable.type,
           variablesListItems,
         },
         id: variable.entity.pedagogId,
-        position: { x: xy+300, y: xy },
+        position: { x: 0, y: 0 },
       };
-      xy += 30;
     nodes.push(node);
   }
 

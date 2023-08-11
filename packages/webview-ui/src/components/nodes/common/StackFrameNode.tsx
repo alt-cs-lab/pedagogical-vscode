@@ -3,9 +3,9 @@ import { VariablesList, VariablesListItem } from "./VariablesList";
 
 import "./CommonNode.css";
 import "./StackFrameNode.css";
+import { BaseNodeData } from "../base";
 
-export type StackFrameData = {
-  name: string;
+export type StackFrameData = BaseNodeData & {
   scopes: ScopeData[];
 };
 
