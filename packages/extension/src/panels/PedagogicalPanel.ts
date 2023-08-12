@@ -175,6 +175,7 @@ export class PedagogicalPanel {
   /** Forward a request from the webview to the DebugSessionController */
   private _handleDebugRequest(sessionId: string, req: DebugRequest, msgSeq?: number) {
     DebugSessionController.sendDebugRequest(sessionId, req).then((resp) => {
+      console.log(resp);
       this._postWebviewMessage({ type: "debugResponse", msgSeq, data: { sessionId, resp } });
     }).catch(() => {
       this._postWebviewMessage({ type: "debugError", msgSeq, data: {} });

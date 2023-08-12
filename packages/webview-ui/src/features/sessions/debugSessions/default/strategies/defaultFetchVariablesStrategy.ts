@@ -34,8 +34,10 @@ export default async function defaultFetchVariablesStrategy(
 
     // add child variables to queue
     // ignore refs we've already fetched and refs that are zero
+    // also ignore variables marked as lazy
     refsToFetch.push(
       ...entity.variables
+        .filter(($var) => $var.presentationHint?.lazy !== true)
         .map(($var) => $var.variablesReference)
         .filter((val) => val > 0 && refsFetched.indexOf(val) === -1)
     );

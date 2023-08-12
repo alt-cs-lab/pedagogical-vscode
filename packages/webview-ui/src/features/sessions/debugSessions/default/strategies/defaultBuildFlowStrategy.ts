@@ -30,30 +30,29 @@ async function defaultBuildFlowStrategy(
 
     for (const scopeId of frame.scopeIds) {
       const scope = scopeSelectors.selectById(state.scopes, scopeId);
-      if (scope === undefined) {
-        continue;
-      }
-
+      if (!scope) { continue; }
       const variablesEntity = variableSelectors.selectByReference(
         state.variables,
         scope.variablesReference
       );
       
-      if (variablesEntity === undefined) {
-        continue;
-      }
-      
       const scopeData: ScopeData = {
         name: frame.scopeIds.length > 1 ? scope.name : undefined,
-        items: [],
+        lazy: scope.expensive,
       };
+      frameNode.data.scopes.push(scopeData);
+
+      if (!variablesEntity) {
+        continue;
+      }
 
       // create items for variables
+      scopeData.items = [];
       for (const childVar of variablesEntity.variables) {
         const childVarEntity = childVar.variablesReference > 0
           ? variableSelectors.selectByReference(
             state.variables,
-            childVar.variablesReference
+            childVar.variablesReference,
           )
           : undefined;
         
@@ -61,8 +60,9 @@ async function defaultBuildFlowStrategy(
         scopeData.items.push({
           name: childVar.name,
           value: childVar.value,
+          lazy: childVar.presentationHint?.lazy,
           showHandle: childVarEntity !== undefined,
-          handleId: handleId
+          handleId: handleId,
         });
 
         // create edge to another node if there is a childVarEntity
@@ -80,7 +80,6 @@ async function defaultBuildFlowStrategy(
           variableNodesToAdd.push({ entity: childVarEntity, type: childVar.type });
         }
       }
-      frameNode.data.scopes.push(scopeData);
     }
     nodes.push(frameNode);
   }
@@ -100,6 +99,7 @@ async function defaultBuildFlowStrategy(
       const variablesListItem: VariablesListItem = {
         name: childVar.name,
         value: childVar.value,
+        lazy: childVar.presentationHint?.lazy,
         showHandle: false,
       };
 

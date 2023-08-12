@@ -16,7 +16,6 @@ class DebugTracker implements vscode.DebugAdapterTracker {
   }
 
   onDidSendMessage(message: DebugProtocol.ProtocolMessage) {
-    console.log(message);
     if (message.type === "event") {
       DebugSessionController.notifyEvent(this.session, message as unknown as DebugEvent);
     }

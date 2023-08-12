@@ -11,7 +11,8 @@ export type StackFrameData = BaseNodeData & {
 
 export type ScopeData = {
   name?: string;
-  items: VariablesListItem[];
+  lazy?: boolean;
+  items?: VariablesListItem[];
 };
 
 export default function StackFrameNode(props: NodeProps<StackFrameData>) {
@@ -25,7 +26,12 @@ export default function StackFrameNode(props: NodeProps<StackFrameData>) {
             {scopeData.name ? (
               <div className="common-node-header">{scopeData.name}</div>
             ) : null}
-            <VariablesList items={scopeData.items} />
+            {scopeData.lazy ? (
+              <div>(lazy)</div>
+            ) : null}
+            {scopeData.items ? (
+              <VariablesList items={scopeData.items} />
+            ) : null}
           </div>
         </>
       ))}

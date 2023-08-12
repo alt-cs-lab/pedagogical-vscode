@@ -77,9 +77,13 @@ export default class DefaultSession extends BaseSession {
   strategies = defaultStrategies;
 
   //#region listener effects
-  debuggerStoppedEffect: AppListenerEffect = async (_action, api) => {
+  debuggerStoppedEffect: AppListenerEffect = async (action, api) => {
     api.dispatch(defaultActions.updateLastPause(this.id));
-    const payload = await this.strategies.fetchSession(this.id, this.strategies);
+    let stoppedThread: number | undefined;
+    if (debugEventAction.stopped.match(action)) {
+      stoppedThread = action.payload.body.threadId;
+    }
+    const payload = await this.strategies.fetchSession(this.id, this.strategies, stoppedThread);
     api.dispatch(defaultActions.setAllDebugObjects(this.id, payload));
     api.dispatch(defaultActions.updateLastFetch(this.id));
     api.dispatch(defaultActions.buildFlow(this.id));
