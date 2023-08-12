@@ -1,3 +1,8 @@
 .stack-frame-node {
-    border-color: var(--vscode-charts-orange);
+  border-color: var(--vscode-charts-orange);
+}
+
+.stack-frame-scope {
+  margin: 10px;
+  border: 1px solid var(--vscode-widget-border);
 }

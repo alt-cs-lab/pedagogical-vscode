@@ -1,12 +1,12 @@
 import { NodeProps, Handle, Position } from "reactflow";
 import { VariablesList, VariablesListItem } from "./VariablesList";
+import { BaseNodeData } from "../base";
 
 import "./CommonNode.css";
 import "./VariablesNode.css";
-import { BaseNodeData } from "../base";
 
 export type VariablesData = BaseNodeData & {
-  variablesListItems: VariablesListItem[];
+  items: VariablesListItem[];
 };
 
 export default function VariablesNode(props: NodeProps<VariablesData>) {
@@ -18,8 +18,7 @@ export default function VariablesNode(props: NodeProps<VariablesData>) {
         position={Position.Left}
         type="target"
       />
-      <hr />
-      <VariablesList items={props.data.variablesListItems} />
+      <VariablesList items={props.data.items} />
     </div>
   );
 }

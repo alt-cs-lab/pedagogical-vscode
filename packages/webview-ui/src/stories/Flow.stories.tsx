@@ -11,8 +11,7 @@ export const Flow: StoryObj<typeof ReactFlow> = {
   render: () => (
     <div style={{ height: "100vh" }}>
       <ReactFlow>
-        <Background id="1" gap={10} color="#f1f1f1" variant={BackgroundVariant.Lines} />
-        <Background id="2" gap={100} offset={1} color="#ccc" variant={BackgroundVariant.Lines} />
+        <Background variant={BackgroundVariant.Dots} />
         <Controls />
       </ReactFlow>
     </div>

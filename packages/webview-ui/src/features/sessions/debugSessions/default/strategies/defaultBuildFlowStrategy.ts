@@ -1,3 +1,4 @@
+import { MarkerType } from "reactflow";
 import { ScopeData } from "../../../../../components/nodes/common/StackFrameNode";
 import { VariablesListItem } from "../../../../../components/nodes/common/VariablesList";
 import { NodeEntity, EdgeEntity, VariablesEntity, stackFrameSelectors, scopeSelectors, variableSelectors, nodeSelectors } from "../../../entities";
@@ -73,6 +74,11 @@ async function defaultBuildFlowStrategy(
             source: frameNode.id,
             sourceHandle: handleId,
             target: childVarEntity.pedagogId,
+            markerEnd: {
+              type: MarkerType.Arrow,
+              height: 20,
+              width: 20,
+            }
           };
           edges.push(edge);
   
@@ -93,7 +99,13 @@ async function defaultBuildFlowStrategy(
     }
 
     const variablesListItems: VariablesListItem[] = [];
-    const childVars = variable.entity.variables;
+    let childVars = variable.entity.variables;
+
+    // TODO: this only works for python
+    const isArrayLike = variable.type === "list" || variable.type === "array" || variable.type === "tuple";
+    if (isArrayLike) {
+      childVars = childVars.filter(($var) => $var.evaluateName?.endsWith("]"));
+    }
 
     for (const childVar of childVars) {
       const variablesListItem: VariablesListItem = {
@@ -120,6 +132,11 @@ async function defaultBuildFlowStrategy(
           source: variable.entity.pedagogId,
           sourceHandle: childVar.name,
           target: childVarEntity.pedagogId,
+          markerEnd: {
+            type: MarkerType.Arrow,
+            height: 20,
+            width: 20,
+          }
         };
         edges.push(edge);
 
@@ -132,10 +149,10 @@ async function defaultBuildFlowStrategy(
     }
 
     const node: NodeEntity = {
-        type: "commonVariables",
+        type: isArrayLike ? "commonArray" : "commonVariables",
         data: {
           name: variable.type,
-          variablesListItems,
+          items: variablesListItems,
         },
         id: variable.entity.pedagogId,
         position: { x: 0, y: 0 },

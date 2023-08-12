@@ -21,8 +21,7 @@ export default function StackFrameNode(props: NodeProps<StackFrameData>) {
       <div className="common-node-header">{props.data.name}</div>
       {props.data.scopes.map((scopeData) => (
         <>
-          <hr />
-          <div className="stack-frame-scope" key={scopeData.name}>
+          <div className="common-node stack-frame-scope" key={scopeData.name}>
             {scopeData.name ? (
               <div className="common-node-header">{scopeData.name}</div>
             ) : null}

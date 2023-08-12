@@ -24,7 +24,7 @@ export const Variables: Story = {
     type: "commonVariables",
     data: {
       name: "MyVariableType",
-      variablesListItems: [
+      items: [
         {
           name: "i",
           value: "2",
@@ -44,6 +44,37 @@ export const Variables: Story = {
           name: "more_nums",
           value: "[2, 3, 4, 5]",
           showHandle: true,
+        },
+      ],
+    },
+  },
+};
+
+export const Array: Story = {
+  args: {
+    type: "commonArray",
+    data: {
+      name: "MyVariableType",
+      items: [
+        {
+          name: "0",
+          value: "10",
+          showHandle: false,
+        },
+        {
+          name: "1",
+          value: '"Hello!"',
+          showHandle: false,
+        },
+        {
+          name: "2",
+          value: 'true',
+          showHandle: true,
+        },
+        {
+          name: "3",
+          value: "None",
+          showHandle: false,
         },
       ],
     },

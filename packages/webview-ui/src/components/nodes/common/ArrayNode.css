@@ -1,0 +1,30 @@
+.array-list {
+  display: flex;
+}
+
+.array-cell {
+  border-right: 2px solid var(--vscode-tree-indentGuidesStroke);
+  min-width: 35px;
+  width: max-content;
+  position: relative;
+}
+
+.array-cell:last-child {
+  border-right: none;
+}
+
+.array-item-index {
+  font-family: var(--vscode-editor-font-family);
+  color: var(--vscode-debugTokenExpression-name);
+  margin-left: 1px;
+}
+
+.array-item-value {
+  margin: 5px 15px 10px;
+  font-family: var(--vscode-editor-font-family);
+  color: var(--vscode-debugTokenExpression-value);
+}
+
+.array-cell > .common-handle {
+  bottom: -7px !important;
+}

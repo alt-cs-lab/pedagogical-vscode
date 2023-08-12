@@ -10,6 +10,8 @@ import { layoutNodes, nodesChanged } from "./defaultActions";
 import { nodeTypes } from "../../../../components/nodes";
 import { useEffect } from "react";
 
+import "./DefaultFlowComponent.css";
+
 const DefaultFlow = (props: { sessionId: string }) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector(

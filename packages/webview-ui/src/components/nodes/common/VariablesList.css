@@ -41,9 +41,6 @@
   position: relative;
 }
 
-.variables-item-handle {
-  width: 10px !important;
-  height: 10px !important;
+.variables-item-handle-container > .common-handle {
   right: -7px !important;
-  background-color: #512888 !important;
 }

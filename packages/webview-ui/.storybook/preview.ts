@@ -14,7 +14,7 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      values: [{ name: "default", value: "#181818" }],
+      values: [{ name: "editor background default", value: "#1f1f1f" }],
     },
   },
 };

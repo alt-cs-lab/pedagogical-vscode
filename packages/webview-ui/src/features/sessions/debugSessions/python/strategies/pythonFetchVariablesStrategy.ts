@@ -25,7 +25,8 @@ export default async function pythonFetchVariablesStrategy(
 
     // for now, filter out "[special/function/class] variables"
     entity.variables = entity.variables.filter(
-      (variable) => !variable.name.endsWith(" variables")
+      // ignore variables with no type
+      (variable) => variable.type,
     );
     variables.push(entity);
 

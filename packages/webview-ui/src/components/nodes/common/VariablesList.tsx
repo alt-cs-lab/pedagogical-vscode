@@ -5,6 +5,7 @@ import "./VariablesList.css";
 export type VariablesListItem = {
   name: string;
   value: string;
+  valueColorHint?: "none" | "string" | "number" | "error" | "boolean"
   lazy?: boolean;
   showHandle: boolean;
   handleId?: string;
@@ -27,7 +28,7 @@ export const VariablesList = (props: VariablesListProps) => {
             <div className="variables-item-handle-container">
               {item.showHandle ? (
                 <Handle
-                  className="variables-item-handle"
+                  className="common-handle"
                   type="source"
                   position={Position.Right}
                   id={item.handleId ? item.handleId : item.name}
