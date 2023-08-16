@@ -42,6 +42,7 @@ const sessionsSlice = createSlice({
       if (action.payload.sessionId === state.currentSessionId) {
         state.currentSessionId = state.sessionEntities.ids.length > 0 ? state.sessionEntities.ids[0].toString() : null;
       }
+      delete state.sessionStates[action.payload.sessionId];
     },
     sessionsInitialized: () => undefined,
     setCurrentSessionId: (state, action: PayloadAction<{ sessionId: string | null }>) => {

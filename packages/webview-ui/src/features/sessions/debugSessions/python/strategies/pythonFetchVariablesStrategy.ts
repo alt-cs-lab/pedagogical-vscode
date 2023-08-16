@@ -6,6 +6,7 @@ export default async function pythonFetchVariablesStrategy(
   sessionId: string,
   refsToFetch: number[],
   maxFetches = 100,
+  frameId?: number,
 ): Promise<VariablesEntity[]> {
   const variables: VariablesEntity[] = [];
   const refsFetched: number[] = [];
@@ -23,20 +24,45 @@ export default async function pythonFetchVariablesStrategy(
     // not ideal because variablesReference has a limited lifetime
     const entity = toVariablesEntity(args, resp.body.variables);
 
-    // for now, filter out "[special/function/class] variables"
+    // TODO: evaluate id() in python to get unique id of object
+
+    // for now, filter out "special variables"
     entity.variables = entity.variables.filter(
-      // ignore variables with no type
-      (variable) => variable.type,
+      (variable) => variable.name !== "special variables",
     );
     variables.push(entity);
 
+    for (const func of entity.variables.filter(($var) => $var.type === "function")) {
+      const expr = `${func.name}.__code__.co_varnames[:${func.name}.__code__.co_argcount]`;
+      const evalResp = await debugApi.debugRequestAsync(sessionId, {
+        command: "evaluate",
+        args: {
+          expression: expr,
+          frameId: frameId,
+        },
+      });
+      const funcSignature = func.name + evalResp.body.result.replaceAll("'", "").replace(",)", ")");
+
+      const funcEntity: VariablesEntity = {
+        pedagogId: funcSignature,
+        variablesReference: func.variablesReference,
+        variables: [{
+          name: func.name,
+          type: "function",
+          value: funcSignature,
+          variablesReference: 0,
+        }],
+      };
+      variables.push(funcEntity);
+    }
+
     // add child variables to queue
     // ignore refs we've already fetched and refs that are zero
-    refsToFetch.push(
-      ...entity.variables
-        .map(($var) => $var.variablesReference)
-        .filter((val) => val > 0 && refsFetched.indexOf(val) === -1)
-    );
+    refsToFetch.push(...entity.variables.filter(($var) => 
+      $var.type !== "function"
+      && $var.variablesReference > 0
+      && !refsFetched.includes($var.variablesReference)
+    ).map(($var) => $var.variablesReference));
 
     refsFetched.push(ref);
     ref = refsToFetch.shift();

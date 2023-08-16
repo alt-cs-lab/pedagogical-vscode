@@ -14,6 +14,7 @@ export default async function defaultFetchVariablesStrategy(
   sessionId: string,
   refsToFetch: number[],
   maxFetches = 100,
+  _frameId?: number,
 ): Promise<VariablesEntity[]> {
   const variables: VariablesEntity[] = [];
   const refsFetched: number[] = [];

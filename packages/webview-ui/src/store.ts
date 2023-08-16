@@ -8,7 +8,7 @@ import { startStateChangedListener } from "./stateChangeListener";
 // load redux devtools if this is a dev environment
 // there's probably a better way to do this
 const scriptData = document.getElementById("scriptData") as any;
-const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment;
+const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment as boolean;
 
 export const store = configureStore({
   reducer: {
@@ -18,16 +18,16 @@ export const store = configureStore({
     getDefaultMiddleware().prepend(appListenerMiddleware.middleware)
   ),
   devTools: isDevEnvironment,
-  enhancers: [
+  enhancers: isDevEnvironment ? [
     devToolsEnhancer({
       hostname: "localhost",
       port: 8000,
       secure: false,
       realtime: isDevEnvironment,
-      // disable hot reload because it re-triggers all actions after replaceReducer
-      shouldHotReload: false,
+      suppressConnectErrors: true,
+      trace: true,
     }),
-  ],
+  ] : undefined,
 });
 
 // sessionManager.postInitialize();

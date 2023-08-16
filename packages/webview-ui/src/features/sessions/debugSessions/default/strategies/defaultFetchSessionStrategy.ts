@@ -36,7 +36,7 @@ async function defaultFetchSessionStrategy(
   // fetch variables from scopes and fetch further nested variables
   // skip scopes marked as expensive
   const refs = scopes.filter((scope) => !scope.expensive).map((scope) => scope.variablesReference);
-  const variables = await strategies.fetchVariables(sessionId, refs);
+  const variables = await strategies.fetchVariables(sessionId, refs, 100, stackFrames[stackFrames.length-1]?.id);
   return { threads, stackFrames, scopes, variables };
 }
 
