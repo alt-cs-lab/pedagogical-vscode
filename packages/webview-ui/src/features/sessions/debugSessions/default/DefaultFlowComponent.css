@@ -1,3 +1,7 @@
 .react-flow__node {
   z-index: -1 !important;
 }
+
+.react-flow__node:not(.dragging) {
+  transition: transform .5s ease;
+}
