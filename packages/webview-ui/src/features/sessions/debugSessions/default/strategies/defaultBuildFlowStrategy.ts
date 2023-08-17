@@ -76,7 +76,7 @@ async function defaultBuildFlowStrategy(
             sourceHandle: handleId,
             target: childVarEntity.pedagogId,
             style: {
-              strokeWidth: 2,
+              strokeWidth: 1.5,
             },
             markerEnd: {
               type: MarkerType.Arrow,
@@ -138,7 +138,7 @@ async function defaultBuildFlowStrategy(
           sourceHandle: childVar.name,
           target: childVarEntity.pedagogId,
           style: {
-            strokeWidth: 2,
+            strokeWidth: 1.5,
           },
           markerEnd: {
             type: MarkerType.Arrow,
