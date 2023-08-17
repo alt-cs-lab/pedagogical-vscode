@@ -71,9 +71,13 @@ async function defaultBuildFlowStrategy(
         if (childVarEntity) {
           const edge: EdgeEntity = {
             id: edgeId(frameNode.id, handleId, childVarEntity.pedagogId),
+            type: "floating",
             source: frameNode.id,
             sourceHandle: handleId,
             target: childVarEntity.pedagogId,
+            style: {
+              strokeWidth: 2,
+            },
             markerEnd: {
               type: MarkerType.Arrow,
               height: 20,
@@ -129,9 +133,13 @@ async function defaultBuildFlowStrategy(
         // create edge from the handle to the childVar's node
         const edge: EdgeEntity = {
           id: edgeId(variable.entity.pedagogId, childVar.name, childVarEntity.pedagogId),
+          type: "floating",
           source: variable.entity.pedagogId,
           sourceHandle: childVar.name,
           target: childVarEntity.pedagogId,
+          style: {
+            strokeWidth: 2,
+          },
           markerEnd: {
             type: MarkerType.Arrow,
             height: 20,

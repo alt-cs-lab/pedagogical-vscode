@@ -11,6 +11,7 @@ import { nodeTypes } from "../../../../components/nodes";
 import { useEffect } from "react";
 
 import "./DefaultFlowComponent.css";
+import { edgeTypes } from "../../../../components/edges";
 
 const DefaultFlow = (props: { sessionId: string }) => {
   const dispatch = useAppDispatch();
@@ -39,6 +40,7 @@ const DefaultFlow = (props: { sessionId: string }) => {
         dispatch(nodesChanged(props.sessionId, { changes }))
       }
       nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
     >
       <Background />
       <Controls />

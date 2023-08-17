@@ -41,6 +41,6 @@
   position: relative;
 }
 
-.variables-item-handle-container > .common-handle {
-  right: -7px !important;
+.common-handle {
+  right: -9px !important;
 }

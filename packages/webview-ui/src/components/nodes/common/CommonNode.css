@@ -18,7 +18,7 @@
 
 /* must be in a container with `position:relative`! */
 .common-handle {
-  width: 10px !important;
-  height: 10px !important;
+  width: 12px !important;
+  height: 12px !important;
   background-color: #512888 !important;
 }

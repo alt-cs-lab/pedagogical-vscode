@@ -24,10 +24,10 @@ export default function ArrayNode(props: NodeProps<ArrayData>) {
             <div className="array-item-index">{item.name}:</div>
             {item.showHandle ? (
               <Handle
-              className="common-handle"
-              type="source"
-              position={Position.Bottom}
-              id={item.handleId ? item.handleId : item.name}
+                className="common-handle"
+                type="source"
+                position={Position.Bottom}
+                id={item.handleId ? item.handleId : item.name}
               />
             ) : item.lazy ? (
               <div className="array-item-value">(lazy)</div>

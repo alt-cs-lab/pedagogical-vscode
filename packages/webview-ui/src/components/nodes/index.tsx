@@ -3,7 +3,7 @@ import { commonNodeTypes } from "./common";
 import { BaseNodeData } from "./base";
 
 export const nodeTypes = {
-  ...commonNodeTypes
+  ...commonNodeTypes,
 };
 
 export type NodeTypes = keyof typeof nodeTypes;

@@ -1,7 +1,7 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
-import { Edge } from "reactflow";
+import { EdgeTypes, PedagogEdge } from "../../../components/edges";
 
-export type EdgeEntity = Edge;
+export type EdgeEntity<T extends EdgeTypes = EdgeTypes> = PedagogEdge<T>;
 
 export const edgesAdapter = createEntityAdapter<EdgeEntity>();
 
