@@ -34,6 +34,11 @@ export default class DefaultSession extends BaseSession {
       defaultReducers.layoutNodesDoneReducer,
     );
 
+    builder.addCase(
+      defaultActions.setLoading,
+      defaultReducers.setLoadingReducer,
+    );
+
     // update last stop and last fetch
     builder.addCase(defaultActions.updateLastPause, (state, action) => {
       state.lastPause = action.payload.lastPause;
@@ -79,6 +84,7 @@ export default class DefaultSession extends BaseSession {
   //#region listener effects
   debuggerStoppedEffect: AppListenerEffect = async (action, api) => {
     api.dispatch(defaultActions.updateLastPause(this.id));
+    api.dispatch(defaultActions.setLoading(this.id, { loading: true }));
     let stoppedThread: number | undefined;
     if (debugEventAction.stopped.match(action)) {
       stoppedThread = action.payload.body.threadId;
@@ -87,6 +93,7 @@ export default class DefaultSession extends BaseSession {
     api.dispatch(defaultActions.setAllDebugObjects(this.id, payload));
     api.dispatch(defaultActions.updateLastFetch(this.id));
     api.dispatch(defaultActions.buildFlow(this.id));
+    api.dispatch(defaultActions.setLoading(this.id, { loading: false }));
   };
 
   buildFlowEffect: AppListenerEffect = async (_action, api) => {

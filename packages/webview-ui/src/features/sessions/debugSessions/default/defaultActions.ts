@@ -21,6 +21,10 @@ export const setAllFlowObjects = createSessionAction<SetAllFlowObjectsPayload>(
   "session/setAllFlowObjects",
 );
 
+export const setLoading = createSessionAction<{ loading: boolean }>(
+  "session/setLoading",
+);
+
 export const buildFlow = createSessionAction(
   "session/buildFlow",
 );

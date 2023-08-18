@@ -13,6 +13,7 @@ export type BaseSessionState = {
   edges: EntityState<EdgeEntity>;
   lastPause: number;
   lastFetch: number;
+  loading: boolean;
 };
 
 export default abstract class BaseSession {
@@ -36,6 +37,7 @@ export default abstract class BaseSession {
     edges: edgesAdapter.getInitialState(),
     lastPause: 0,
     lastFetch: 0,
+    loading: false,
   };
 
   /**

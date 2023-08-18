@@ -12,6 +12,7 @@ import { useEffect } from "react";
 
 import "./DefaultFlowComponent.css";
 import { edgeTypes } from "../../../../components/edges";
+import LoadingScreen from "../../../../components/misc/LoadingScreen";
 
 const DefaultFlow = (props: { sessionId: string }) => {
   const dispatch = useAppDispatch();
@@ -42,6 +43,7 @@ const DefaultFlow = (props: { sessionId: string }) => {
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
     >
+      <LoadingScreen enabled={state.loading} />
       <Background />
       <Controls />
     </ReactFlow>

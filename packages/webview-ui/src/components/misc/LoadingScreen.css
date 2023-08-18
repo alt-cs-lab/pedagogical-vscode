@@ -1,0 +1,28 @@
+.loading-screen {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.loading-screen-background {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 50%;
+}
+
+.loading-screen-content {
+  height: min-content;
+  margin: auto;
+  z-index: 0;
+  user-select: none;
+  font-size: medium;
+}
+
+.loading-screen-spinner {
+  margin: 10px auto;
+}

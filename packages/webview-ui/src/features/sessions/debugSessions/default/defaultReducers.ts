@@ -23,6 +23,10 @@ export const setAllFlowObjectsReducer: CR<typeof defaultActions.setAllFlowObject
   edgesAdapter.setAll(state.edges, action.payload.edges);
 };
 
+export const setLoadingReducer: CR<typeof defaultActions.setLoading> = (state, action) => {
+  state.loading = action.payload.loading;
+};
+
 export const nodesChangedReducer: CR<typeof defaultActions.nodesChanged> = (state, action) => {
   const changedNodes = applyNodeChanges(action.payload.changes, nodeSelectors.selectAll(state.nodes));
   nodesAdapter.setAll(state.nodes, changedNodes as PedagogNode[]);
