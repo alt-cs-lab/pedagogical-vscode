@@ -5,7 +5,7 @@ let ctx = await esbuild.context({
   format: "esm", // esm needed for top-level await
   outdir: "../../dist/webview-ui/assets",
   bundle: true,
-  minify: true,
+  minifyWhitespace: true,
   sourcemap: "inline",
   platform: "browser",
   define: {
