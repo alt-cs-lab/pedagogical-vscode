@@ -1,27 +1,37 @@
 import * as esbuild from "esbuild";
 
-let ctx = await esbuild.context({
+const options = {
   entryPoints: ["src/index.tsx"],
   format: "esm", // esm needed for top-level await
   outdir: "../../dist/webview-ui/assets",
   bundle: true,
   minifyWhitespace: true,
-  sourcemap: "inline",
   platform: "browser",
   define: {
     global: "window",
   },
   logLevel: "info",
   external: ["web-worker"], // needed because of elkjs
-});
+};
 
 switch (process.argv[2]) {
   case "watch":
-    ctx.watch();
+    const ctx = await esbuild.context({
+      ...options,
+      sourcemap: "inline",
+    });
+    await ctx.watch();
     break;
 
-  case "build" | undefined:
-    ctx.rebuild();
+  case "build" || undefined:
+    try {
+      await esbuild.build({
+        ...options,
+        minify: true,
+      });
+    } catch {
+      process.exit(1);
+    }
     break;
 
   default:

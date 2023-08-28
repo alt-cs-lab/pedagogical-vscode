@@ -2,7 +2,7 @@
   "name": "webview-ui",
   "private": true,
   "scripts": {
-    "build": "node esbuild.mjs build",
+    "build": "yarn node esbuild.mjs build",
     "watch": "yarn node esbuild.mjs watch",
     "lint": "yarn run -T lint",
     "redux-devtools": "yarn run -B redux-devtools --hostname=localhost --port=8000 --open",
