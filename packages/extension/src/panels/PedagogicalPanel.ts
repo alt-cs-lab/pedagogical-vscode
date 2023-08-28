@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { getUri } from "../utilities/getUri";
-import { getNonce } from "../utilities/getNonce";
+import { getUri } from "../util/getUri";
+import { getNonce } from "../util/getNonce";
 import { VsCodeMessage, DebugRequest } from "shared";
 import DebugSessionController, { DebugSessionMessageListener } from "../DebugSessionController";
 
