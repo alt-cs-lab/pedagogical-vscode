@@ -21,7 +21,7 @@
       "name": "list_sum.py",
       "type": "python",
       "request": "launch",
-      "program": "${file}",
+      "program": "list_sum.py",
       "justMyCode": true
     }
   ]

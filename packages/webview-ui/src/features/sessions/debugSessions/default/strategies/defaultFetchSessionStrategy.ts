@@ -13,30 +13,40 @@ async function defaultFetchSessionStrategy(
 }> {
   // fetch threads
   const threads = await strategies.fetchThreads(sessionId);
+  const scopes: ScopeEntity[] = [];
+  const stackFrames: StackFrameEntity[] = [];
+  const variables: VariablesEntity[] = [];
 
   // fetch stack trace from each thread
   // only fetch from threads that were stopped
-  const stackFrames: StackFrameEntity[] = [];
   const stoppedThreads = threadId ? threads.filter((t) => t.id === threadId) : threads;
   for (const thread of stoppedThreads) {
     const threadFrames = await strategies.fetchStackTrace(sessionId, thread.id);
     thread.stackFrameIds = threadFrames.map((frame) => frame.id);
     stackFrames.push(...threadFrames);
+    
+    // fetch scopes from frames
+    // skip frames marked "deemphasize"
+    for (const frame of stackFrames.filter((frame) => frame.source?.presentationHint !== "deemphasize")) {
+      const frameScopes = await strategies.fetchScopes(sessionId, frame.id);
+      frame.scopeIds = frameScopes.map((scope) => scope.pedagogId);
+      scopes.push(...frameScopes);
+
+      // fetch variables from scopes and fetch further nested variables
+      // skip scopes marked as expensive
+      for (const scope of frameScopes.filter((scope) => !scope.expensive)) {
+        const scopeVariables = await strategies.fetchVariables({
+          sessionId,
+          frame,
+          refsToFetch: [scope.variablesReference],
+          scope,
+        });
+        variables.push(...scopeVariables);
+      }
+    }
   }
 
-  // fetch scopes from frames
-  // skip frames marked "deemphasize"
-  const scopes: ScopeEntity[] = [];
-  for (const frame of stackFrames.filter((frame) => frame.source?.presentationHint !== "deemphasize")) {
-    const frameScopes = await strategies.fetchScopes(sessionId, frame.id);
-    frame.scopeIds = frameScopes.map((scope) => scope.pedagogId);
-    scopes.push(...frameScopes);
-  }
 
-  // fetch variables from scopes and fetch further nested variables
-  // skip scopes marked as expensive
-  const refs = scopes.filter((scope) => !scope.expensive).map((scope) => scope.variablesReference);
-  const variables = await strategies.fetchVariables(sessionId, refs, 100, stackFrames[stackFrames.length-1]?.id);
   return { threads, stackFrames, scopes, variables };
 }
 
