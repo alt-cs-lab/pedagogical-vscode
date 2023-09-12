@@ -37,5 +37,6 @@ export function createSessionAction<
 }
 
 export function isSessionAction(action: AnyAction): action is UnknownSessionAction {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return action.meta?.sessionId !== undefined;
 }

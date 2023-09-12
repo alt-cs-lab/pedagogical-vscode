@@ -46,7 +46,7 @@ export default class DebugSessionController {
     if (session === undefined) {
       throw new Error(`session id ${sessionId} not found`);
     }
-    const respBody = await session.customRequest(req.command, req.args);
+    const respBody = await session.customRequest(req.command, req.args) as DebugResponse["body"];
     return { command: req.command, body: respBody } as DebugResponse;
   }
 }

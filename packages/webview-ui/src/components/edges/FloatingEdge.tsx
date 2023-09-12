@@ -42,8 +42,8 @@ function getEdgePosition(node: Node, intersectionPoint: { x: number, y: number }
   const n = { ...node.positionAbsolute, ...node };
   const nx = Math.round(n.x!);
   const ny = Math.round(n.y!);
-  const px = Math.round(intersectionPoint.x!);
-  const py = Math.round(intersectionPoint.y!);
+  const px = Math.round(intersectionPoint.x);
+  const py = Math.round(intersectionPoint.y);
 
   if (px <= nx + 1) {
     return Position.Left;
@@ -54,7 +54,7 @@ function getEdgePosition(node: Node, intersectionPoint: { x: number, y: number }
   if (py <= ny + 1) {
     return Position.Top;
   }
-  if (py >= ny! + n.height! - 1) {
+  if (py >= ny + n.height! - 1) {
     return Position.Bottom;
   }
 

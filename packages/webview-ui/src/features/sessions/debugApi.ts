@@ -11,7 +11,7 @@ const debugApi = {
       data: { sessionId, req: options },
     });
     if (result.type === "debugError") {
-      throw new Error(`error from debug adapter: ${result.data.error}`);
+      throw new Error(`error from debug adapter: ${result.data.error?.id}`);
     } else if (result.type !== "debugResponse") {
       throw new Error(`Expected debugResponse, got ${result.type} instead`);
     }

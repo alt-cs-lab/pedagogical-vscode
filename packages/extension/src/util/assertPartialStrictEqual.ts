@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import * as assert from "assert";
 
 /**
@@ -7,8 +8,8 @@ import * as assert from "assert";
  */
 export function assertPartialStrictEqual(actual: any, expected: any, message?: string | Error) {
   for (const expectedKey in expected) {
-    const expectedVal = expected[expectedKey];
-    const actualVal = actual[expectedKey];
+    const expectedVal: unknown = expected[expectedKey];
+    const actualVal: unknown = actual[expectedKey];
     
     if (typeof expectedVal === "object" && expectedVal && typeof actualVal === "object" && actualVal) {
       // if both are objects (and not null), then checked nested partial equality

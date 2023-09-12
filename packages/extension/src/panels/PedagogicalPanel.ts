@@ -111,7 +111,7 @@ export class PedagogicalPanel {
             style-src ${webview.cspSource};
             script-src 'nonce-${nonce}';
             connect-src ${isEnvDevelopment ? "'self' ws:" : "none"}">
-          <link rel="stylesheet" type="text/css" href="${stylesUri}">
+          <link rel="stylesheet" type="text/css" href="${stylesUri.toString()}">
           <title>Pedagogical</title>
         </head>
         <body>
@@ -119,7 +119,7 @@ export class PedagogicalPanel {
           <script id="scriptData" type="application/json">
             {"isEnvDevelopment": ${context.extensionMode === vscode.ExtensionMode.Development}}
           </script>
-          <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
+          <script type="module" nonce="${nonce}" src="${scriptUri.toString()}"></script>
         </body>
       </html>
     `;
@@ -141,7 +141,7 @@ export class PedagogicalPanel {
             break;
 
           case "showError":
-            vscode.window.showErrorMessage(`Pedagogical error: ${message.data.msg}`);
+            void vscode.window.showErrorMessage(`Pedagogical error: ${message.data.msg}`);
             break;
 
           case "getAllSessionsRequest": {
@@ -169,7 +169,7 @@ export class PedagogicalPanel {
   }
 
   private _postWebviewMessage(message: VsCodeMessage) {
-    this._panel.webview.postMessage(message);
+    void this._panel.webview.postMessage(message);
   }
 
   /** Forward a request from the webview to the DebugSessionController */

@@ -7,7 +7,8 @@ import { startStateChangedListener } from "./stateChangeListener";
 
 // load redux devtools if this is a dev environment
 // there's probably a better way to do this
-const scriptData = document.getElementById("scriptData") as any;
+const scriptData = document.getElementById("scriptData") as HTMLScriptElement;
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment as boolean;
 
 export const store = configureStore({
@@ -30,7 +31,6 @@ export const store = configureStore({
   ] : undefined,
 });
 
-// sessionManager.postInitialize();
 startStateChangedListener(appListenerMiddleware as AppListenerMiddlewareInstance);
 startMessageObserver();
 

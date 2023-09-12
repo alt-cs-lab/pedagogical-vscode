@@ -3,7 +3,7 @@ import * as assert from "assert";
 // import * as extension from "../../extension";
 
 describe("debugging list_sum.py", () => {
-  vscode.window.showInformationMessage("Start all tests.");
+  void vscode.window.showInformationMessage("Start all tests.");
 
   before("Debug list_sum.py", async function () {
     this.timeout(5000);

@@ -1,7 +1,7 @@
 import { DebugEventName, DebugEvent } from "shared";
 import { createSessionAction } from "./sessionAction";
 
-function generateDebugEventAC<E extends string & DebugEventName>(event: E) {
+function generateDebugEventAC<E extends DebugEventName>(event: E) {
   return createSessionAction<DebugEvent<E>>(`debugEvent/${event}`);
 }
 

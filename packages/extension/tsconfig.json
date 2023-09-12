@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
-    "outDir": "../../dist/extension",
-    "lib": ["es6", "dom"],
-    "sourceMap": true,
+    "target": "esnext",
+    "lib": ["esnext", "dom"],
     "rootDir": "src",
-    "strict": true
+    "strict": true,
+    "noEmit": true,
   },
-  "exclude": ["node_modules"]
+  "include": ["./src"]
 }

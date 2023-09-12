@@ -4,7 +4,7 @@ import "./App.css";
 import "reactflow/dist/style.css";
 import { getSessionComponent, setInitialSessionManagerState } from "./features/sessions/sessionsSlice";
 
-setInitialSessionManagerState();
+await setInitialSessionManagerState();
 
 export default function App() {
   const currentSessionId = useAppSelector(

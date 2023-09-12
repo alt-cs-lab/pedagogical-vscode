@@ -115,7 +115,7 @@ export async function setInitialSessionManagerState() {
 
   // load persisted session states if they exist
   const preloadedSessionStateResults: Record<string, BaseSessionState> = {};
-  const persistedState = (vscode.getState() as RootState | undefined)?.sessions;
+  const persistedState = (vscode.getState() )?.sessions;
   if (persistedState) {
     for (const persistedSessionId of Object.keys(persistedState.sessionStates)) {
       const currentSession = currentSessions.find((val) => val.id === persistedSessionId);

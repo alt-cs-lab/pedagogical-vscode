@@ -14,6 +14,7 @@ export function matcherWithId<
   M extends (a: any) => a is MA
 >(id: string, matcher: M): M {
   return ((action: AnyAction) => (
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     matcher(action) && action.meta?.sessionId === id
   )) as M;
 }

@@ -17,7 +17,8 @@ vsc-extension-quickstart.md
 **/.gitignore
 **/tsconfig.json
 **/vite.config.ts
-**/.eslintrc.json
+**/.eslintrc.*
 **/*.map
 **/*.ts
 node_modules/**
+**/.yarnrc.*

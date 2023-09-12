@@ -1,4 +1,5 @@
 import type { WebviewApi } from "vscode-webview";
+import { RootState } from "../store";
 
 /**
  * A utility wrapper around the acquireVsCodeApi() function, which enables
@@ -44,12 +45,12 @@ class VSCodeAPIWrapper {
    *
    * @return The current state or `undefined` if no state has been set.
    */
-  public getState(): unknown | undefined {
+  public getState(): RootState | undefined {
     if (this.vsCodeApi) {
-      return this.vsCodeApi.getState();
+      return this.vsCodeApi.getState() as RootState | undefined;
     } else {
       const state = localStorage.getItem("vscodeState");
-      return state ? JSON.parse(state) : undefined;
+      return state ? JSON.parse(state) as RootState | undefined : undefined;
     }
   }
 
@@ -64,7 +65,7 @@ class VSCodeAPIWrapper {
    *
    * @return The new state.
    */
-  public setState<T extends unknown | undefined>(newState: T): T {
+  public setState<T extends RootState>(newState: T): T {
     if (this.vsCodeApi) {
       return this.vsCodeApi.setState(newState);
     } else {

@@ -3,7 +3,7 @@ import { vscode } from "./vscode";
 import AsyncLock from "async-lock";
 
 type PromiseCallbacks = {
-  resolve: (value: VsCodeMessage) => void;
+  resolve: (value: any) => void;
   reject: (error?: any) => void;
 };
 
@@ -37,7 +37,7 @@ class VsCodeMessageController {
     const msg = ev.data as VsCodeMessage;
     if (msg.msgSeq) {
       // this is a reponse to an earlier request message
-      this.completeMessagePromise(msg.msgSeq, msg);
+      void this.completeMessagePromise(msg.msgSeq, msg);
     } else {
       this.observers.forEach((cb) => cb(msg));
     }
@@ -66,7 +66,9 @@ class VsCodeMessageController {
 
       // reject if we never hear back
       setTimeout(
-        () => this.completeMessagePromise(msgSeq, new Error("message timeout reached"), "reject"),
+        () => {
+          void this.completeMessagePromise(msgSeq, new Error("message timeout reached"), "reject");
+        },
         timeout
       );
     });
