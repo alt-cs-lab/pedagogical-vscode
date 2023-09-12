@@ -20,10 +20,10 @@ export function toVariablesEntity(args: DP.VariablesArguments, variables: DP.Var
 
 export const variableSelectors = {
   ...variablesAdapter.getSelectors(),
-  selectReferences: (state: EntityState<VariablesEntity>) => {
+  selectReferences: (state: EntityState<VariablesEntity>): number[] => {
     return Object.values(state.entities).map((v) => v!.variablesReference);
   },
-  selectByReference: (state: EntityState<VariablesEntity>, reference: number) => {
+  selectByReference: (state: EntityState<VariablesEntity>, reference: number): VariablesEntity | undefined => {
     return Object.values(state.entities).find((v) => v?.variablesReference === reference);
   }
 };

@@ -144,6 +144,10 @@ export async function setInitialSessionManagerState() {
   store.dispatch(sessionsInitialized());
 }
 
+export function selectSessionState(rootState: RootState, sessionId: string) {
+  return rootState.sessions.sessionStates[sessionId];
+}
+
 export const {
   addSession,
   removeSession,

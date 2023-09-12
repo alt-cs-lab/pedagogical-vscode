@@ -1,5 +1,7 @@
+import { AppListenerEffectApi } from "../../../../../listenerMiddleware";
 import debugApi from "../../../debugApi";
 import { StackFrameEntity, toStackFrameEntities } from "../../../entities";
+import { addStackFrames } from "../defaultActions";
 
 /**
  * Fetch the stack trace from the given thread id.
@@ -9,7 +11,8 @@ import { StackFrameEntity, toStackFrameEntities } from "../../../entities";
  */
 async function defaultFetchStackTraceStrategy(
   sessionId: string,
-  threadId: number
+  threadId: number,
+  api: AppListenerEffectApi,
 ): Promise<StackFrameEntity[]> {
   const resp = await debugApi.debugRequestAsync(sessionId, {
     command: "stackTrace",
@@ -25,7 +28,10 @@ async function defaultFetchStackTraceStrategy(
 
   // the root of the stack is at the end of the array, but we want it at the beginning
   frames.reverse();
-  return toStackFrameEntities(threadId, frames);
+  
+  const entities = toStackFrameEntities(threadId, frames);
+  api.dispatch(addStackFrames(sessionId, { threadId, stackFrames: entities }));
+  return entities;
 }
 
 export default defaultFetchStackTraceStrategy;

@@ -1,3 +1,4 @@
 {
-  "editor.indentSize": 2
+  "editor.indentSize": 2,
+  "python.analysis.typeCheckingMode": "basic"
 }

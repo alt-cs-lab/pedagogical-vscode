@@ -157,7 +157,7 @@ async function defaultBuildFlowStrategy(
     }
 
     const node: NodeEntity = {
-        type: isArrayLike ? "commonArray" : "commonVariables",
+        type: /*isArrayLike ? "commonArray" :*/ "commonVariables",
         data: {
           name: variable.type,
           items: variablesListItems,

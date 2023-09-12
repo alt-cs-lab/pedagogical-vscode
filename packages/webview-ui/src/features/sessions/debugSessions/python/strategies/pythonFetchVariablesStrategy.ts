@@ -1,15 +1,21 @@
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import debugApi from "../../../debugApi";
-import { VariablesEntity, toVariablesEntity } from "../../../entities";
+import { VariablesEntity, toVariablesEntity, variableSelectors } from "../../../entities";
 import { FetchVariablesContextArg } from "../../default/strategies/defaultFetchVariablesStrategy";
+import { selectSessionState } from "../../../sessionsSlice";
+import { AppListenerEffectApi } from "../../../../../listenerMiddleware";
+import { addVariables } from "../../default/defaultActions";
 
 export default async function pythonFetchVariablesStrategy(
   ctx: FetchVariablesContextArg,
+  api: AppListenerEffectApi,
   maxDepth = 10,
   currentDepth = 0,
 ): Promise<VariablesEntity[]> {
   const variables: VariablesEntity[] = [];
-  const refsFetched: number[] = ctx.refsFetched ? ctx.refsFetched : [];
+
+  const session = selectSessionState(api.getState(), ctx.sessionId);
+  const refsFetched: number[] = variableSelectors.selectReferences(session.variables);
 
   for (const ref of ctx.refsToFetch) {
     // skip if ref is zero (not actually a ref)
@@ -35,31 +41,8 @@ export default async function pythonFetchVariablesStrategy(
     varEntity.variables = varEntity.variables.filter(
       (variable) => !variable.name.endsWith(" variables"),
     );
+    api.dispatch(addVariables(ctx.sessionId, { variables: [varEntity] }));
     variables.push(varEntity);
-
-    // for (const func of entity.variables.filter(($var) => $var.type === "function")) {
-    //   const expr = `${func.name}.__code__.co_varnames[:${func.name}.__code__.co_argcount]`;
-    //   const evalResp = await debugApi.debugRequestAsync(ctx.sessionId, {
-    //     command: "evaluate",
-    //     args: {
-    //       expression: expr,
-    //       frameId: ctx.frame.id,
-    //     },
-    //   });
-    //   const funcSignature = func.name + evalResp.body.result.replaceAll("'", "").replace(",)", ")");
-
-    //   const funcEntity: VariablesEntity = {
-    //     pedagogId: funcSignature,
-    //     variablesReference: func.variablesReference,
-    //     variables: [{
-    //       name: func.name,
-    //       type: "function",
-    //       value: funcSignature,
-    //       variablesReference: 0,
-    //     }],
-    //   };
-    //   variables.push(funcEntity);
-    // }
 
     if (currentDepth >= maxDepth) {
       continue;
@@ -73,12 +56,13 @@ export default async function pythonFetchVariablesStrategy(
       && !refsFetched.includes($var.variablesReference)
     ).map(($var) => $var.variablesReference);
 
-    const childVars = await pythonFetchVariablesStrategy({
+    const childContextArgs: FetchVariablesContextArg = {
       ...ctx,
       refsToFetch: childRefsToFetch,
-      refsFetched: refsFetched,
       variable: varEntity,
-    });
+    };
+
+    const childVars = await pythonFetchVariablesStrategy(childContextArgs, api, maxDepth, currentDepth + 1);
 
     variables.push(...childVars);
   }

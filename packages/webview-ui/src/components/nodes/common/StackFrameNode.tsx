@@ -20,19 +20,17 @@ export default function StackFrameNode(props: NodeProps<StackFrameData>) {
     <div className="common-node stack-frame-node">
       <div className="common-node-header">{props.data.name}</div>
       {props.data.scopes.map((scopeData) => (
-        <>
-          <div className="common-node stack-frame-scope" key={scopeData.name}>
-            {scopeData.name ? (
-              <div className="common-node-header">{scopeData.name}</div>
-            ) : null}
-            {scopeData.lazy ? (
-              <div>(lazy)</div>
-            ) : null}
-            {scopeData.items ? (
-              <VariablesList items={scopeData.items} />
-            ) : null}
-          </div>
-        </>
+        <div className="common-node stack-frame-scope" key={scopeData.name}>
+          {scopeData.name ? (
+            <div className="common-node-header">{scopeData.name}</div>
+          ) : null}
+          {scopeData.lazy ? (
+            <div>(lazy)</div>
+          ) : null}
+          {scopeData.items ? (
+            <VariablesList items={scopeData.items} />
+          ) : null}
+        </div>
       ))}
     </div>
   );

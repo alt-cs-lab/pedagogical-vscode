@@ -1,5 +1,7 @@
+import { AppListenerEffectApi } from "../../../../../listenerMiddleware";
 import debugApi from "../../../debugApi";
 import { ScopeEntity } from "../../../entities";
+import { addScopes } from "../defaultActions";
 
 /**
  * Fetch the scopes from the given stack frame id.
@@ -8,7 +10,8 @@ import { ScopeEntity } from "../../../entities";
  */
 async function defaultFetchScopesStrategy(
   sessionId: string,
-  frameId: number
+  frameId: number,
+  api: AppListenerEffectApi,
 ): Promise<ScopeEntity[]> {
   const resp = await debugApi.debugRequestAsync(sessionId, {
     command: "scopes",
@@ -25,6 +28,8 @@ async function defaultFetchScopesStrategy(
     stackFrameId: frameId,
     pedagogId: `${frameId}[${scope.name}]`,
   }));
+
+  api.dispatch(addScopes(sessionId, { frameId, scopes: entities }));
 
   return entities;
 }

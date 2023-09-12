@@ -1,53 +1,41 @@
 import { DebugSessionStrategies } from ".";
-import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity } from "../../../entities";
+import { AppListenerEffectApi } from "../../../../../listenerMiddleware";
+import * as defaultActions from "../defaultActions";
 
 async function defaultFetchSessionStrategy(
   sessionId: string,
   strategies: DebugSessionStrategies,
+  api: AppListenerEffectApi,
   threadId?: number,
-): Promise<{
-  threads: ThreadEntity[],
-  stackFrames: StackFrameEntity[],
-  scopes: ScopeEntity[],
-  variables: VariablesEntity[],
-}> {
+): Promise<void> {
+  api.dispatch(defaultActions.updateLastFetch(sessionId));
+  
   // fetch threads
-  const threads = await strategies.fetchThreads(sessionId);
-  const scopes: ScopeEntity[] = [];
-  const stackFrames: StackFrameEntity[] = [];
-  const variables: VariablesEntity[] = [];
+  const threads = await strategies.fetchThreads(sessionId, api);
 
   // fetch stack trace from each thread
   // only fetch from threads that were stopped
   const stoppedThreads = threadId ? threads.filter((t) => t.id === threadId) : threads;
   for (const thread of stoppedThreads) {
-    const threadFrames = await strategies.fetchStackTrace(sessionId, thread.id);
-    thread.stackFrameIds = threadFrames.map((frame) => frame.id);
-    stackFrames.push(...threadFrames);
+    const frames = await strategies.fetchStackTrace(sessionId, thread.id, api);
     
     // fetch scopes from frames
     // skip frames marked "deemphasize"
-    for (const frame of stackFrames.filter((frame) => frame.source?.presentationHint !== "deemphasize")) {
-      const frameScopes = await strategies.fetchScopes(sessionId, frame.id);
-      frame.scopeIds = frameScopes.map((scope) => scope.pedagogId);
-      scopes.push(...frameScopes);
+    for (const frame of frames.filter((frame) => frame.source?.presentationHint !== "deemphasize")) {
+      const scopes = await strategies.fetchScopes(sessionId, frame.id, api);
 
       // fetch variables from scopes and fetch further nested variables
       // skip scopes marked as expensive
-      for (const scope of frameScopes.filter((scope) => !scope.expensive)) {
-        const scopeVariables = await strategies.fetchVariables({
+      for (const scope of scopes.filter((scope) => !scope.expensive)) {
+        await strategies.fetchVariables({
           sessionId,
           frame,
           refsToFetch: [scope.variablesReference],
           scope,
-        });
-        variables.push(...scopeVariables);
+        }, api);
       }
     }
   }
-
-
-  return { threads, stackFrames, scopes, variables };
 }
 
 export default defaultFetchSessionStrategy;

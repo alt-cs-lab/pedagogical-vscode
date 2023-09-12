@@ -12,40 +12,27 @@ import { sessionsInitialized } from "../../sessionsSlice";
 export default class DefaultSession extends BaseSession {
   override reducer = createReducer(this.initialState, (builder) => {
     // set all debug adapter objects
-    builder.addCase(
-      defaultActions.setAllDebugObjects,
-      defaultReducers.setAllDebugObjectsReducer
-    );
+    builder.addCase(defaultActions.setAllDebugObjects, defaultReducers.setAllDebugObjectsReducer);
+
+    // add individual debug adapter objects
+    builder.addCase(defaultActions.addThreads, defaultReducers.addThreadsReducer);
+    builder.addCase(defaultActions.addStackFrames, defaultReducers.addStackFramesReducer);
+    builder.addCase(defaultActions.addScopes, defaultReducers.addScopesReducer);
+    builder.addCase(defaultActions.addVariables, defaultReducers.addVariablesReducer);
 
     // set all react flow objects
-    builder.addCase(
-      defaultActions.setAllFlowObjects,
-      defaultReducers.setAllFlowObjectsReducer,
-    );
+    builder.addCase(defaultActions.setAllFlowObjects, defaultReducers.setAllFlowObjectsReducer,);
 
     // apply node changes from react flow
-    builder.addCase(
-      defaultActions.nodesChanged,
-      defaultReducers.nodesChangedReducer,
-    );
+    builder.addCase(defaultActions.nodesChanged, defaultReducers.nodesChangedReducer);
 
-    builder.addCase(
-      defaultActions.layoutNodesDone,
-      defaultReducers.layoutNodesDoneReducer,
-    );
+    builder.addCase(defaultActions.layoutNodesDone, defaultReducers.layoutNodesDoneReducer);
 
-    builder.addCase(
-      defaultActions.setLoading,
-      defaultReducers.setLoadingReducer,
-    );
+    builder.addCase(defaultActions.setLoading, defaultReducers.setLoadingReducer);
 
     // update last stop and last fetch
-    builder.addCase(defaultActions.updateLastPause, (state, action) => {
-      state.lastPause = action.payload.lastPause;
-    });
-    builder.addCase(defaultActions.updateLastFetch, (state, action) => {
-      state.lastFetch = action.payload.lastFetch;
-    });
+    builder.addCase(defaultActions.updateLastPause, defaultReducers.updateLastStopReducer);
+    builder.addCase(defaultActions.updateLastFetch, defaultReducers.updateLastFetchReducer);
   });
 
   override component = getDefaultFlowComponent();
@@ -84,14 +71,12 @@ export default class DefaultSession extends BaseSession {
   //#region listener effects
   debuggerStoppedEffect: AppListenerEffect = async (action, api) => {
     api.dispatch(defaultActions.updateLastPause(this.id));
+    api.dispatch(defaultActions.removeAllDebugObjects(this.id));
+
+    const stoppedThread = debugEventAction.stopped.match(action) ? action.payload.body.threadId : undefined;
+    
     api.dispatch(defaultActions.setLoading(this.id, { loading: true }));
-    let stoppedThread: number | undefined;
-    if (debugEventAction.stopped.match(action)) {
-      stoppedThread = action.payload.body.threadId;
-    }
-    const payload = await this.strategies.fetchSession(this.id, this.strategies, stoppedThread);
-    api.dispatch(defaultActions.setAllDebugObjects(this.id, payload));
-    api.dispatch(defaultActions.updateLastFetch(this.id));
+    await this.strategies.fetchSession(this.id, this.strategies, api, stoppedThread);
     api.dispatch(defaultActions.buildFlow(this.id));
     api.dispatch(defaultActions.setLoading(this.id, { loading: false }));
   };

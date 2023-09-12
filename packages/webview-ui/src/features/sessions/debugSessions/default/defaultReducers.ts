@@ -18,6 +18,37 @@ export const setAllDebugObjectsReducer: CR<typeof defaultActions.setAllDebugObje
   variablesAdapter.setAll(state.variables, action.payload.variables);
 };
 
+export const removeAllDebugObjectsReducer: CR<typeof defaultActions.removeAllDebugObjects> = (state) => {
+  threadsAdapter.removeAll(state.threads);
+  stackFramesAdapter.removeAll(state.stackFrames);
+  scopesAdapter.removeAll(state.scopes);
+  variablesAdapter.removeAll(state.variables);
+};
+
+export const addThreadsReducer: CR<typeof defaultActions.addThreads> = (state, action) => {
+  threadsAdapter.upsertMany(state.threads, action.payload.threads);
+};
+
+export const addStackFramesReducer: CR<typeof defaultActions.addStackFrames> = (state, action) => {
+  stackFramesAdapter.upsertMany(state.stackFrames, action.payload.stackFrames);
+  threadsAdapter.updateOne(state.threads, {
+    id: action.payload.threadId,
+    changes: { stackFrameIds: action.payload.stackFrames.map((frame) => frame.id) },
+  });
+};
+
+export const addScopesReducer: CR<typeof defaultActions.addScopes> = (state, action) => {
+  scopesAdapter.upsertMany(state.scopes, action.payload.scopes);
+  stackFramesAdapter.updateOne(state.stackFrames, {
+    id: action.payload.frameId,
+    changes: { scopeIds: action.payload.scopes.map((scope) => scope.pedagogId ) },
+  });
+};
+
+export const addVariablesReducer: CR<typeof defaultActions.addVariables> = (state, action) => {
+  variablesAdapter.upsertMany(state.variables, action.payload.variables);
+};
+
 export const setAllFlowObjectsReducer: CR<typeof defaultActions.setAllFlowObjects> = (state, action) => {
   nodesAdapter.setAll(state.nodes, action.payload.nodes);
   edgesAdapter.setAll(state.edges, action.payload.edges);
