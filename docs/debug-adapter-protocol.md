@@ -39,7 +39,7 @@ Each object has its own request, so the process of getting a full debug state is
 
 5. Continue fetching variables with each `variablesReference` number until you have all the information you need. This is usually done lazily (e.g. when a user expands one of the variable items in the debug panel). Also note that some items share the same reference number, in which case you should use the cached result instead of fetching it again.
 
-### Limited Lifetime of `variablesReference`
+## Limited Lifetime of `variablesReference`
 
 Threads and stack frames have an `id` number, while scopes and variables have a `variablesReference` number. This are _not_ the same thing. Although the `id` numbers will stay the same throughout the entire debug session, **the lifetime of each `variablesReference` number is limitted to the current suspended state**. This means, when the debugger is no longer paused and code execution continues, those reference numbers become invalid and should not be used. The next time the debugger stops, those reference numbers may not point to the same object.
 
@@ -51,7 +51,7 @@ In Pedagogical, each node has its own id so we can update its values instead of 
 
 - Python actually does seem to use constant reference numbers for variables (although this is undocumented and probably shouldn't be treated as an intended/stable feature).
 
-### Differences in DAP implementations
+## Differences in DAP implementations
 
 The DAP makes it look like, whichever debugger we're using, we can follow the same process to fetch the debug state. Unfortunately, it's not quite as simple as that. Some (all?) debuggers have different features or limitations that change how they implement the DAP. Here are some examples:
 

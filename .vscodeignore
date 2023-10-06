@@ -11,8 +11,10 @@ dist/extension/test/**
 # Ignore all workspace files (everything needed should be in dist)
 packages/**
 
+# Ignore development docs
+docs/**
+
 # Ignore Misc
-.yarnrc
 vsc-extension-quickstart.md
 **/.gitignore
 **/tsconfig.json
@@ -20,5 +22,6 @@ vsc-extension-quickstart.md
 **/.eslintrc.*
 **/*.map
 **/*.ts
-node_modules/**
+**/node_modules/**
 **/.yarnrc.*
+.yarn/**
