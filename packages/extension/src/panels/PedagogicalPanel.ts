@@ -141,7 +141,11 @@ export class PedagogicalPanel {
             break;
 
           case "showError":
-            void vscode.window.showErrorMessage(`Pedagogical error: ${message.data.msg}`);
+            void vscode.window.showErrorMessage(`Pedagogical: ${message.data.msg}`);
+            break;
+          
+          case "showInformation":
+            void vscode.window.showInformationMessage(`Pedagogical: ${message.data.msg}`);
             break;
 
           case "getAllSessionsRequest": {

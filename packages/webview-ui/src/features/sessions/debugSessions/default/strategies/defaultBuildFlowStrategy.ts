@@ -21,7 +21,7 @@ async function defaultBuildFlowStrategy(
   for (const frame of stackFrameSelectors.selectAll(state.stackFrames)) {
     const frameNode: NodeEntity<"commonStackFrame"> = {
       type: "commonStackFrame",
-      id: `frame-${frame.id}`,
+      id: `frame-${frame.pedagogId}`,
       position: { x: 0, y: 0 },
       data: {
         name: "Stack Frame: " + frame.name,

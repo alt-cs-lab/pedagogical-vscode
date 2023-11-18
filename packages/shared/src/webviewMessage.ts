@@ -28,7 +28,8 @@ type AnyVsCodeMessage =
   | MessageData<"activeSessionChangedEvent", { id: string | null }>
   | MessageData<"getAllSessionsRequest", void>
   | MessageData<"getAllSessionsResponse", GetAllSessionsResponse>
-  | MessageData<"showError", { msg: string | undefined }>;
+  | MessageData<"showError", { msg: string }>
+  | MessageData<"showInformation", { msg: string}>;
 
 export type VsCodeMessageType = AnyVsCodeMessage["type"];
 export type VsCodeMessage<T extends VsCodeMessageType = VsCodeMessageType> = Extract<AnyVsCodeMessage, { type: T }>;

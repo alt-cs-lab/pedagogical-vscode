@@ -11,8 +11,9 @@ import { sessionsInitialized } from "../../sessionsSlice";
 
 export default class DefaultSession extends BaseSession {
   override reducer = createReducer(this.initialState, (builder) => {
-    // set all debug adapter objects
+    // set/remove all debug adapter objects
     builder.addCase(defaultActions.setAllDebugObjects, defaultReducers.setAllDebugObjectsReducer);
+    builder.addCase(defaultActions.removeAllDebugObjects, defaultReducers.removeAllDebugObjectsReducer);
 
     // add individual debug adapter objects
     builder.addCase(defaultActions.addThreads, defaultReducers.addThreadsReducer);
