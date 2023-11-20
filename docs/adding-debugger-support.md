@@ -8,7 +8,8 @@ See [Pedagogical Sessions](./pedagogical-sessions.md) for info on how Pedagogica
 
 In this document, we will try adding support for debugging Java files using [Microsoft's Debugger for Java extension](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-debug).
 
-> If you plan on adding/updating debugger support to this extension, I recommend you follow this guide from start to finish! You can start by removing the existing Java support. To do that:
+> I know this guide looks like a wall of text, but if you plan on adding/updating debugger support to this extension, I recommend you follow this from start to finish! You can start by removing the existing Java support. To do that:
+>
 > 1. Navigate to `packages/webview-ui/src/features/sessions/debugSessions`
 > 2. Delete the `java` folder
 > 3. Modify the `sessionClassByDebugType` object in `index.ts`:
@@ -22,6 +23,14 @@ In this document, we will try adding support for debugging Java files using [Mic
 > ```
 >
 > (Of course, please don't commit these changes to the main branch!)
+
+## Prerequisite knowledge
+
+I recommend you read the pages [Debug Adapter Protocol](debug-adapter-protocol.md) and [Debug Sessions in Pedagogical](pedagogical-sessions.md) so you understand how Pedagogical handles different types of debuggers.
+
+You should know some decent JavaScript or TypeScript. This is a TypeScript project, but this guide doesn't utilize much of TypeScript's features.
+
+You probably need to know [Redux](https://redux.js.org/introduction/getting-started) before you start writing your own code. 
 
 ## Step 1: Testing with `DefaultSession`
 
@@ -368,6 +377,8 @@ export default async function javaFetchVariablesStrategy(/* ... */) {
 ```
 
 > The expression `parent.value.match(/@\d+$/)` matches "@[number]" at the end of the vaue ([regex101](https://regex101.com/r/atvlEW/1))
+
+> These strategies are called by listeners from Redux Toolkit. You can use the [listener API](https://redux-toolkit.js.org/api/createListenerMiddleware#listener-api) to interact with the store.
 
 There's another expression that determines if this new variable has any child variables it needs to recursively fetch. Since we're determining variable references by value and ID, I've modified this code to filter out variables whose value matches an existing ID.
 

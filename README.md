@@ -50,3 +50,7 @@ yarn redux-devtools
 This starts the devtools server on `ws://localhost:8000` and launches a standalone devtools app. You can also use a different devtools app if you prefer.
 
 If the webview is open and you don't see the instance in devtools, wait a few seconds then reload devtools with `Ctrl+R`, or go to settings and disconnect/reconnect.
+
+## Adding debugger support
+
+Becuase debuggers are implemented differently for each language, support needs to be added for each debugger to guarantee accurate information in Pedagogical. If you are a developer who would like to add support for a specific language or debugger, read the guide [Adding Debugger Support to Pedagogical](docs/adding-debugger-support.md).
