@@ -1,24 +1,10 @@
 import { AppListenerEffectApi } from "../../../../../listenerMiddleware";
 import debugApi from "../../../debugApi";
-import { ScopeEntity, StackFrameEntity, VariablesEntity, toVariablesEntity, variableSelectors } from "../../../entities";
+import { VariablesEntity, toVariablesEntity, variableSelectors } from "../../../entities";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { selectSessionState } from "../../../sessionsSlice";
-import { addVariables } from "../defaultActions";
-
-export type FetchVariablesContextArg = {
-  /** The debug session id */
-  sessionId: string,
-  /** The stack frame that this variable belongs to */
-  frame: StackFrameEntity,
-  /** The `variableReference`s to fetch */
-  refsToFetch: number[],
-  /** The parent variable that references this variable, or undefined if referenced from a scope */
-  variable?: VariablesEntity,
-  /** The scope that references this variable, or undefined if referenced from a parent variable */
-  scope?: ScopeEntity,
-  /** Whether "lazy" variables shopuld be fetched */
-  force?: boolean,
-};
+import { addVariables } from "../../default/defaultActions";
+import { FetchVariablesContextArg } from "../../default/strategies/defaultFetchVariablesStrategy";
 
 /**
  * Fetch variables using the given reference numbers.
@@ -34,7 +20,7 @@ export type FetchVariablesContextArg = {
  * @param maxDepth Maximum recursion depth
  * @param currentDepth Current recursion depth
  */
-export default async function defaultFetchVariablesStrategy(
+export default async function javaFetchVariablesStrategy(
   ctx: FetchVariablesContextArg,
   api: AppListenerEffectApi,
   maxDepth = 10,
@@ -64,6 +50,16 @@ export default async function defaultFetchVariablesStrategy(
     // not ideal because variablesReference has a limited lifetime
     const varEntity = toVariablesEntity(args, resp.body.variables);
 
+    // reference values in Java have the value `Type@id` which can identify referenced objects.
+    // update pedagogId if this object is referenced from a parent variable
+    if (ctx.variable !== undefined) {
+      // find the specific variable item that references this
+      const parent = ctx.variable.variables.find(v => v.variablesReference === ref);
+      if (parent !== undefined && parent.value.match(/@\d+$/)) {
+        varEntity.pedagogId = parent.value;
+      }
+    }
+
     api.dispatch(addVariables(ctx.sessionId, { variables: [varEntity] }));
     variables.push(varEntity);
 
@@ -75,13 +71,10 @@ export default async function defaultFetchVariablesStrategy(
     // fetch child refs
     // ignore refs we've already fetched and refs that are zero
     // also ignore variables marked as lazy (unless request is forced)
-    // 
-    // new for java: ignore child var if its value matches an existing id (e.g. `String@8`)
     const childRefsToFetch = varEntity.variables.filter(($var) =>
       $var.variablesReference > 0
       && !refsFetched.includes($var.variablesReference)
       && (ctx.force || !$var.presentationHint?.lazy)
-      && !session.variables.ids.includes($var.value) // <-- NEW
     ).map(($var) => $var.variablesReference);
 
     const childContextArgs: FetchVariablesContextArg = {
@@ -89,7 +82,7 @@ export default async function defaultFetchVariablesStrategy(
       refsToFetch: childRefsToFetch,
       variable: varEntity,
     };
-    const childVars = await defaultFetchVariablesStrategy(childContextArgs, api, maxDepth, currentDepth + 1);
+    const childVars = await javaFetchVariablesStrategy(childContextArgs, api, maxDepth, currentDepth + 1);
 
     variables.push(...childVars);
   }

@@ -81,7 +81,7 @@ export default abstract class BaseSession {
    * another session.
    *
    * To only listen for actions that correspond to this session, check the `sessionId` in the
-   * `meta` property of an action. The convenience function `matcherWithId(id, matcher) does this
+   * `meta` property of an action. The convenience function `matcherWithId(id, matcher)` does this
    * while keeping the matcher's type guard.
    *
    * The session manager will unsubscribe the listeners when the session is removed.
