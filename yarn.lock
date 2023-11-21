@@ -5698,6 +5698,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vscode/codicons@npm:^0.0.35":
+  version: 0.0.35
+  resolution: "@vscode/codicons@npm:0.0.35"
+  checksum: 7527ef7c1c56d53f931af4984640101bb4ddb7be5761ca5de3d1e5ae1d3ce56cdefb0fbe446d5cb84e6d45f6d9655a32bbc1e1c9e7e30aa78128bd8dcbd88858
+  languageName: node
+  linkType: hard
+
 "@vscode/debugprotocol@npm:^1.61.0":
   version: 1.61.0
   resolution: "@vscode/debugprotocol@npm:1.61.0"
@@ -9100,6 +9107,7 @@ __metadata:
     "@types/mocha": ^10
     "@types/node": ^12.11.7
     "@types/vscode": ^1.46.0
+    "@vscode/codicons": ^0.0.35
     "@vscode/debugprotocol": ^1.61.0
     "@vscode/test-electron": ^2.3.4
     glob: ^10.3.3
@@ -15835,6 +15843,7 @@ __metadata:
     "@types/react": ^18.2.11
     "@types/react-dom": ^18.2.4
     "@types/vscode-webview": ^1.57.0
+    "@vscode/codicons": ^0.0.35
     "@vscode/webview-ui-toolkit": ^1.2.2
     async-lock: ^1.4.0
     elkjs: ^0.8.2

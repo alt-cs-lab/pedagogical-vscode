@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react";
 import { ReactFlowProvider } from "reactflow";
 import { DebugNodeContainer } from "../components/nodes";
 
-// default export determines wehre story goes in the story list
+// default export determines where story goes in the story list
 const meta: Meta<typeof DebugNodeContainer> = {
   component: DebugNodeContainer,
   decorators: [

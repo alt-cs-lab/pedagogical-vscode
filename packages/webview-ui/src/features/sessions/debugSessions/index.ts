@@ -16,3 +16,7 @@ export function getSessionClassByDebugType(debugType: string): BaseSessionCtor {
     Object.hasOwn(sessionClassByDebugType, debugType) ? debugType : "default"
   ];
 }
+
+export function isDebugTypeSupported(debugType: string): boolean {
+  return Object.hasOwn(sessionClassByDebugType, debugType);
+}

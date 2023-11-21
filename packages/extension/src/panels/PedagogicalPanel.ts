@@ -94,6 +94,8 @@ export class PedagogicalPanel {
     const stylesUri = getUri(webview, context.extensionUri, ["dist", "webview-ui", "assets", "index.css"]);
     // The JS file from the React build output
     const scriptUri = getUri(webview, context.extensionUri, ["dist", "webview-ui", "assets", "index.js"]);
+    // CSS file for using vscode-codicons
+    const codiconUri = getUri(webview, context.extensionUri, ['node_modules', '@vscode/codicons', 'dist', 'codicon.css']);
 
     const nonce = getNonce();
 
@@ -111,6 +113,7 @@ export class PedagogicalPanel {
             style-src ${webview.cspSource};
             script-src 'nonce-${nonce}';
             connect-src ${isEnvDevelopment ? "'self' ws:" : "none"}">
+          <link rel="stylesheet" type="text/css" href="${codiconUri.toString()}">
           <link rel="stylesheet" type="text/css" href="${stylesUri.toString()}">
           <title>Pedagogical</title>
         </head>

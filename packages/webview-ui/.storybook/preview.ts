@@ -2,6 +2,7 @@ import type { Preview } from "@storybook/react";
 
 import "./styleDeclarations.css";
 import "./styleDefault.css";
+import "@vscode/codicons/dist/codicon.css"
 import "reactflow/dist/style.css";
 
 const preview: Preview = {

@@ -10,7 +10,7 @@ export type StackFrameData = BaseNodeData & {
 };
 
 export type ScopeData = {
-  name?: string;
+  name: string;
   lazy?: boolean;
   items?: VariablesListItem[];
 };
@@ -21,7 +21,7 @@ export default function StackFrameNode(props: NodeProps<StackFrameData>) {
       <div className="common-node-header">{props.data.name}</div>
       {props.data.scopes.map((scopeData) => (
         <div className="common-node stack-frame-scope" key={scopeData.name}>
-          {scopeData.name ? (
+          {props.data.scopes.length > 1 ? (
             <div className="common-node-header">{scopeData.name}</div>
           ) : null}
           {scopeData.lazy ? (
