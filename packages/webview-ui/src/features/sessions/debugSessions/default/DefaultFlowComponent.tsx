@@ -18,7 +18,7 @@ const DefaultFlow = (props: { sessionId: string }) => {
   );
 
   const sessionEntity = useAppSelector((state) => state.sessions.sessionEntities.entities[props.sessionId]);
-  const debugTypeSupported = useMemo(() => isDebugTypeSupported(sessionEntity!.name), []);
+  const debugTypeSupported = useMemo(() => isDebugTypeSupported(sessionEntity!.type), []);
 
   const nodeSelectors = nodesAdapter.getSelectors();
   const edgeSelectors = edgesAdapter.getSelectors();

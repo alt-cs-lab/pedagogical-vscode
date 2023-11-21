@@ -15,8 +15,11 @@ packages/**
 docs/**
 
 # Ignore node_modules except for codicons
-# **/node_modules/**
+**/node_modules/**
 !node_modules/@vscode/codicons/dist/**
+
+# Ignore testbench workspace
+sampleWorkspace/**
 
 # Ignore Misc
 vsc-extension-quickstart.md

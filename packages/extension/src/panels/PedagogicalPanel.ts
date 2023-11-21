@@ -18,6 +18,7 @@ export class PedagogicalPanel {
   public static currentPanel: PedagogicalPanel | undefined;
   private readonly _panel: vscode.WebviewPanel;
   private _disposables: vscode.Disposable[] = [];
+  private _context: vscode.ExtensionContext;
 
   /**
    * The PedagogicalPanel class private constructor (called only from the render method).
@@ -27,10 +28,11 @@ export class PedagogicalPanel {
    */
   private constructor(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
     this._panel = panel;
+    this._context = context;
 
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
-    this._panel.webview.html = this._getWebviewContent(this._panel.webview, context);
+    this._panel.webview.html = this._getWebviewContent(this._panel.webview);
 
     this._setWebviewMessageListener(this._panel.webview);
 
@@ -89,17 +91,17 @@ export class PedagogicalPanel {
    * @returns A template string literal containing the HTML that should be
    * rendered within the webview panel
    */
-  private _getWebviewContent(webview: vscode.Webview, context: vscode.ExtensionContext) {
+  private _getWebviewContent(webview: vscode.Webview) {
     // The CSS file from the React build output
-    const stylesUri = getUri(webview, context.extensionUri, ["dist", "webview-ui", "assets", "index.css"]);
+    const stylesUri = getUri(webview, this._context.extensionUri, ["dist", "webview-ui", "assets", "index.css"]);
     // The JS file from the React build output
-    const scriptUri = getUri(webview, context.extensionUri, ["dist", "webview-ui", "assets", "index.js"]);
+    const scriptUri = getUri(webview, this._context.extensionUri, ["dist", "webview-ui", "assets", "index.js"]);
     // CSS file for using vscode-codicons
-    const codiconUri = getUri(webview, context.extensionUri, ['node_modules', '@vscode/codicons', 'dist', 'codicon.css']);
+    const codiconUri = getUri(webview, this._context.extensionUri, ['node_modules', '@vscode/codicons', 'dist', 'codicon.css']);
 
     const nonce = getNonce();
 
-    const isEnvDevelopment = context.extensionMode === vscode.ExtensionMode.Development;
+    const isEnvDevelopment = this._context.extensionMode === vscode.ExtensionMode.Development;
 
     // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
     return /*html*/ `
@@ -120,7 +122,7 @@ export class PedagogicalPanel {
         <body>
           <div id="root"></div>
           <script id="scriptData" type="application/json">
-            {"isEnvDevelopment": ${context.extensionMode === vscode.ExtensionMode.Development}}
+            {"isEnvDevelopment": ${this._context.extensionMode === vscode.ExtensionMode.Development}}
           </script>
           <script type="module" nonce="${nonce}" src="${scriptUri.toString()}"></script>
         </body>
@@ -182,7 +184,9 @@ export class PedagogicalPanel {
   /** Forward a request from the webview to the DebugSessionController */
   private _handleDebugRequest(sessionId: string, req: DebugRequest, msgSeq?: number) {
     DebugSessionController.sendDebugRequest(sessionId, req).then((resp) => {
-      console.log(resp);
+      if (this._context.extensionMode !== vscode.ExtensionMode.Production) {
+        console.log(resp);
+      }
       this._postWebviewMessage({ type: "debugResponse", msgSeq, data: { sessionId, resp } });
     }).catch(() => {
       this._postWebviewMessage({ type: "debugError", msgSeq, data: {} });
