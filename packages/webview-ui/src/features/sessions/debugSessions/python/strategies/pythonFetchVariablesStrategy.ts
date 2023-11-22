@@ -33,14 +33,16 @@ export default async function pythonFetchVariablesStrategy(
     
     // by default the variable id is it's variablesReference number
     // not ideal because variablesReference has a limited lifetime
+    // TODO: if we need a better unique id, evaluate id() in python to get unique id of object
     const varEntity = toVariablesEntity(args, resp.body.variables);
 
-    // TODO: evaluate id() in python to get unique id of object
-
-    // for now, filter out "special variables", etc.
-    varEntity.variables = varEntity.variables.filter(
-      (variable) => !variable.name.endsWith(" variables"),
+    // for now, filter out "special variables", "function variables" and "class variables"
+    // also filter out imported modules (e.g. "numpy")
+    varEntity.variables = varEntity.variables.filter((variable) => 
+      !variable.name.endsWith(" variables")
+      && variable.type !== "module"
     );
+
     api.dispatch(addVariables(ctx.sessionId, { variables: [varEntity] }));
     variables.push(varEntity);
 
