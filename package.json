@@ -27,15 +27,18 @@
     "onDebug"
   ],
   "scripts": {
-    "vscode:prepublish": "yarn build",
+    "vscode:prepublish": "yarn cleanbuild",
     "watch": "concurrently 'yarn workspace extension watch' 'yarn workspace webview-ui watch'",
     "build": "yarn workspace extension build && yarn workspace webview-ui build",
+    "clean": "yarn node scripts/clean.mjs",
+    "cleanbuild": "yarn clean && yarn build",
     "lint": "yarn eslint .",
     "redux-devtools": "yarn workspace webview-ui run redux-devtools",
     "storybook": "yarn workspace webview-ui run storybook"
   },
   "packageManager": "yarn@3.6.1",
   "devDependencies": {
+    "@types/fs-extra": "^11",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "@vscode/vsce": "^2.20.1",
@@ -46,6 +49,7 @@
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-react": "latest",
+    "fs-extra": "^11.1.1",
     "typescript": "*"
   }
 }
