@@ -18,7 +18,7 @@ export default function VariablesNode(props: NodeProps<VariablesData>) {
         position={Position.Left}
         type="target"
       />
-      <VariablesList items={props.data.items} />
+      <VariablesList nodeId={props.id} items={props.data.items} />
     </div>
   );
 }

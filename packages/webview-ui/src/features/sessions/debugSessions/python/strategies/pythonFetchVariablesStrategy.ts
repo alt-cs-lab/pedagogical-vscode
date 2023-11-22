@@ -37,10 +37,12 @@ export default async function pythonFetchVariablesStrategy(
     const varEntity = toVariablesEntity(args, resp.body.variables);
 
     // for now, filter out "special variables", "function variables" and "class variables"
-    // also filter out imported modules (e.g. "numpy")
+    // ignore imported modules (e.g. "numpy")
+    // ignore "(return)" values
     varEntity.variables = varEntity.variables.filter((variable) => 
       !variable.name.endsWith(" variables")
       && variable.type !== "module"
+      && !variable.name.startsWith("(return) ")
     );
 
     api.dispatch(addVariables(ctx.sessionId, { variables: [varEntity] }));

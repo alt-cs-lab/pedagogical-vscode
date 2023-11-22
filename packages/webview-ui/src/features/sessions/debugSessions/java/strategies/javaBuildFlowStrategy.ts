@@ -38,7 +38,7 @@ async function javaBuildFlowStrategy(
       );
       
       const scopeData: ScopeData = {
-        name: frame.scopeIds.length > 1 ? scope.name : undefined,
+        name: scope.name,
         lazy: scope.expensive,
       };
       frameNode.data.scopes.push(scopeData);

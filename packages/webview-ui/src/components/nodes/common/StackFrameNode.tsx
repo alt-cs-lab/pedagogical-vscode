@@ -28,7 +28,7 @@ export default function StackFrameNode(props: NodeProps<StackFrameData>) {
             <div>(lazy)</div>
           ) : null}
           {scopeData.items ? (
-            <VariablesList items={scopeData.items} />
+            <VariablesList nodeId={props.id} items={scopeData.items} />
           ) : null}
         </div>
       ))}
