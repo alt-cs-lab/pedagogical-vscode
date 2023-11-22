@@ -1,4 +1,22 @@
-# Pedagogical IDE
+# Pedagogical VSCode
+
+A [Python Tutor](https://pythontutor.com/)-inspired Visual Studio Code extension that displays a real-time visualization of your program's debug state.
+
+![Demonstration](docs/img/demo.gif)
+
+# Installation
+
+Install this extension through the VSCode Marketplace or by downloading the VSIX package from the Releases page.
+
+# Usage
+
+*Note: this extension is still in its early stages, and some visualizations may be buggy or innacurate! Improved support for more languages will be added as development continues.*
+
+To open Pedagogical, start debugging a program, then click the Pedagogical button near the bottom-left of the window. You can also open the command window (`F1` or `Ctrl+Shift+P`) and select `Show Pedagogical View`.
+
+Simply step through your program to see the visualization update in real-time. If you have multiple debug sessions running at once, Pedagogical will use the currently active session.
+
+Right now, Pedagogical only officially supports Python programs. You can try using Pedagogical with any other language, but expect the visualization to be buggy or innacurate. Improved support for more languages will be added as development continues.
 
 # Development
 

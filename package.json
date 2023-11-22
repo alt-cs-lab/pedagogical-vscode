@@ -1,20 +1,17 @@
 {
   "name": "pedagogical",
-  "displayName": "pedagogical",
-  "description": "Pedagogical debug visualizer",
-  "publisher": "ALT+CS Lab @ Kansas State University",
+  "displayName": "Pedagogical",
+  "description": "Real-time visualization of your program's debug state",
+  "publisher": "ksu-alt-cs",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "github:alt-cs-lab/pedagogical-vscode"
   },
   "version": "0.0.1",
-  "workspaces": [
-    "packages/*"
-  ],
   "engines": {
     "vscode": "^1.75.0"
   },
-  "main": "./dist/extension/extension.js",
   "contributes": {
     "commands": [
       {
@@ -26,6 +23,16 @@
   "activationEvents": [
     "onDebug"
   ],
+  "categories": [
+    "Visualization",
+    "Debuggers",
+    "Education"
+  ],
+  "main": "./dist/extension/extension.js",
+  "workspaces": [
+    "packages/*"
+  ],
+  "packageManager": "yarn@3.6.1",
   "scripts": {
     "vscode:prepublish": "yarn cleanbuild",
     "watch": "concurrently 'yarn workspace extension watch' 'yarn workspace webview-ui watch'",
@@ -36,7 +43,6 @@
     "redux-devtools": "yarn workspace webview-ui run redux-devtools",
     "storybook": "yarn workspace webview-ui run storybook"
   },
-  "packageManager": "yarn@3.6.1",
   "devDependencies": {
     "@types/fs-extra": "^11",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
