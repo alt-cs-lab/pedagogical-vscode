@@ -8,8 +8,12 @@ import defaultStrategies from "./strategies";
 import { getDefaultFlowComponent } from "./DefaultFlowComponent";
 import { debugEventAction } from "../../debugEventActions";
 import { sessionsInitialized } from "../../sessionsSlice";
+import { SessionRulesEngine } from "../../../rulesEngine/engines/sessionRulesEngine";
+import { SessionEntity } from "../../entities";
 
 export default class DefaultSession extends BaseSession {
+  sessionRulesEngine: SessionRulesEngine;
+
   override reducer = createReducer(this.initialState, (builder) => {
     // set/remove all debug adapter objects
     builder.addCase(defaultActions.setAllDebugObjects, defaultReducers.setAllDebugObjectsReducer);
@@ -60,8 +64,9 @@ export default class DefaultSession extends BaseSession {
     }),
   ];
 
-  constructor(id: string, initialState?: BaseSessionState) {
-    super(id, initialState);
+  constructor(sessionEntity: SessionEntity, initialState?: BaseSessionState) {
+    super(sessionEntity, initialState);
+    this.sessionRulesEngine = new SessionRulesEngine(sessionEntity);
     if (this.initialState.lastPause > this.initialState.lastFetch) {
       this.fetchAfterInitialize = true;
     }

@@ -7007,6 +7007,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"clone@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "clone@npm:2.1.2"
+  checksum: aaf106e9bc025b21333e2f4c12da539b568db4925c0501a1bf4070836c9e848c892fa22c35548ce0d1132b08bbbfa17a00144fe58fccdab6fa900fec4250f67d
+  languageName: node
+  linkType: hard
+
 "codemirror@npm:^5.65.4":
   version: 5.65.13
   resolution: "codemirror@npm:5.65.13"
@@ -9025,6 +9032,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eventemitter2@npm:^6.4.4":
+  version: 6.4.9
+  resolution: "eventemitter2@npm:6.4.9"
+  checksum: be59577c1e1c35509c7ba0e2624335c35bbcfd9485b8a977384c6cc6759341ea1a98d3cb9dbaa5cea4fff9b687e504504e3f9c2cc1674cf3bd8a43a7c74ea3eb
+  languageName: node
+  linkType: hard
+
 "execa@npm:^5.0.0, execa@npm:^5.1.1":
   version: 5.1.1
   resolution: "execa@npm:5.1.1"
@@ -9984,6 +9998,13 @@ __metadata:
   dependencies:
     function-bind: ^1.1.1
   checksum: b9ad53d53be4af90ce5d1c38331e712522417d017d5ef1ebd0507e07c2fbad8686fffb8e12ddecd4c39ca9b9b47431afbb975b8abf7f3c3b82c98e9aad052792
+  languageName: node
+  linkType: hard
+
+"hash-it@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "hash-it@npm:6.0.0"
+  checksum: 10ca948ff7902a752344c3975c1a5c76ba9e4aa0363032f347a7235cce98473dce60fe4399b05979596aedf649adaf5b3f792a55b9b64ad59ae686e43300c2d1
   languageName: node
   linkType: hard
 
@@ -10968,6 +10989,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"json-rules-engine@npm:^6.5.0":
+  version: 6.5.0
+  resolution: "json-rules-engine@npm:6.5.0"
+  dependencies:
+    clone: ^2.1.2
+    eventemitter2: ^6.4.4
+    hash-it: ^6.0.0
+    jsonpath-plus: ^7.2.0
+    lodash.isobjectlike: ^4.0.0
+  checksum: c1a6fa2bb65743397c838c4e4a9157f184e0c24423031fa4bab6b83b5edbb64341f9197ccad9fdd44fcd6c58ac329c0c77882a64acf0d90ee1d856768a4154e3
+  languageName: node
+  linkType: hard
+
 "json-schema-compare@npm:^0.2.2":
   version: 0.2.2
   resolution: "json-schema-compare@npm:0.2.2"
@@ -11070,6 +11104,13 @@ __metadata:
     graceful-fs:
       optional: true
   checksum: 7af3b8e1ac8fe7f1eccc6263c6ca14e1966fcbc74b618d3c78a0a2075579487547b94f72b7a1114e844a1e15bb00d440e5d1720bfc4612d790a6f285d5ea8354
+  languageName: node
+  linkType: hard
+
+"jsonpath-plus@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "jsonpath-plus@npm:7.2.0"
+  checksum: 05f447339d29be861e307d6e812aec1b9b88a3ba6bba286966a4e8bed3e752bee3d715eabfc21dce968be85ccb48bf79d2c1af78da7b9b74cd1b446d4d5d02f5
   languageName: node
   linkType: hard
 
@@ -11525,6 +11566,13 @@ __metadata:
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: a3f527d22c548f43ae31c861ada88b2637eb48ac6aa3eb56e82d44917971b8aa96fbb37aa60efea674dc4ee8c42074f90f7b1f772e9db375435f6c83a19b3bc6
+  languageName: node
+  linkType: hard
+
+"lodash.isobjectlike@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "lodash.isobjectlike@npm:4.0.0"
+  checksum: eabcd968b1bd11208a90b27f9b167bd5ce30165a5b20d7886b94df95acfbc929dbe00cf16f2ce7a7779bdaf3f0ef4ee705e671782599ab73097307d2b8b488c5
   languageName: node
   linkType: hard
 
@@ -12843,6 +12891,7 @@ __metadata:
     eslint-plugin-promise: ^6.0.0
     eslint-plugin-react: latest
     fs-extra: ^11.1.1
+    json-rules-engine: ^6.5.0
     typescript: "*"
   languageName: unknown
   linkType: soft

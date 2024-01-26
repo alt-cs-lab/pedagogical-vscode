@@ -2,8 +2,9 @@ import BaseSession from "./BaseSession";
 import DefaultSession from "./default/DefaultSession";
 import PythonSession from "./python/PythonSession";
 import JavaSession from "./java/JavaSession";
+import { SessionEntity } from "../entities";
 
-type BaseSessionCtor = new (id: string, preloadedState?: any) => BaseSession;
+type BaseSessionCtor = new (sessionEntity: SessionEntity, preloadedState?: any) => BaseSession;
 
 const sessionClassByDebugType: Record<string, BaseSessionCtor> = {
   default: DefaultSession,
