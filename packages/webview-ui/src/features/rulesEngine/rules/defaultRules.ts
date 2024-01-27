@@ -14,7 +14,7 @@ const defaultStackFrameAcceptRule: PedagogRule = {
       {
         fact: "stackFrame",
         path: "$.presentationHint",
-        operator: "isUndefined",
+        operator: "undefined",
         value: null,
       },
       {
@@ -28,7 +28,8 @@ const defaultStackFrameAcceptRule: PedagogRule = {
 };
 
 /**
- * Accepts a scope as long as scope.expensive is not true
+ * Accepts a scope if scope.expensive is not true,
+ * and presentationHint is "locals" or the name starts with "Local".
  */
 const defaultScopeAcceptRule: PedagogRule = {
   name: "defaultScopeAcceptRule",
@@ -42,6 +43,24 @@ const defaultScopeAcceptRule: PedagogRule = {
         path: "$.expensive",
         operator: "notEqual",
         value: true,
+      },
+      {
+        any: [
+          {
+            // scope.presentationHint should be "local"...
+            fact: "scope",
+            path: "$.presentationHint",
+            operator: "equal",
+            value: "local"
+          },
+          {
+            // ...or scope.name should start with "Local"
+            fact: "scope",
+            path: "$.name",
+            operator: "startsWith",
+            value: "Local",
+          },
+        ],
       },
     ],
   },
@@ -64,7 +83,7 @@ const defaultVariableMemoryReferenceIdRule: PedagogRule = {
       {
         fact: "variable",
         path: "$.memoryReference",
-        operator: "isDefined",
+        operator: "defined",
         value: null,
       },
     ],
@@ -72,8 +91,9 @@ const defaultVariableMemoryReferenceIdRule: PedagogRule = {
 };
 
 /**
- * Instructs Pedagogical to not fetch the children of a variable if it is marked as "lazy"
- * or if its recursion depth is greater than 10.
+ * Instructs Pedagogical to not fetch the children of a variable if:
+ *  - its recursion depth is greater than 10, or
+ *  - it is marked as "lazy"
  */
 const defaultVariableSkipChildrenRule: PedagogRule = {
   name: "defaultVariableSkipChildrenRule",

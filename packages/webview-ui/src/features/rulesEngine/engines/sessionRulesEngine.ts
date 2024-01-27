@@ -10,6 +10,9 @@ import { ThreadRulesEngine } from "./threadRulesEngine";
 import { VariablesRulesEngine } from "./variablesRulesEngine";
 import { defaultRules, rulesPerDebugType } from "../rules";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
+import { MessageBox } from "../../../util";
+
+window.localStorage.debug = "json-rules-engine";
 
 export class SessionRulesEngine {
   private session: SessionEntity;
@@ -20,9 +23,14 @@ export class SessionRulesEngine {
 
   constructor(session: SessionEntity) {
     this.session = session;
+
     let rules = rulesPerDebugType[session.type];
     if (rules === undefined) {
       rules = defaultRules;
+      // Display a message that the current debugger may not be supported.
+      MessageBox.showInformation(
+        `No rules were defined for the \`${session.type}\` debugger. The information shown may be inaccurate.`
+      );
     }
 
     this.threadEngine = new ThreadRulesEngine(rules.threadRules);
@@ -37,7 +45,16 @@ export class SessionRulesEngine {
    * @returns The ThreadEntity and StackTraceArguments resulting from the rules, or null if the thread is rejected.
    */
   async evalThread(thread: DP.Thread) {
-    return await this.threadEngine.eval({ session: this.session, thread });
+    try {
+      return await this.threadEngine.eval({ session: this.session, thread });
+    } catch (e) {
+      console.error(e);
+      console.log(e);
+      MessageBox.showInformation(
+        "An error occured while processing a rule, and a thread was dropped."
+      );
+      return null;
+    }
   }
 
   /**
@@ -47,11 +64,20 @@ export class SessionRulesEngine {
    * @returns The StackFrameEntity and ScopeArguments resulting from the rules, or null if the stack frame is rejected.
    */
   async evalStackFrame(thread: ThreadEntity, stackFrame: DP.StackFrame) {
-    return await this.stackFrameEngine.eval({
-      session: this.session,
-      thread,
-      stackFrame,
-    });
+    try {
+      return await this.stackFrameEngine.eval({
+        session: this.session,
+        thread,
+        stackFrame,
+      });
+    } catch (e) {
+      console.error(e);
+      console.log(e);
+      MessageBox.showInformation(
+        "An error occured while processing a rule, and a stack frame was dropped."
+      );
+      return null;
+    }
   }
 
   /**
@@ -66,12 +92,21 @@ export class SessionRulesEngine {
     stackFrame: StackFrameEntity,
     scope: DP.Scope
   ) {
-    return await this.scopeEngine.eval({
-      session: this.session,
-      thread,
-      stackFrame,
-      scope,
-    });
+    try {
+      return await this.scopeEngine.eval({
+        session: this.session,
+        thread,
+        stackFrame,
+        scope,
+      });
+    } catch (e) {
+      console.error(e);
+      console.log(e);
+      MessageBox.showInformation(
+        "An error occured while processing a rule, and a scope was dropped."
+      );
+      return null;
+    }
   }
 
   /**
@@ -93,14 +128,23 @@ export class SessionRulesEngine {
     variable: DP.Variable,
     depth: number
   ) {
-    return await this.variableEngine.eval({
-      session: this.session,
-      thread,
-      stackFrame,
-      scope,
-      parentVariable,
-      variable,
-      meta: { depth },
-    });
+    try {
+      return await this.variableEngine.eval({
+        session: this.session,
+        thread,
+        stackFrame,
+        scope,
+        parentVariable,
+        variable,
+        meta: { depth },
+      });
+    } catch (e) {
+      console.error(e);
+      console.log(e);
+      MessageBox.showInformation(
+        "An error occured while processing a rule, and a variable was dropped."
+      );
+      return null;
+    }
   }
 }

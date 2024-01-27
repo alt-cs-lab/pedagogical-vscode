@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Background, Controls, ReactFlow, useNodesInitialized } from "reactflow";
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
 import { edgesAdapter, nodesAdapter } from "../../entities";
@@ -6,8 +6,6 @@ import { layoutNodes, nodesChanged } from "./defaultActions";
 import { nodeTypes } from "../../../../components/nodes";
 import { edgeTypes } from "../../../../components/edges";
 import LoadingScreen from "../../../../components/misc/LoadingScreen";
-import NotSupportedBanner from "../../../../components/misc/NotSupportedBanner";
-import { isDebugTypeSupported } from "..";
 
 import "./DefaultFlowComponent.css";
 
@@ -17,8 +15,7 @@ const DefaultFlow = (props: { sessionId: string }) => {
     (state) => state.sessions.sessionStates[props.sessionId]
   );
 
-  const sessionEntity = useAppSelector((state) => state.sessions.sessionEntities.entities[props.sessionId]);
-  const debugTypeSupported = useMemo(() => isDebugTypeSupported(sessionEntity!.type), []);
+  // const sessionEntity = useAppSelector((state) => state.sessions.sessionEntities.entities[props.sessionId]);
 
   const nodeSelectors = nodesAdapter.getSelectors();
   const edgeSelectors = edgesAdapter.getSelectors();
@@ -34,7 +31,6 @@ const DefaultFlow = (props: { sessionId: string }) => {
   }, [nodesInitialized]);
 
   return <>
-    <NotSupportedBanner visible={!debugTypeSupported} debugType={sessionEntity!.type}  />
     <ReactFlow
       nodes={nodes}
       edges={edges}

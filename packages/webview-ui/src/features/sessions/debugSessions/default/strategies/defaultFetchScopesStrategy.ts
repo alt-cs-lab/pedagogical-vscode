@@ -1,7 +1,10 @@
 import { AppListenerEffectApi } from "../../../../../listenerMiddleware";
 import debugApi from "../../../debugApi";
-import { ScopeEntity } from "../../../entities";
-import { addScopes } from "../defaultActions";
+import { DebugProtocol as DP } from "@vscode/debugprotocol";
+import * as defaultActions from "../defaultActions";
+import { SessionRulesEngine } from "../../../../rulesEngine/engines/sessionRulesEngine";
+import { ThreadEntity, StackFrameEntity } from "../../../entities";
+import { AcceptedScope } from "../../../../rulesEngine/engines/scopeRulesEngine";
 
 /**
  * Fetch the scopes from the given stack frame id.
@@ -10,28 +13,38 @@ import { addScopes } from "../defaultActions";
  */
 async function defaultFetchScopesStrategy(
   sessionId: string,
-  frameId: number,
+  sessionRulesEngine: SessionRulesEngine,
   api: AppListenerEffectApi,
-): Promise<ScopeEntity[]> {
-  const resp = await debugApi.debugRequestAsync(sessionId, {
+  thread: ThreadEntity,
+  stackFrame: StackFrameEntity,
+  scopesArgs: DP.ScopesArguments
+): Promise<AcceptedScope[]> {
+  // Fetch the scopes
+  const scopesResp = await debugApi.debugRequestAsync(sessionId, {
     command: "scopes",
-    args: { frameId },
+    args: scopesArgs,
   });
 
-  // only keep names that begin with "Local"
-  const scopes = resp.body.scopes.filter(
-    (scope) => scope.name.startsWith("Local")
+  // Run each scope through the rules engine
+  const acceptedScopes = [];
+  for (const scope of scopesResp.body.scopes) {
+    const acceptedScope = await sessionRulesEngine.evalScope(
+      thread,
+      stackFrame,
+      scope
+    );
+    acceptedScope && acceptedScopes.push(acceptedScope);
+  }
+
+  // Add scopes to the state
+  api.dispatch(
+    defaultActions.addScopes(sessionId, {
+      frameId: stackFrame.id,
+      scopes: acceptedScopes.map((as) => as.entity),
+    })
   );
 
-  const entities: ScopeEntity[] = scopes.map((scope) => ({
-    ...scope,
-    stackFrameId: frameId,
-    pedagogId: `${frameId}[${scope.name}]`,
-  }));
-
-  api.dispatch(addScopes(sessionId, { frameId, scopes: entities }));
-
-  return entities;
+  return acceptedScopes;
 }
 
 export default defaultFetchScopesStrategy;

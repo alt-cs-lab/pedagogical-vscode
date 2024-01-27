@@ -20,7 +20,7 @@ function endsWithEval(factValue: unknown, searchString: string) {
   return String(factValue).endsWith(searchString);
 }
 
-function isDefinedEval(factValue: unknown, _jsonValue: unknown) {
+function defined(factValue: unknown, _jsonValue: unknown) {
   return factValue !== undefined;
 }
 
@@ -31,6 +31,6 @@ export const operators = [
   new Operator("notStartsWith", not(startsWithEval)),
   new Operator("endsWith", endsWithEval),
   new Operator("notEndsWith", not(endsWithEval)),
-  new Operator("defined", isDefinedEval),
-  new Operator("undefined", not(isDefinedEval)),
+  new Operator("defined", defined),
+  new Operator("undefined", not(defined)),
 ];

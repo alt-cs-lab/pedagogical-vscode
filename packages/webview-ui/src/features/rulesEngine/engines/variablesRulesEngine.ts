@@ -15,7 +15,7 @@ interface VariablesFacts {
   };
 }
 
-interface AcceptedVariable {
+export interface AcceptedVariable {
   variable: DP.Variable;
   variablesArgs?: DP.VariablesArguments;
   pedagogId: string;

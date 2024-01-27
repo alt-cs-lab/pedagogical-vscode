@@ -1,7 +1,10 @@
 import { AppListenerEffectApi } from "../../../../../listenerMiddleware";
+import { SessionRulesEngine } from "../../../../rulesEngine/engines/sessionRulesEngine";
 import debugApi from "../../../debugApi";
-import { StackFrameEntity, toStackFrameEntities } from "../../../entities";
-import { addStackFrames } from "../defaultActions";
+import { ThreadEntity } from "../../../entities";
+import { DebugProtocol as DP } from "@vscode/debugprotocol";
+import * as defaultActions from "../defaultActions";
+import { AcceptedStackFrame } from "../../../../rulesEngine/engines/stackFrameRulesEngine";
 
 /**
  * Fetch the stack trace from the given thread id.
@@ -11,27 +14,36 @@ import { addStackFrames } from "../defaultActions";
  */
 async function defaultFetchStackTraceStrategy(
   sessionId: string,
-  threadId: number,
+  sessionRulesEngine: SessionRulesEngine,
   api: AppListenerEffectApi,
-): Promise<StackFrameEntity[]> {
-  const resp = await debugApi.debugRequestAsync(sessionId, {
+  thread: ThreadEntity,
+  stackTraceArgs: DP.StackTraceArguments
+): Promise<AcceptedStackFrame[]> {
+  // Fetch the stack frames
+  const framesResp = await debugApi.debugRequestAsync(sessionId, {
     command: "stackTrace",
-    args: { threadId },
+    args: stackTraceArgs,
   });
 
-  // filter out "subtle" and "label" frames
-  const frames = resp.body.stackFrames.filter(
-    (frame) =>
-      frame.presentationHint !== "subtle" &&
-      frame.presentationHint !== "label"
+  // Run each stack frame through the rules engine
+  const acceptedFrames = [];
+  for (const stackFrame of framesResp.body.stackFrames) {
+    const acceptedFrame = await sessionRulesEngine.evalStackFrame(
+      thread,
+      stackFrame
+    );
+    acceptedFrame && acceptedFrames.push(acceptedFrame);
+  }
+
+  // Add stack frames to the state
+  api.dispatch(
+    defaultActions.addStackFrames(sessionId, {
+      threadId: thread.id,
+      stackFrames: acceptedFrames.map((af) => af.entity),
+    })
   );
 
-  // the root of the stack is at the end of the array, but we want it at the beginning
-  frames.reverse();
-  
-  const entities = toStackFrameEntities(threadId, frames);
-  api.dispatch(addStackFrames(sessionId, { threadId, stackFrames: entities }));
-  return entities;
+  return acceptedFrames;
 }
 
 export default defaultFetchStackTraceStrategy;

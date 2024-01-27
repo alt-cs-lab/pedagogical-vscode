@@ -12,7 +12,7 @@ interface StackFrameFacts {
   stackFrame: DP.StackFrame;
 }
 
-interface AcceptedStackFrame {
+export interface AcceptedStackFrame {
   entity: StackFrameEntity;
   scopesArgs?: DP.ScopesArguments;
 }
@@ -56,7 +56,7 @@ export class StackFrameRulesEngine extends BaseRulesEngine {
     //   //     if (event.params.regexp) {
     //   //       const regexp = RegExp(event.params.regexp.pattern, event.params.regexp.flags);
     //   //       const match = String(value).match(regexp);
-            
+
     //   //     }
     //   //   }
     //   // }

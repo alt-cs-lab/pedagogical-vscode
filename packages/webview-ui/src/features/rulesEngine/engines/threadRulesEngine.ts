@@ -8,7 +8,7 @@ interface ThreadFacts {
   thread: DP.Thread;
 }
 
-interface AcceptedThread {
+export interface AcceptedThread {
   entity: ThreadEntity;
   stackTraceArgs?: DP.StackTraceArguments;
 }

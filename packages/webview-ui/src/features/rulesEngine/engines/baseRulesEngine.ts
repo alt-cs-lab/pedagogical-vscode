@@ -36,16 +36,12 @@ export class BaseRulesEngine {
   }
 
   protected isRejected(engineResult: EngineResult): boolean {
-    for (const ruleResult of engineResult.results) {
-      if (ruleResult.result && ruleResult.event?.type === "reject") {
-        // "reject" event succeeded
-        return true;
-      }
-      else if (ruleResult.result === false && ruleResult.event?.type === "accept") {
-        // "accept" event failed
-        return true;
-      }
-    }
-    return false;
+    // search successful events for a "reject" event
+    const successfulReject = engineResult.events.find((ev) => ev.type === "reject");
+
+    // search failed events for an "accept" event
+    const failedAccept = engineResult.failureEvents.find((ev) => ev.type === "accept");
+
+    return !!successfulReject || !!failedAccept;
   }
 }

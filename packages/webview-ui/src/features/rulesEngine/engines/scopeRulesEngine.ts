@@ -9,7 +9,7 @@ interface ScopeFacts {
   scope: DP.Scope;
 }
 
-interface AcceptedScope {
+export interface AcceptedScope {
   entity: ScopeEntity;
   variablesArgs?: DP.VariablesArguments;
 }

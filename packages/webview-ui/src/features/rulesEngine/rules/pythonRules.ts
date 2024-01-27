@@ -1,7 +1,27 @@
+import { defaultRules } from "./defaultRules";
 import { DebugSessionRules, PedagogRule } from "./types";
 
 /**
- * This rule accepts a python variable as long as it's not a "special" variable, module, or return value.
+ * Only accept the "Locals" scope.
+ */
+const pythonScopeAcceptRule: PedagogRule = {
+  name: "pythonScopeAcceptRule",
+  event: { type: "accept" },
+  priority: 100,
+  conditions: {
+    all: [
+      {
+        fact: "scope",
+        path: "$.name",
+        operator: "equal",
+        value: "Locals",
+      },
+    ],
+  },
+};
+
+/**
+ * Accept a python variable as long as it's not special/function/class variables, a module, or a return value.
  */
 const pythonVariableAcceptRule: PedagogRule = {
   name: "pythonVariableAcceptRule",
@@ -30,8 +50,8 @@ const pythonVariableAcceptRule: PedagogRule = {
 };
 
 export const pythonRules: DebugSessionRules = {
-  threadRules: [],
-  stackFrameRules: [],
-  scopeRules: [],
-  variableRules: [pythonVariableAcceptRule],
+  threadRules: defaultRules.threadRules,
+  stackFrameRules: defaultRules.stackFrameRules,
+  scopeRules: [pythonScopeAcceptRule],
+  variableRules: [...defaultRules.variableRules, pythonVariableAcceptRule],
 };
