@@ -8,6 +8,7 @@ type BaseSessionCtor = new (id: string, preloadedState?: any) => BaseSession;
 const sessionClassByDebugType: Record<string, BaseSessionCtor> = {
   default: DefaultSession,
   python: PythonSession,
+  debugpy: PythonSession,
   java: JavaSession,
 };
 
