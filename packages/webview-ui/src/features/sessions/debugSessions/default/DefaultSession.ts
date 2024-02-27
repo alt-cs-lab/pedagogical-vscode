@@ -15,7 +15,10 @@ export default class DefaultSession extends BaseSession {
   override reducer = createReducer(this.initialState, (builder) => {
     // set/remove all debug adapter objects
     builder.addCase(defaultActions.setAllDebugObjects, defaultReducers.setAllDebugObjectsReducer);
-    builder.addCase(defaultActions.removeAllDebugObjects, defaultReducers.removeAllDebugObjectsReducer);
+    builder.addCase(
+      defaultActions.removeAllDebugObjects,
+      defaultReducers.removeAllDebugObjectsReducer,
+    );
 
     // add individual debug adapter objects
     builder.addCase(defaultActions.addThreads, defaultReducers.addThreadsReducer);
@@ -24,7 +27,7 @@ export default class DefaultSession extends BaseSession {
     builder.addCase(defaultActions.addVariables, defaultReducers.addVariablesReducer);
 
     // set all react flow objects
-    builder.addCase(defaultActions.setAllFlowObjects, defaultReducers.setAllFlowObjectsReducer,);
+    builder.addCase(defaultActions.setAllFlowObjects, defaultReducers.setAllFlowObjectsReducer);
 
     // apply node changes from react flow
     builder.addCase(defaultActions.nodesChanged, defaultReducers.nodesChangedReducer);
@@ -76,15 +79,19 @@ export default class DefaultSession extends BaseSession {
     api.dispatch(defaultActions.updateLastPause(this.id));
     api.dispatch(defaultActions.removeAllDebugObjects(this.id));
 
-    const stoppedThread = debugEventAction.stopped.match(action) ? action.payload.body.threadId : undefined;
-    
+    const stoppedThread = debugEventAction.stopped.match(action)
+      ? action.payload.body.threadId
+      : undefined;
+
     api.dispatch(defaultActions.setLoading(this.id, { loading: true }));
 
     try {
       await this.strategies.fetchSession(this.id, this.strategies, api, stoppedThread);
     } catch (e) {
       console.error(e);
-      MessageBox.showError("An error occured while fetching the debug state. The flowchart shown may be missing or incomplete.");
+      MessageBox.showError(
+        "An error occured while fetching the debug state. The flowchart shown may be missing or incomplete.",
+      );
     }
 
     api.dispatch(defaultActions.buildFlow(this.id));

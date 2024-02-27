@@ -13,11 +13,7 @@ export default function VariablesNode(props: NodeProps<VariablesData>) {
   return (
     <div className="common-node variables-node">
       <div className="common-node-header">{props.data.name}</div>
-      <Handle
-        className="variables-node-handle"
-        position={Position.Left}
-        type="target"
-      />
+      <Handle className="variables-node-handle" position={Position.Left} type="target" />
       <VariablesList nodeId={props.id} items={props.data.items} />
     </div>
   );

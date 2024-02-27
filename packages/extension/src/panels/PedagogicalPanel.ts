@@ -52,10 +52,15 @@ export class PedagogicalPanel {
       PedagogicalPanel.currentPanel._panel.reveal(vscode.ViewColumn.Beside);
     } else {
       // If a webview panel does not already exist create and show a new one
-      const panel = vscode.window.createWebviewPanel("showPedagogicalView", "Pedagogical", vscode.ViewColumn.Beside, {
-        enableScripts: true,
-        localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, "dist")],
-      });
+      const panel = vscode.window.createWebviewPanel(
+        "showPedagogicalView",
+        "Pedagogical",
+        vscode.ViewColumn.Beside,
+        {
+          enableScripts: true,
+          localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, "dist")],
+        },
+      );
 
       PedagogicalPanel.currentPanel = new PedagogicalPanel(panel, context);
     }
@@ -94,11 +99,26 @@ export class PedagogicalPanel {
    */
   private _getWebviewContent(webview: vscode.Webview) {
     // The CSS file from the React build output
-    const stylesUri = getUri(webview, this._context.extensionUri, ["dist", "webview-ui", "assets", "index.css"]);
+    const stylesUri = getUri(webview, this._context.extensionUri, [
+      "dist",
+      "webview-ui",
+      "assets",
+      "index.css",
+    ]);
     // The JS file from the React build output
-    const scriptUri = getUri(webview, this._context.extensionUri, ["dist", "webview-ui", "assets", "index.js"]);
+    const scriptUri = getUri(webview, this._context.extensionUri, [
+      "dist",
+      "webview-ui",
+      "assets",
+      "index.js",
+    ]);
     // CSS file for using vscode-codicons
-    const codiconUri = getUri(webview, this._context.extensionUri, ['node_modules', '@vscode/codicons', 'dist', 'codicon.css']);
+    const codiconUri = getUri(webview, this._context.extensionUri, [
+      "node_modules",
+      "@vscode/codicons",
+      "dist",
+      "codicon.css",
+    ]);
 
     const nonce = getNonce();
 
@@ -148,14 +168,16 @@ export class PedagogicalPanel {
           case "showError":
             void vscode.window.showErrorMessage(`Pedagogical: ${message.data.msg}`);
             return;
-          
+
           case "showInformation":
             void vscode.window.showInformationMessage(`Pedagogical: ${message.data.msg}`);
             return;
 
           case "getAllSessionsRequest": {
             const respData: VsCodeMessage<"getAllSessionsResponse">["data"] = {
-              activeSessionId: vscode.debug.activeDebugSession ? vscode.debug.activeDebugSession.id : null,
+              activeSessionId: vscode.debug.activeDebugSession
+                ? vscode.debug.activeDebugSession.id
+                : null,
               sessions: DebugSessionController.sessions.map((val) => ({
                 id: val.id,
                 name: val.name,
@@ -193,14 +215,16 @@ export class PedagogicalPanel {
 
   /** Forward a request from the webview to the DebugSessionController */
   private _handleDebugRequest(sessionId: string, req: DebugRequest, msgSeq?: number) {
-    DebugSessionController.sendDebugRequest(sessionId, req).then((resp) => {
-      if (this._context.extensionMode !== vscode.ExtensionMode.Production) {
-        console.log(resp);
-      }
-      this._postWebviewMessage({ type: "debugResponse", msgSeq, data: { sessionId, resp } });
-    }).catch(() => {
-      this._postWebviewMessage({ type: "debugError", msgSeq, data: {} });
-    });
+    DebugSessionController.sendDebugRequest(sessionId, req)
+      .then((resp) => {
+        if (this._context.extensionMode !== vscode.ExtensionMode.Production) {
+          console.log(resp);
+        }
+        this._postWebviewMessage({ type: "debugResponse", msgSeq, data: { sessionId, resp } });
+      })
+      .catch(() => {
+        this._postWebviewMessage({ type: "debugError", msgSeq, data: {} });
+      });
   }
 
   private _onDebugSessionMessage: DebugSessionMessageListener = (msg) => {

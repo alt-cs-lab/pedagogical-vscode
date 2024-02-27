@@ -11,7 +11,7 @@ export default async function defaultFetchThreadsStrategy(
   sessionId: string,
   sessionRulesEngine: SessionRulesEngine,
   api: AppListenerEffectApi,
-  stoppedThreadId?: number
+  stoppedThreadId?: number,
 ): Promise<AcceptedThread[]> {
   // Fetch threads from the debug adapter
   const threadsResp = await debugApi.debugRequestAsync(sessionId, {
@@ -36,7 +36,7 @@ export default async function defaultFetchThreadsStrategy(
   api.dispatch(
     defaultActions.addThreads(sessionId, {
       threads: acceptedThreads.map((at) => at.entity),
-    })
+    }),
   );
 
   return acceptedThreads;

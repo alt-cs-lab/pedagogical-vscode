@@ -6,14 +6,14 @@ import { edgeSelectors, nodeSelectors } from "../../../entities";
 const elk = new ELK();
 
 const elkRootLayoutOptions: Record<string, string> = {
-  "algorithm": "layered",
-  "interactiveLayout": "true",
+  algorithm: "layered",
+  interactiveLayout: "true",
   "elk.direction": "RIGHT",
   "layering.strategy": "INTERACTIVE",
   "nodePlacement.strategy": "INTERACTIVE",
   "considerModelOrder.strategy": "NONE",
-  "edgeRouting": "POLYLINE",
-  "hierarchyHandling": "INCLUDE_CHILDREN",
+  edgeRouting: "POLYLINE",
+  hierarchyHandling: "INCLUDE_CHILDREN",
   "spacing.nodeNode": "50",
   "spacing.nodeNodeBetweenLayers": "50",
 };
@@ -22,7 +22,9 @@ const elkFramesLayoutOptions: Record<string, string> = {
   "crossingMinimization.semiInteractive": "true",
 };
 
-export default async function defaultLayoutNodesStrategy(state: Pick<BaseSessionState, "nodes" | "edges">): Promise<NodePositionChange[]> {
+export default async function defaultLayoutNodesStrategy(
+  state: Pick<BaseSessionState, "nodes" | "edges">,
+): Promise<NodePositionChange[]> {
   // place stack frames in a seperate hierarchy
   const elkFramesNode: ElkNode = {
     id: "elkframes",
@@ -50,8 +52,8 @@ export default async function defaultLayoutNodesStrategy(state: Pick<BaseSession
         height: node.height!,
         labels: [{ text: node.data.name }],
         layoutOptions: {
-          "position": `(0,${stackPosition++})`
-        }
+          position: `(0,${stackPosition++})`,
+        },
       });
     } else {
       elkRootNode.children!.push({
@@ -61,14 +63,16 @@ export default async function defaultLayoutNodesStrategy(state: Pick<BaseSession
         width: node.width!,
         height: node.height!,
         labels: node.data.name ? [{ text: node.data.name }] : undefined,
-        ... node.data.isLayouted ? { x: node.position.x, y: node.position.y } : undefined,
+        ...(node.data.isLayouted ? { x: node.position.x, y: node.position.y } : undefined),
       });
     }
   }
 
   const layoutedGraph = await elk.layout(elkRootNode);
-  const layoutedNodes = layoutedGraph.children!.flatMap((elkNode) => elkNode.children ? elkNode.children : elkNode);
-  
+  const layoutedNodes = layoutedGraph.children!.flatMap((elkNode) =>
+    elkNode.children ? elkNode.children : elkNode,
+  );
+
   return layoutedNodes.map((elkNode) => ({
     id: elkNode.id,
     type: "position",

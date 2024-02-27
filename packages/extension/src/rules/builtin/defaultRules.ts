@@ -51,7 +51,7 @@ const defaultScopeAcceptRule: PedagogRule = {
             fact: "scope",
             path: "$.presentationHint",
             operator: "equal",
-            value: "local"
+            value: "local",
           },
           {
             // ...or scope.name should start with "Local"
@@ -114,9 +114,9 @@ const defaultVariableSkipChildrenRule: PedagogRule = {
         path: "$.depth",
         operator: "greaterThan",
         value: 10,
-      }
-    ]
-  }
+      },
+    ],
+  },
 };
 
 export default [

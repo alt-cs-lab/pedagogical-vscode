@@ -13,11 +13,7 @@ export default function ArrayNode(props: NodeProps<ArrayData>) {
   return (
     <div className="common-node variables-node">
       <div className="common-node-header">{props.data.name}</div>
-      <Handle
-        className="variables-node-handle"
-        position={Position.Left}
-        type="target"
-      />
+      <Handle className="variables-node-handle" position={Position.Left} type="target" />
       <div className="array-list">
         {props.data.items.map((item) => (
           <div className="array-cell" key={item.name}>
@@ -31,7 +27,7 @@ export default function ArrayNode(props: NodeProps<ArrayData>) {
               />
             ) : item.lazy ? (
               <div className="array-item-value">(lazy)</div>
-            ) : (  
+            ) : (
               <div className="array-item-value">{item.value}</div>
             )}
           </div>

@@ -1,6 +1,10 @@
 import * as cp from "child_process";
 import * as path from "path";
-import { downloadAndUnzipVSCode, resolveCliArgsFromVSCodeExecutablePath, runTests } from "@vscode/test-electron";
+import {
+  downloadAndUnzipVSCode,
+  resolveCliArgsFromVSCodeExecutablePath,
+  runTests,
+} from "@vscode/test-electron";
 
 async function main() {
   try {
@@ -9,14 +13,10 @@ async function main() {
     const vscodeExecutablePath = await downloadAndUnzipVSCode("insiders");
     const [cliPath, ...args] = resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
 
-    cp.spawnSync(
-      cliPath,
-      [...args, "--install-extension", "ms-python.python"],
-      {
-        encoding: "utf-8",
-        stdio: "inherit",
-      },
-    );
+    cp.spawnSync(cliPath, [...args, "--install-extension", "ms-python.python"], {
+      encoding: "utf-8",
+      stdio: "inherit",
+    });
 
     // Download VS Code, unzip it and run the integration test
     await runTests({
@@ -26,9 +26,9 @@ async function main() {
       launchArgs: ["../../sampleWorkspace"],
     });
   } catch (err) {
-		console.error('Failed to run tests', err);
-		process.exit(1);
-	}
+    console.error("Failed to run tests", err);
+    process.exit(1);
+  }
 }
 
 void main();

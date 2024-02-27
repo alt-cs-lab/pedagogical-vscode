@@ -1,4 +1,10 @@
-import { AllConditions, AnyConditions, ConditionProperties, ConditionReference, NotConditions } from "json-rules-engine";
+import {
+  AllConditions,
+  AnyConditions,
+  ConditionProperties,
+  ConditionReference,
+  NotConditions,
+} from "json-rules-engine";
 import { PedagogOperatorName } from "./operators";
 
 // json-rules-engine types re-typed with stricter operator.

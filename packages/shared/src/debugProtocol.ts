@@ -81,14 +81,14 @@ type AnyDebugRequest =
 export type DebugCommand = AnyDebugRequest["command"];
 
 /** The request arguments associated with a debug adapter command */
-export type DebugRequest<C extends DebugCommand = DebugCommand> = Extract<AnyDebugRequest, { command: C }>;
+export type DebugRequest<C extends DebugCommand = DebugCommand> = Extract<
+  AnyDebugRequest,
+  { command: C }
+>;
 
-type DebugResponseType<
-  Command extends DebugCommand,
-  Response extends DP.Response
-> = {
-  command: Command,
-  body: Response extends { body: unknown } ? Response["body"] : never,
+type DebugResponseType<Command extends DebugCommand, Response extends DP.Response> = {
+  command: Command;
+  body: Response extends { body: unknown } ? Response["body"] : never;
 };
 
 /** A message from the debug adapter responding to a request */
@@ -139,7 +139,10 @@ type AnyDebugResponse =
   | DebugResponseType<"disassemble", DP.DisassembleResponse>;
 
 /** The response body associated with a debug adapter command */
-export type DebugResponse<C extends DebugCommand = DebugCommand> = Extract<AnyDebugResponse, { command: C }>;
+export type DebugResponse<C extends DebugCommand = DebugCommand> = Extract<
+  AnyDebugResponse,
+  { command: C }
+>;
 
 type DebugEventType<EventString extends string, EventType extends DP.Event> = {
   event: EventString;
@@ -170,4 +173,7 @@ type AnyDebugEvent =
 export type DebugEventName = AnyDebugEvent["event"];
 
 /** The body type associated with a given debug event string type */
-export type DebugEvent<E extends DebugEventName = DebugEventName> = Extract<AnyDebugEvent, { event: E }>;
+export type DebugEvent<E extends DebugEventName = DebugEventName> = Extract<
+  AnyDebugEvent,
+  { event: E }
+>;

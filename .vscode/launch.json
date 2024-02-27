@@ -11,26 +11,24 @@
       "request": "launch",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}",
-        "${workspaceFolder}/sampleWorkspace",
+        "${workspaceFolder}/sampleWorkspace"
       ],
       "outFiles": ["${workspaceFolder}/dist/extension/**/*"],
       "preLaunchTask": "${defaultBuildTask}",
-      "sourceMaps": true,
+      "sourceMaps": true
     },
     {
-    	"name": "Extension Tests",
-    	"type": "extensionHost",
-    	"request": "launch",
-    	"args": [
-    		"--extensionDevelopmentPath=${workspaceFolder}",
-    		"--extensionTestsPath=${workspaceFolder}/dist/extension/test/suite/index",
-        "${workspaceFolder}/sampleWorkspace",
-    	],
-    	"outFiles": [
-    		"${workspaceFolder}/dist/extension/test/**/*.js",
-    	],
-    	"preLaunchTask": "${defaultBuildTask}",
-      "sourceMaps": true,
+      "name": "Extension Tests",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--extensionTestsPath=${workspaceFolder}/dist/extension/test/suite/index",
+        "${workspaceFolder}/sampleWorkspace"
+      ],
+      "outFiles": ["${workspaceFolder}/dist/extension/test/**/*.js"],
+      "preLaunchTask": "${defaultBuildTask}",
+      "sourceMaps": true
     }
   ]
 }

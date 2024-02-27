@@ -16,6 +16,6 @@ export function startStateChangedListener(middleware: AppListenerMiddlewareInsta
       } catch (e) {
         // listener was cancelled, do nothing
       }
-    }
+    },
   });
 }

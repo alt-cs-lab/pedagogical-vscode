@@ -1,20 +1,31 @@
 import { MarkerType } from "reactflow";
 import { ScopeData } from "../../../../../components/nodes/common/StackFrameNode";
 import { VariablesListItem } from "../../../../../components/nodes/common/VariablesList";
-import { NodeEntity, EdgeEntity, VariablesEntity, stackFrameSelectors, scopeSelectors, variableSelectors, nodeSelectors } from "../../../entities";
+import {
+  NodeEntity,
+  EdgeEntity,
+  VariablesEntity,
+  stackFrameSelectors,
+  scopeSelectors,
+  variableSelectors,
+  nodeSelectors,
+} from "../../../entities";
 import { BaseSessionState } from "../../BaseSession";
 
 const edgeId = (sourceId: string | number, sourceName: string, targetId: string | number) =>
   `${sourceId}[${sourceName}]-${targetId}`;
 
 async function defaultBuildFlowStrategy(
-  state: Pick<BaseSessionState, "threads" | "stackFrames" | "scopes" | "variables" | "nodes" | "edges">,
-): Promise<{ nodes: NodeEntity[], edges: EdgeEntity[] }> {
+  state: Pick<
+    BaseSessionState,
+    "threads" | "stackFrames" | "scopes" | "variables" | "nodes" | "edges"
+  >,
+): Promise<{ nodes: NodeEntity[]; edges: EdgeEntity[] }> {
   const nodes: NodeEntity[] = [];
   const edges: EdgeEntity[] = [];
 
   // queue of variable nodes to add, along with their type for the node data
-  const variableNodesToAdd: { entity: VariablesEntity, type: string | undefined }[] = [];
+  const variableNodesToAdd: { entity: VariablesEntity; type: string | undefined }[] = [];
   const variableIdsAdded = new Set<string>();
 
   // start with stack frames and scopes
@@ -31,12 +42,14 @@ async function defaultBuildFlowStrategy(
 
     for (const scopeId of frame.scopeIds) {
       const scope = scopeSelectors.selectById(state.scopes, scopeId);
-      if (!scope) { continue; }
+      if (!scope) {
+        continue;
+      }
       const variablesEntity = variableSelectors.selectByReference(
         state.variables,
-        scope.variablesReference
+        scope.variablesReference,
       );
-      
+
       const scopeData: ScopeData = {
         name: scope.name,
         lazy: scope.expensive,
@@ -50,13 +63,11 @@ async function defaultBuildFlowStrategy(
       // create items for variables
       scopeData.items = [];
       for (const childVar of variablesEntity.variables) {
-        const childVarEntity = childVar.variablesReference > 0
-          ? variableSelectors.selectByReference(
-            state.variables,
-            childVar.variablesReference,
-          )
-          : undefined;
-        
+        const childVarEntity =
+          childVar.variablesReference > 0
+            ? variableSelectors.selectByReference(state.variables, childVar.variablesReference)
+            : undefined;
+
         const handleId = `${scope.name}[${childVar.name}]`;
         scopeData.items.push({
           name: childVar.name,
@@ -82,10 +93,10 @@ async function defaultBuildFlowStrategy(
               type: MarkerType.Arrow,
               height: 20,
               width: 20,
-            }
+            },
           };
           edges.push(edge);
-  
+
           // add childVar to the queue of variable nodes to add
           variableNodesToAdd.push({ entity: childVarEntity, type: childVar.type });
         }
@@ -106,7 +117,8 @@ async function defaultBuildFlowStrategy(
     let childVars = variable.entity.variables;
 
     // TODO: this only works for python
-    const isArrayLike = variable.type === "list" || variable.type === "array" || variable.type === "tuple";
+    const isArrayLike =
+      variable.type === "list" || variable.type === "array" || variable.type === "tuple";
     if (isArrayLike) {
       childVars = childVars.filter(($var) => $var.evaluateName?.endsWith("]"));
     }
@@ -119,12 +131,10 @@ async function defaultBuildFlowStrategy(
         showHandle: false,
       };
 
-      const childVarEntity = childVar.variablesReference > 0
-        ? variableSelectors.selectByReference(
-          state.variables,
-          childVar.variablesReference
-        )
-        : undefined;
+      const childVarEntity =
+        childVar.variablesReference > 0
+          ? variableSelectors.selectByReference(state.variables, childVar.variablesReference)
+          : undefined;
 
       if (childVarEntity) {
         // show handle for this variable in the variables list
@@ -144,7 +154,7 @@ async function defaultBuildFlowStrategy(
             type: MarkerType.Arrow,
             height: 20,
             width: 20,
-          }
+          },
         };
         edges.push(edge);
 
@@ -157,14 +167,14 @@ async function defaultBuildFlowStrategy(
     }
 
     const node: NodeEntity = {
-        type: /*isArrayLike ? "commonArray" :*/ "commonVariables",
-        data: {
-          name: variable.type,
-          items: variablesListItems,
-        },
-        id: variable.entity.pedagogId,
-        position: { x: 0, y: 0 },
-      };
+      type: /*isArrayLike ? "commonArray" :*/ "commonVariables",
+      data: {
+        name: variable.type,
+        items: variablesListItems,
+      },
+      id: variable.entity.pedagogId,
+      position: { x: 0, y: 0 },
+    };
     nodes.push(node);
   }
 

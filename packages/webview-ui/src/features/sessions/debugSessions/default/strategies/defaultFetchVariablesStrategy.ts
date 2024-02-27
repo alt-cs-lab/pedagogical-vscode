@@ -18,7 +18,7 @@ export default async function defaultFetchVariablesStrategy(
   parentVariable: DP.Variable | undefined,
   variablesArgs: DP.VariablesArguments,
   variablesPedagogId: string,
-  depth: number
+  depth: number,
 ): Promise<void> {
   // Fetch the variables
   const variablesResp = await debugApi.debugRequestAsync(sessionId, {
@@ -35,7 +35,7 @@ export default async function defaultFetchVariablesStrategy(
       scope,
       parentVariable,
       variable,
-      depth
+      depth,
     );
     acceptedVariable && acceptedVariables.push(acceptedVariable);
   }
@@ -62,7 +62,7 @@ export default async function defaultFetchVariablesStrategy(
         acceptedVariable.variable,
         acceptedVariable.variablesArgs,
         acceptedVariable.pedagogId,
-        depth + 1
+        depth + 1,
       );
     }
   }

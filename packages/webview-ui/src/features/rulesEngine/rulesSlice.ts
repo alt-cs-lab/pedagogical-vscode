@@ -31,17 +31,19 @@ const rulesSlice = createSlice({
   initialState: initialState,
   reducers: {
     addDefinitions: (state, action: PayloadAction<{ definitions: PedagogRuleSerializable[] }>) => {
-      const defs: Record<string, PedagogRuleSerializable> =
-        action.payload.definitions.reduce(
-          (acc, rule) => ({ ...acc, [rule.name]: rule }),
-          {}
-        );
+      const defs: Record<string, PedagogRuleSerializable> = action.payload.definitions.reduce(
+        (acc, rule) => ({ ...acc, [rule.name]: rule }),
+        {},
+      );
       state.definitions = {
         ...state.definitions,
         ...defs,
       };
     },
-    addSessionRules: (state, action: PayloadAction<{ sessionRules: Record<string, DebugSessionNamedRules> }>) => {
+    addSessionRules: (
+      state,
+      action: PayloadAction<{ sessionRules: Record<string, DebugSessionNamedRules> }>,
+    ) => {
       state.sessionRules = {
         ...state.sessionRules,
         ...action.payload.sessionRules,
@@ -52,7 +54,9 @@ const rulesSlice = createSlice({
 
 export function getDebugSessionRules(state: RulesState, debugType: string): DebugSessionRules {
   if (!Object.hasOwn(state.sessionRules, debugType)) {
-    MessageBox.showInformation(`The debugger '${debugType}' is not supported, and Pedagogical may not work correctly.`);
+    MessageBox.showInformation(
+      `The debugger '${debugType}' is not supported, and Pedagogical may not work correctly.`,
+    );
     debugType = "_default";
   }
   const sessionNamedRules = state.sessionRules[debugType];
@@ -69,7 +73,7 @@ export function getDebugSessionRules(state: RulesState, debugType: string): Debu
       throw new Error(`Rule '${name}' does not exist.`);
     }
   }
-  
+
   return {
     threadRules: sessionNamedRules.threadRules.map((name) => state.definitions[name]),
     stackFrameRules: sessionNamedRules.stackFrameRules.map((name) => state.definitions[name]),

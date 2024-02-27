@@ -7,7 +7,7 @@ import DebugSessionController from "./DebugSessionController";
 export const debugTrackerFactory: vscode.DebugAdapterTrackerFactory = {
   createDebugAdapterTracker(session: vscode.DebugSession): vscode.ProviderResult<DebugTracker> {
     return new DebugTracker(session);
-  }
+  },
 };
 
 class DebugTracker implements vscode.DebugAdapterTracker {

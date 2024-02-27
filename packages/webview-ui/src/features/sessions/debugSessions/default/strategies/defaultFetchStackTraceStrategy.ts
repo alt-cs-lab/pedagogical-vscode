@@ -8,7 +8,7 @@ import { AcceptedStackFrame } from "../../../../rulesEngine/engines/stackFrameRu
 
 /**
  * Fetch the stack trace from the given thread id.
- * 
+ *
  * By default this fetches all stack frames and ignores frames with the
  * presentationHint "subtle" or "label".
  */
@@ -17,7 +17,7 @@ async function defaultFetchStackTraceStrategy(
   sessionRulesEngine: SessionRulesEngine,
   api: AppListenerEffectApi,
   thread: ThreadEntity,
-  stackTraceArgs: DP.StackTraceArguments
+  stackTraceArgs: DP.StackTraceArguments,
 ): Promise<AcceptedStackFrame[]> {
   // Fetch the stack frames
   const framesResp = await debugApi.debugRequestAsync(sessionId, {
@@ -28,10 +28,7 @@ async function defaultFetchStackTraceStrategy(
   // Run each stack frame through the rules engine
   const acceptedFrames = [];
   for (const stackFrame of framesResp.body.stackFrames) {
-    const acceptedFrame = await sessionRulesEngine.evalStackFrame(
-      thread,
-      stackFrame
-    );
+    const acceptedFrame = await sessionRulesEngine.evalStackFrame(thread, stackFrame);
     acceptedFrame && acceptedFrames.push(acceptedFrame);
   }
 
@@ -40,7 +37,7 @@ async function defaultFetchStackTraceStrategy(
     defaultActions.addStackFrames(sessionId, {
       threadId: thread.id,
       stackFrames: acceptedFrames.map((af) => af.entity),
-    })
+    }),
   );
 
   return acceptedFrames;

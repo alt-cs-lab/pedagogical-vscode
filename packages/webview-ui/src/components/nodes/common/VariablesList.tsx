@@ -6,7 +6,7 @@ import "./VariablesList.css";
 export type VariablesListItem = {
   name: string;
   value: string;
-  valueColorHint?: "none" | "string" | "number" | "error" | "boolean"
+  valueColorHint?: "none" | "string" | "number" | "error" | "boolean";
   lazy?: boolean;
   showHandle: boolean;
   handleId?: string;
@@ -31,9 +31,7 @@ export const VariablesList = (props: VariablesListProps) => {
         <li className="variables-item" key={item.name}>
           <div className="variables-item-flex">
             <pre className="variables-item-name">{item.name}:</pre>
-            {item.lazy ? (
-              <div>(lazy)</div>
-            ) : null}
+            {item.lazy ? <div>(lazy)</div> : null}
             <div className="variables-item-handle-container">
               {item.showHandle ? (
                 <Handle

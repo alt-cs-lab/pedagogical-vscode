@@ -8,7 +8,7 @@ import { AcceptedScope } from "../../../../rulesEngine/engines/scopeRulesEngine"
 
 /**
  * Fetch the scopes from the given stack frame id.
- * 
+ *
  * By default this fetches all scopes but only keeps scopes that begin with "Local".
  */
 async function defaultFetchScopesStrategy(
@@ -17,7 +17,7 @@ async function defaultFetchScopesStrategy(
   api: AppListenerEffectApi,
   thread: ThreadEntity,
   stackFrame: StackFrameEntity,
-  scopesArgs: DP.ScopesArguments
+  scopesArgs: DP.ScopesArguments,
 ): Promise<AcceptedScope[]> {
   // Fetch the scopes
   const scopesResp = await debugApi.debugRequestAsync(sessionId, {
@@ -28,11 +28,7 @@ async function defaultFetchScopesStrategy(
   // Run each scope through the rules engine
   const acceptedScopes = [];
   for (const scope of scopesResp.body.scopes) {
-    const acceptedScope = await sessionRulesEngine.evalScope(
-      thread,
-      stackFrame,
-      scope
-    );
+    const acceptedScope = await sessionRulesEngine.evalScope(thread, stackFrame, scope);
     acceptedScope && acceptedScopes.push(acceptedScope);
   }
 
@@ -41,7 +37,7 @@ async function defaultFetchScopesStrategy(
     defaultActions.addScopes(sessionId, {
       frameId: stackFrame.id,
       scopes: acceptedScopes.map((as) => as.entity),
-    })
+    }),
   );
 
   return acceptedScopes;

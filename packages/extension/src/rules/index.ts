@@ -8,10 +8,7 @@ const decoder = new TextDecoder();
 
 export async function loadWorkspaceRules(): Promise<PedagogicalRulesSchema> {
   let result: PedagogicalRulesSchema = {
-    ruleDefinitions: [
-      ...defaultRules,
-      ...pythonRules,
-    ],
+    ruleDefinitions: [...defaultRules, ...pythonRules],
     sessionRules: {
       _default: {
         threadRules: [],
@@ -30,11 +27,14 @@ export async function loadWorkspaceRules(): Promise<PedagogicalRulesSchema> {
         stackFrameRules: ["defaultStackFrameAcceptRule"],
         scopeRules: ["pythonScopeAcceptRule"],
         variableRules: ["defaultVariableSkipChildrenRule", "pythonVariableAcceptRule"],
-      }
-    }
+      },
+    },
   };
 
-  const fileUris = await workspace.findFiles(".vscode/pedagogical-rules.{json,jsonc,json5}", undefined);
+  const fileUris = await workspace.findFiles(
+    ".vscode/pedagogical-rules.{json,jsonc,json5}",
+    undefined,
+  );
 
   try {
     for (const fileUri of fileUris) {

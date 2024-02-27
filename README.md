@@ -10,7 +10,7 @@ Install this extension through the VSCode Marketplace or by downloading the VSIX
 
 # Usage
 
-*Note: this extension is still in its early stages, and some visualizations may be buggy or innacurate! Improved support for more languages will be added as development continues.*
+_Note: this extension is still in its early stages, and some visualizations may be buggy or innacurate! Improved support for more languages will be added as development continues._
 
 To open Pedagogical, start debugging a program, then click the Pedagogical button near the bottom-left of the window. You can also open the command window (`F1` or `Ctrl+Shift+P`) and select `Show Pedagogical View`.
 

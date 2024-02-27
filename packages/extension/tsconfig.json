@@ -5,7 +5,7 @@
     "lib": ["esnext", "dom"],
     "rootDir": "src",
     "strict": true,
-    "noEmit": true,
+    "noEmit": true
   },
   "include": ["./src"]
 }

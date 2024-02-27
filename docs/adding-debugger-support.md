@@ -30,7 +30,7 @@ I recommend you read the pages [Debug Adapter Protocol](debug-adapter-protocol.m
 
 You should know some decent JavaScript or TypeScript. This is a TypeScript project, but this guide doesn't utilize much of TypeScript's features.
 
-You probably need to know [Redux](https://redux.js.org/introduction/getting-started) before you start writing your own code. 
+You probably need to know [Redux](https://redux.js.org/introduction/getting-started) before you start writing your own code.
 
 ## Step 1: Testing with `DefaultSession`
 
@@ -72,7 +72,7 @@ That's not too far off what we're looking for! There are a few things to note he
 
 - `nodeA.next` is supposed to point the `nodeB` object. Instead, it's pointing to a new object.
 - After each step, all nodes slide in from the top-left. This is because each node is being recreated for each step, rather than reusing nodes from the previous step.
-- The value of the `args` string array ends in `@8`. I wonder what that's for? *(foreshadowing...)*
+- The value of the `args` string array ends in `@8`. I wonder what that's for? _(foreshadowing...)_
 
 > The ordering of the nodes is also weird, but that's partially because layouting in Pedagogical is still a work-in-progress, so let's not worry about that right now.
 
@@ -288,7 +288,7 @@ Cool, it works! Now let's get into how we can change the functionality.
 
 ---
 
-Most of the functionality of these debug sessions is split into different [strategies](https://en.wikipedia.org/wiki/Strategy_pattern). These strategies can be implemented differently for each debug type, or they can be the same. These strategies are structured in a way that you *hopefully* shouldn't have to reimplement all of them if you only need to change a few things.
+Most of the functionality of these debug sessions is split into different [strategies](https://en.wikipedia.org/wiki/Strategy_pattern). These strategies can be implemented differently for each debug type, or they can be the same. These strategies are structured in a way that you _hopefully_ shouldn't have to reimplement all of them if you only need to change a few things.
 
 For example, below you can see `defaultStrategies`, which has everything implemented, and `pythonStrategies`, which inherits from the default strategies and only overrides one function. Our java strategies will be very similar to this when we're done.
 
@@ -306,8 +306,8 @@ const defaultStrategies = {
 
 // packages/webview-ui/src/features/sessions/debugSessions/python/strategies/index.ts
 const pythonStrategies: DebugSessionStrategies = {
-    ...defaultStrategies,
-    fetchVariables: pythonFetchVariablesStrategy, // only overrides one function!
+  ...defaultStrategies,
+  fetchVariables: pythonFetchVariablesStrategy, // only overrides one function!
 };
 ```
 
@@ -345,7 +345,7 @@ The first thing we want to do is update the `pedagogId` property of our variable
 export default async function javaFetchVariablesStrategy(/* ... */) {
   for (const ref of ctx.refsToFetch) {
     const variables: VariablesEntity[] = [];
-  
+
     const session = selectSessionState(api.getState(), ctx.sessionId);
     const refsFetched = variableSelectors.selectReferences(session.variables);
 
@@ -359,7 +359,7 @@ export default async function javaFetchVariablesStrategy(/* ... */) {
     // update pedagogId if this object is referenced from a parent variable
     if (ctx.variable !== undefined) {
       // find the specific variable item that references this
-      const parent = ctx.variable.variables.find(v => v.variablesReference === ref);
+      const parent = ctx.variable.variables.find((v) => v.variablesReference === ref);
       if (parent !== undefined && parent.value.match(/@\d+$/)) {
         varEntity.pedagogId = parent.value;
       }
@@ -386,14 +386,17 @@ There's another expression that determines if this new variable has any child va
 // fetch child refs
 // ignore refs we've already fetched and refs that are zero
 // also ignore variables marked as lazy (unless request is forced)
-// 
+//
 // new for java: ignore child var if its value matches an existing id (e.g. `String@8`)
-const childRefsToFetch = varEntity.variables.filter(($var) =>
-  $var.variablesReference > 0
-  && !refsFetched.includes($var.variablesReference)
-  && (ctx.force || !$var.presentationHint?.lazy)
-  && !session.variables.ids.includes($var.value) // <-- NEW
-).map(($var) => $var.variablesReference);
+const childRefsToFetch = varEntity.variables
+  .filter(
+    ($var) =>
+      $var.variablesReference > 0 &&
+      !refsFetched.includes($var.variablesReference) &&
+      (ctx.force || !$var.presentationHint?.lazy) &&
+      !session.variables.ids.includes($var.value), // <-- NEW
+  )
+  .map(($var) => $var.variablesReference);
 ```
 
 Let's make sure we include this new strategy in our implementation, then let's test it out:
@@ -422,7 +425,7 @@ By default, when building the flowchart, each node finds its next node by search
 
 There's a bit of a tradeoff here. Changing the parent's `variablesReference` value is the easiest since we can do that right next to our last change in our `fetchVariables` strategy. It also means we don't have to reimplement the `buildFlow` strategy, which means less code that differs from the default session.
 
-However, it *probably* isn't a good idea to change `variablesReference` from the original value given by the debug adapter. Also, we would be modifying an existing objects's state inside an async function, which could cause unwanted side effects if any other functions happen to be viewing object at the same time. Just to be safe, I'm going to do the second option and implement a new `buildFlow` strategy.
+However, it _probably_ isn't a good idea to change `variablesReference` from the original value given by the debug adapter. Also, we would be modifying an existing objects's state inside an async function, which could cause unwanted side effects if any other functions happen to be viewing object at the same time. Just to be safe, I'm going to do the second option and implement a new `buildFlow` strategy.
 
 > To be honest, the `buildFlow` strategy is kind of a long and messy function. In the future I might split this into two strategies that build the nodes and edges seperately.
 
@@ -435,12 +438,10 @@ However, it *probably* isn't a good idea to change `variablesReference` from the
 // find the object whose id matches the given value.
 // before, this used selectByReference instead of selectById.
 for (const childVar of variablesEntity.variables) {
-  const childVarEntity = childVar.variablesReference > 0
-    ? variableSelectors.selectById(
-      state.variables,
-      childVar.value,
-    )
-    : undefined;
+  const childVarEntity =
+    childVar.variablesReference > 0
+      ? variableSelectors.selectById(state.variables, childVar.value)
+      : undefined;
 
   // there's an identical expression later in the file that finds
   // children for parent variables instead of parent scopes.

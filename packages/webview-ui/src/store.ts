@@ -17,21 +17,22 @@ export const store = configureStore({
     [rulesSlice.name]: rulesSlice.reducer,
     [sessionsSlice.name]: sessionsSlice.reducer,
   },
-  middleware: (getDefaultMiddleware) => (
-    getDefaultMiddleware().prepend(appListenerMiddleware.middleware)
-  ),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().prepend(appListenerMiddleware.middleware),
   devTools: isDevEnvironment,
-  enhancers: isDevEnvironment ? [
-    devToolsEnhancer({
-      hostname: "localhost",
-      port: 8000,
-      secure: false,
-      realtime: isDevEnvironment,
-      suppressConnectErrors: true,
-      trace: true,
-      traceLimit: 100,
-    }),
-  ] : undefined,
+  enhancers: isDevEnvironment
+    ? [
+        devToolsEnhancer({
+          hostname: "localhost",
+          port: 8000,
+          secure: false,
+          realtime: isDevEnvironment,
+          suppressConnectErrors: true,
+          trace: true,
+          traceLimit: 100,
+        }),
+      ]
+    : undefined,
 });
 
 startStateChangedListener(appListenerMiddleware as AppListenerMiddlewareInstance);

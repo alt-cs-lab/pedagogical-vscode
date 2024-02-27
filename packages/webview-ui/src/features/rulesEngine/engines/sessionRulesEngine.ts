@@ -44,7 +44,7 @@ export class SessionRulesEngine {
       console.error(e);
       console.log(e);
       MessageBox.showInformation(
-        "An error occured while processing a rule, and a thread was dropped."
+        "An error occured while processing a rule, and a thread was dropped.",
       );
       return null;
     }
@@ -67,7 +67,7 @@ export class SessionRulesEngine {
       console.error(e);
       console.log(e);
       MessageBox.showInformation(
-        "An error occured while processing a rule, and a stack frame was dropped."
+        "An error occured while processing a rule, and a stack frame was dropped.",
       );
       return null;
     }
@@ -80,11 +80,7 @@ export class SessionRulesEngine {
    * @param scope The Scope returned by the debug adapter.
    * @returns The ScopeEntity and VariablesArguments resulting from the rules, or null if the scope is rejected.
    */
-  async evalScope(
-    thread: ThreadEntity,
-    stackFrame: StackFrameEntity,
-    scope: DP.Scope
-  ) {
+  async evalScope(thread: ThreadEntity, stackFrame: StackFrameEntity, scope: DP.Scope) {
     try {
       return await this.scopeEngine.eval({
         session: this.session,
@@ -96,7 +92,7 @@ export class SessionRulesEngine {
       console.error(e);
       console.log(e);
       MessageBox.showInformation(
-        "An error occured while processing a rule, and a scope was dropped."
+        "An error occured while processing a rule, and a scope was dropped.",
       );
       return null;
     }
@@ -119,7 +115,7 @@ export class SessionRulesEngine {
     scope: ScopeEntity,
     parentVariable: DP.Variable | undefined,
     variable: DP.Variable,
-    depth: number
+    depth: number,
   ) {
     try {
       return await this.variableEngine.eval({
@@ -135,7 +131,7 @@ export class SessionRulesEngine {
       console.error(e);
       console.log(e);
       MessageBox.showInformation(
-        "An error occured while processing a rule, and a variable was dropped."
+        "An error occured while processing a rule, and a variable was dropped.",
       );
       return null;
     }

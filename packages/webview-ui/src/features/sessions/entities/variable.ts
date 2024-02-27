@@ -10,7 +10,10 @@ export const variablesAdapter = createEntityAdapter<VariablesEntity>({
   selectId: (variable) => variable.pedagogId,
 });
 
-export function toVariablesEntity(args: DP.VariablesArguments, variables: DP.Variable[]): VariablesEntity {
+export function toVariablesEntity(
+  args: DP.VariablesArguments,
+  variables: DP.Variable[],
+): VariablesEntity {
   return {
     pedagogId: args.variablesReference.toString(),
     ...args,
@@ -23,7 +26,10 @@ export const variableSelectors = {
   selectReferences: (state: EntityState<VariablesEntity>): number[] => {
     return Object.values(state.entities).map((v) => v!.variablesReference);
   },
-  selectByReference: (state: EntityState<VariablesEntity>, reference: number): VariablesEntity | undefined => {
+  selectByReference: (
+    state: EntityState<VariablesEntity>,
+    reference: number,
+  ): VariablesEntity | undefined => {
     return Object.values(state.entities).find((v) => v?.variablesReference === reference);
-  }
+  },
 };

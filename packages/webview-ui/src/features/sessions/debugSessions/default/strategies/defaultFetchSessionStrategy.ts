@@ -8,12 +8,15 @@ export default async function defaultFetchSessionStrategy(
   sessionId: string,
   strategies: DebugSessionStrategies,
   api: AppListenerEffectApi,
-  stoppedThreadId?: number
+  stoppedThreadId?: number,
 ): Promise<void> {
   api.dispatch(defaultActions.updateLastFetch(sessionId));
 
   const rootState = api.getState();
-  const sessionEntity = sessionsSelectors.selectById(rootState.sessions.sessionEntities, sessionId)!;
+  const sessionEntity = sessionsSelectors.selectById(
+    rootState.sessions.sessionEntities,
+    sessionId,
+  )!;
   const sessionRulesEngine = new SessionRulesEngine(rootState.rules, sessionEntity);
 
   // Fetch threads
@@ -21,7 +24,7 @@ export default async function defaultFetchSessionStrategy(
     sessionId,
     sessionRulesEngine,
     api,
-    stoppedThreadId
+    stoppedThreadId,
   );
 
   // Fetch the stack trace for each accepted thread
@@ -37,7 +40,7 @@ export default async function defaultFetchSessionStrategy(
       sessionRulesEngine,
       api,
       acceptedThread.entity,
-      acceptedThread.stackTraceArgs
+      acceptedThread.stackTraceArgs,
     );
 
     // Fetch the scopes for each accepted stack frame
@@ -53,7 +56,7 @@ export default async function defaultFetchSessionStrategy(
         api,
         acceptedThread.entity,
         acceptedStackFrame.entity,
-        acceptedStackFrame.scopesArgs
+        acceptedStackFrame.scopesArgs,
       );
 
       for (const acceptedScope of acceptedScopes) {
@@ -74,7 +77,7 @@ export default async function defaultFetchSessionStrategy(
           acceptedScope.variablesArgs,
           // TODO: get variables pedagogId from rules engine
           acceptedScope.entity.variablesReference.toString(),
-          0
+          0,
         );
       }
     }

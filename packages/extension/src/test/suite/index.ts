@@ -1,40 +1,40 @@
-import * as path from 'path';
-import * as Mocha from 'mocha';
-import * as glob from 'glob';
+import * as path from "path";
+import * as Mocha from "mocha";
+import * as glob from "glob";
 
 export function run(): Promise<void> {
-	// Create the mocha test
-	const mocha = new Mocha({
-		ui: "bdd",
-		color: true,
-	});
- 
-	const testsRoot = path.resolve(__dirname, '..');
+  // Create the mocha test
+  const mocha = new Mocha({
+    ui: "bdd",
+    color: true,
+  });
 
-	return new Promise((c, e) => {
-		const testFiles = new glob.Glob("**/**.test.js", { cwd: testsRoot });
-		const testFileStream = testFiles.stream();
+  const testsRoot = path.resolve(__dirname, "..");
 
-		testFileStream.on("data", (file) => {
-			mocha.addFile(path.resolve(testsRoot, file));
-		});
-		testFileStream.on("error", (err) => {
-			e(err);
-		});
-		testFileStream.on("end", () => {
-			try {
-				// Run the mocha test
-				mocha.run(failures => {
-					if (failures > 0) {
-						e(new Error(`${failures} tests failed.`));
-					} else {
-						c();
-					}
-				});
-			} catch (err) {
-				console.error(err);
-				e(err);
-			}
-		});
-	});
+  return new Promise((c, e) => {
+    const testFiles = new glob.Glob("**/**.test.js", { cwd: testsRoot });
+    const testFileStream = testFiles.stream();
+
+    testFileStream.on("data", (file) => {
+      mocha.addFile(path.resolve(testsRoot, file));
+    });
+    testFileStream.on("error", (err) => {
+      e(err);
+    });
+    testFileStream.on("end", () => {
+      try {
+        // Run the mocha test
+        mocha.run((failures) => {
+          if (failures > 0) {
+            e(new Error(`${failures} tests failed.`));
+          } else {
+            c();
+          }
+        });
+      } catch (err) {
+        console.error(err);
+        e(err);
+      }
+    });
+  });
 }

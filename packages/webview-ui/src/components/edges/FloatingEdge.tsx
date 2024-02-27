@@ -38,7 +38,7 @@ function getNodeIntersection(intersectionNode: Node, targetX: number, targetY: n
   return { x, y };
 }
 
-function getEdgePosition(node: Node, intersectionPoint: { x: number, y: number }) {
+function getEdgePosition(node: Node, intersectionPoint: { x: number; y: number }) {
   const n = { ...node.positionAbsolute, ...node };
   const nx = Math.round(n.x!);
   const ny = Math.round(n.y!);
@@ -72,8 +72,12 @@ function getEdgeTargetParams(source: Node, target: Node) {
 }
 
 export default function FloatingEdge(props: EdgeProps) {
-  const sourceNode = useReactFlowStore(useCallback((store) => store.nodeInternals.get(props.source), [props.source]));
-  const targetNode = useReactFlowStore(useCallback((store) => store.nodeInternals.get(props.target), [props.target]));
+  const sourceNode = useReactFlowStore(
+    useCallback((store) => store.nodeInternals.get(props.source), [props.source]),
+  );
+  const targetNode = useReactFlowStore(
+    useCallback((store) => store.nodeInternals.get(props.target), [props.target]),
+  );
 
   if (!sourceNode || !targetNode) {
     return null;

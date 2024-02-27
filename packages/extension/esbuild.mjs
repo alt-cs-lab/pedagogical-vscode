@@ -8,7 +8,7 @@ const options = {
   target: "esnext",
   logLevel: "info",
   external: ["vscode"],
-  alias: { "shared": "../shared/src" },
+  alias: { shared: "../shared/src" },
 };
 
 const watchOptions = {
@@ -35,7 +35,7 @@ switch (process.argv[2]) {
       process.exit(1);
     }
     break;
-  
+
   case "watch":
     const ctx = await esbuild.context(watchOptions);
     await ctx.watch();

@@ -12,7 +12,7 @@ function generateDebugEventAC<E extends DebugEventName>(event: E) {
  * index this object to get the correct action creator.
  */
 export const debugEventAction: {
-  [E in DebugEventName]: ReturnType<typeof generateDebugEventAC<E>>
+  [E in DebugEventName]: ReturnType<typeof generateDebugEventAC<E>>;
 } = {
   initialized: generateDebugEventAC("initialized"),
   stopped: generateDebugEventAC("stopped"),

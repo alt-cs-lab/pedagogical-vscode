@@ -68,7 +68,7 @@ export const Array: Story = {
         },
         {
           name: "2",
-          value: 'true',
+          value: "true",
           showHandle: true,
         },
         {
@@ -125,9 +125,9 @@ export const StackFrame: Story = {
               value: "[1, 2, 3]",
               showHandle: true,
             },
-          ]
-        }
-      ]
-    }
-  }
+          ],
+        },
+      ],
+    },
+  },
 };

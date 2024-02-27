@@ -48,7 +48,4 @@ const pythonVariableAcceptRule: PedagogRule = {
   },
 };
 
-export default [
-  pythonScopeAcceptRule,
-  pythonVariableAcceptRule,
-];
+export default [pythonScopeAcceptRule, pythonVariableAcceptRule];

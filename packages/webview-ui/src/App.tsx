@@ -11,11 +11,9 @@ import { loadRulesThunk } from "./features/rulesEngine/thunks";
 
 export default function App() {
   const dispatch = useAppDispatch();
-  
-  const currentSessionId = useAppSelector(
-    (state) => state.sessions.currentSessionId
-    );
-    
+
+  const currentSessionId = useAppSelector((state) => state.sessions.currentSessionId);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

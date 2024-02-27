@@ -51,8 +51,7 @@ export const operatorEvaluators = {
 } satisfies Record<string, OperatorEvaluator<any, any>>;
 
 export const operators = Object.entries(operatorEvaluators).map(
-  ([name, evaluator]) =>
-    new Operator(name, evaluator as OperatorEvaluator<any, any>)
+  ([name, evaluator]) => new Operator(name, evaluator as OperatorEvaluator<any, any>),
 );
 
 /**

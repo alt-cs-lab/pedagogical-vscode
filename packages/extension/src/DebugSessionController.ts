@@ -46,7 +46,7 @@ export default class DebugSessionController {
     if (session === undefined) {
       throw new Error(`session id ${sessionId} not found`);
     }
-    const respBody = await session.customRequest(req.command, req.args) as DebugResponse["body"];
+    const respBody = (await session.customRequest(req.command, req.args)) as DebugResponse["body"];
     return { command: req.command, body: respBody } as DebugResponse;
   }
 }
@@ -54,7 +54,7 @@ export default class DebugSessionController {
 export type DebugSessionMessageListener = (msg: DebugSessionMessage) => void;
 
 type DebugSessionMessage =
-  | { type: "started", session: DebugSession }
-  | { type: "stopped", session: DebugSession }
-  | { type: "debugEvent", session: DebugSession, data: { event: DebugEvent } }
-  | { type: "activeSessionChanged", session: DebugSession | undefined };
+  | { type: "started"; session: DebugSession }
+  | { type: "stopped"; session: DebugSession }
+  | { type: "debugEvent"; session: DebugSession; data: { event: DebugEvent } }
+  | { type: "activeSessionChanged"; session: DebugSession | undefined };

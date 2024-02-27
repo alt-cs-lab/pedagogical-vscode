@@ -18,5 +18,5 @@ root.render(
         <App />
       </ReactFlowProvider>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

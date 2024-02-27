@@ -11,13 +11,15 @@ export function startMessageObserver() {
 function messageObserver(msg: VsCodeMessage) {
   switch (msg.type) {
     case "sessionStartedEvent": {
-      store.dispatch(addSession({
-        sessionEntity: {
-          id: msg.data.id,
-          name: msg.data.name,
-          type: msg.data.type,
-        }
-      }));
+      store.dispatch(
+        addSession({
+          sessionEntity: {
+            id: msg.data.id,
+            name: msg.data.name,
+            type: msg.data.type,
+          },
+        }),
+      );
       return;
     }
 

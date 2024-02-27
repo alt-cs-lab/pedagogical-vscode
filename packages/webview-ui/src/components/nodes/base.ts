@@ -1,4 +1,4 @@
 export type BaseNodeData = {
-  name?: string,
-  isLayouted?: boolean,
+  name?: string;
+  isLayouted?: boolean;
 };

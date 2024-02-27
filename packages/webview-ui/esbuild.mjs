@@ -9,7 +9,7 @@ const options = {
   define: { global: "window" },
   logLevel: "info",
   external: ["web-worker"], // needed because of elkjs
-  alias: { "shared": "../shared/src" },
+  alias: { shared: "../shared/src" },
 };
 
 const watchOptions = {
@@ -28,7 +28,6 @@ const buildOptions = {
 
 // valid arguments are `build` (default) or `watch`
 switch (process.argv[2]) {
-  
   case undefined:
   case "build":
     try {
@@ -37,12 +36,12 @@ switch (process.argv[2]) {
       process.exit(1);
     }
     break;
-      
+
   case "watch":
     const ctx = await esbuild.context(watchOptions);
     await ctx.watch();
     break;
-  
+
   default:
     console.error(`unknown command: ${process.argv[2]}`);
     process.exit(1);

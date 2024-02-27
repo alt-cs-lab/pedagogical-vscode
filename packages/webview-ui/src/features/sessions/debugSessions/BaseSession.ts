@@ -1,7 +1,21 @@
 import { FunctionComponent } from "react";
 import { AnyAction, EntityState, Reducer } from "@reduxjs/toolkit";
 import { AppAddListener } from "../../../listenerMiddleware";
-import { ThreadEntity, StackFrameEntity, ScopeEntity, VariablesEntity, NodeEntity, EdgeEntity, edgesAdapter, nodesAdapter, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter, SessionEntity } from "../entities";
+import {
+  ThreadEntity,
+  StackFrameEntity,
+  ScopeEntity,
+  VariablesEntity,
+  NodeEntity,
+  EdgeEntity,
+  edgesAdapter,
+  nodesAdapter,
+  scopesAdapter,
+  stackFramesAdapter,
+  threadsAdapter,
+  variablesAdapter,
+  SessionEntity,
+} from "../entities";
 
 export type BaseSessionState = {
   name: string;

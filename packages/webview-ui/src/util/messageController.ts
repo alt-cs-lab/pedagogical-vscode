@@ -65,12 +65,9 @@ class VsCodeMessageController {
       vscode.postMessage({ msgSeq: msgSeq, ...message });
 
       // reject if we never hear back
-      setTimeout(
-        () => {
-          void this.completeMessagePromise(msgSeq, new Error("message timeout reached"), "reject");
-        },
-        timeout
-      );
+      setTimeout(() => {
+        void this.completeMessagePromise(msgSeq, new Error("message timeout reached"), "reject");
+      }, timeout);
     });
   }
 
@@ -85,7 +82,7 @@ class VsCodeMessageController {
   private async completeMessagePromise(
     msgSeq: number,
     value: any,
-    result: "resolve" | "reject" = "resolve"
+    result: "resolve" | "reject" = "resolve",
   ) {
     await this.lock.acquire("key", (done) => {
       const callbacks = this.seqPromiseMap.get(msgSeq);

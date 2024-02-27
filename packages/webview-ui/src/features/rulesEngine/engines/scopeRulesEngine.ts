@@ -1,4 +1,9 @@
-import { ScopeEntity, SessionEntity, StackFrameEntity, ThreadEntity } from "../../sessions/entities";
+import {
+  ScopeEntity,
+  SessionEntity,
+  StackFrameEntity,
+  ThreadEntity,
+} from "../../sessions/entities";
 import { BaseRulesEngine } from "./baseRulesEngine";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 

@@ -11,9 +11,7 @@ import "./DefaultFlowComponent.css";
 
 const DefaultFlow = (props: { sessionId: string }) => {
   const dispatch = useAppDispatch();
-  const state = useAppSelector(
-    (state) => state.sessions.sessionStates[props.sessionId]
-  );
+  const state = useAppSelector((state) => state.sessions.sessionStates[props.sessionId]);
 
   // const sessionEntity = useAppSelector((state) => state.sessions.sessionEntities.entities[props.sessionId]);
 
@@ -30,21 +28,21 @@ const DefaultFlow = (props: { sessionId: string }) => {
     }
   }, [nodesInitialized]);
 
-  return <>
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={(changes) =>
-        dispatch(nodesChanged(props.sessionId, { changes }))
-      }
-      nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes}
-    >
-      <LoadingScreen enabled={state.loading} />
-      <Background />
-      <Controls />
-    </ReactFlow>
-  </>;
+  return (
+    <>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={(changes) => dispatch(nodesChanged(props.sessionId, { changes }))}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+      >
+        <LoadingScreen enabled={state.loading} />
+        <Background />
+        <Controls />
+      </ReactFlow>
+    </>
+  );
 };
 
 export function getDefaultFlowComponent() {

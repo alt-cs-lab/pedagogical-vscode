@@ -50,7 +50,7 @@ class VSCodeAPIWrapper {
       return this.vsCodeApi.getState() as RootState | undefined;
     } else {
       const state = localStorage.getItem("vscodeState");
-      return state ? JSON.parse(state) as RootState | undefined : undefined;
+      return state ? (JSON.parse(state) as RootState | undefined) : undefined;
     }
   }
 

@@ -4,7 +4,7 @@ import { messageController } from "../../util";
 const debugApi = {
   async debugRequestAsync<C extends DebugCommand>(
     sessionId: string,
-    options: DebugRequest<C>
+    options: DebugRequest<C>,
   ): Promise<DebugResponse<C>> {
     const result = await messageController.postRequestAndWaitAsync({
       type: "debugRequest",
