@@ -1,5 +1,5 @@
 import { Engine, RuleProperties, EngineResult } from "json-rules-engine";
-import { operators } from "../operators";
+import { operators } from "shared";
 
 /**
  * Base rules engine wrapper for debug adapter objects.
