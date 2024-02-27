@@ -9,6 +9,7 @@ const options = {
   define: { global: "window" },
   logLevel: "info",
   external: ["web-worker"], // needed because of elkjs
+  alias: { "shared": "../shared/src" },
 };
 
 const watchOptions = {

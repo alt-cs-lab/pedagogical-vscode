@@ -8,6 +8,7 @@ const options = {
   target: "esnext",
   logLevel: "info",
   external: ["vscode"],
+  alias: { "shared": "../shared/src" },
 };
 
 const watchOptions = {

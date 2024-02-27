@@ -18,6 +18,12 @@
         "command": "pedagogical.showPedagogicalView",
         "title": "Pedagogical: Show Pedagogical View"
       }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": "pedagogical-rules.{json,jsonc}",
+        "url": "./schemas/pedagogical-rules-schema.json"
+      }
     ]
   },
   "activationEvents": [
@@ -37,14 +43,16 @@
     "vscode:prepublish": "yarn cleanbuild",
     "watch": "concurrently 'yarn workspace extension watch' 'yarn workspace webview-ui watch'",
     "build": "yarn workspace extension build && yarn workspace webview-ui build",
-    "clean": "yarn node scripts/clean.mjs",
+    "clean": "node scripts/clean.mjs",
     "cleanbuild": "yarn clean && yarn build",
+    "generate-schema": "node scripts/generateSchema.mjs",
     "lint": "yarn eslint .",
     "redux-devtools": "yarn workspace webview-ui run redux-devtools",
     "storybook": "yarn workspace webview-ui run storybook"
   },
   "devDependencies": {
     "@types/fs-extra": "^11",
+    "@types/node": "^20.11.20",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "@vscode/vsce": "^2.20.1",
@@ -57,6 +65,7 @@
     "eslint-plugin-react": "latest",
     "fs-extra": "^11.1.1",
     "json-rules-engine": "^6.5.0",
-    "typescript": "*"
+    "typescript": "*",
+    "typescript-json-schema": "^0.63.0"
   }
 }

@@ -60,7 +60,7 @@ export const operators = Object.entries(operatorEvaluators).map(
  * including our custom operators and the the built-in ones.
  * (https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators)
  */
-export type OperatorName =
+export type PedagogOperatorName =
   | "equal"
   | "notEqual"
   | "lessThan"
