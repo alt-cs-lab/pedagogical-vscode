@@ -8,6 +8,7 @@ extends:
   - eslint:recommended
   - plugin:@typescript-eslint/recommended-type-checked
   - plugin:react/recommended
+  - prettier
 settings:
   react:
     version: detect
@@ -19,7 +20,6 @@ ignorePatterns:
   - dist
   - "*.mjs"
 rules:
-  "@typescript-eslint/semi": "warn"
   "@typescript-eslint/no-explicit-any": "off"
   "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
   "@typescript-eslint/unbound-method": ["error", { "ignoreStatic": true }]
@@ -29,4 +29,3 @@ rules:
   "curly": "warn"
   "eqeqeq": "warn"
   "no-throw-literal": "warn"
-

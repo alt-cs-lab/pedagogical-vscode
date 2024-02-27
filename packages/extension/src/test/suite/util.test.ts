@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { assertPartialStrictEqual } from "../../util";
+import { assertPartialStrictEqual } from "../../util/assertPartialStrictEqual";
 
 describe("utility functions", function () {
   it("partialStrictEqual should work", () => {
@@ -8,7 +8,7 @@ describe("utility functions", function () {
 
     // should succeed because all properties in `b` are in `a`
     assertPartialStrictEqual(a, b);
-    
+
     try {
       // should throw because `b` does not contain the `three` property in `a`
       assertPartialStrictEqual(b, a);
