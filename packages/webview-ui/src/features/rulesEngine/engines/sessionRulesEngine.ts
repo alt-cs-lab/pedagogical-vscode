@@ -8,9 +8,9 @@ import { ScopeRulesEngine } from "./scopeRulesEngine";
 import { StackFrameRulesEngine } from "./stackFrameRulesEngine";
 import { ThreadRulesEngine } from "./threadRulesEngine";
 import { VariablesRulesEngine } from "./variablesRulesEngine";
-import { defaultRules, rulesPerDebugType } from "../rules";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { MessageBox } from "../../../util";
+import { RulesState, getDebugSessionRules } from "../rulesSlice";
 
 window.localStorage.debug = "json-rules-engine";
 
@@ -21,17 +21,10 @@ export class SessionRulesEngine {
   private scopeEngine: ScopeRulesEngine;
   private variableEngine: VariablesRulesEngine;
 
-  constructor(session: SessionEntity) {
+  constructor(state: RulesState, session: SessionEntity) {
     this.session = session;
 
-    let rules = rulesPerDebugType[session.type];
-    if (rules === undefined) {
-      rules = defaultRules;
-      // Display a message that the current debugger may not be supported.
-      MessageBox.showInformation(
-        `No rules were defined for the \`${session.type}\` debugger. The information shown may be inaccurate.`
-      );
-    }
+    const rules = getDebugSessionRules(state, session.type);
 
     this.threadEngine = new ThreadRulesEngine(rules.threadRules);
     this.stackFrameEngine = new StackFrameRulesEngine(rules.stackFrameRules);

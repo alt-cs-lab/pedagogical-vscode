@@ -1,6 +1,6 @@
 // Custom operators to use with json-rules-engine conditions
 import { Operator } from "json-rules-engine";
-import { RegExpParams } from "./events";
+import { RegExpParams } from "shared/src/rules";
 
 function not(fn: (a: any, b: any) => boolean) {
   return (a: any, b: any) => !fn(a, b);

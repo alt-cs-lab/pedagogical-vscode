@@ -3,7 +3,7 @@ export interface RegExpParams {
   flags?: string | undefined;
 }
 
-interface SetPedagogIdParams {
+export interface SetPedagogIdParams {
   fact: string;
   path?: string;
   params?: Record<string, any>;

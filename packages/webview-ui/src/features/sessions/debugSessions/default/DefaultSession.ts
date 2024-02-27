@@ -8,13 +8,10 @@ import defaultStrategies from "./strategies";
 import { getDefaultFlowComponent } from "./DefaultFlowComponent";
 import { debugEventAction } from "../../debugEventActions";
 import { sessionsInitialized } from "../../sessionsSlice";
-import { SessionRulesEngine } from "../../../rulesEngine/engines/sessionRulesEngine";
 import { SessionEntity } from "../../entities";
 import { MessageBox } from "../../../../util";
 
 export default class DefaultSession extends BaseSession {
-  sessionRulesEngine: SessionRulesEngine;
-
   override reducer = createReducer(this.initialState, (builder) => {
     // set/remove all debug adapter objects
     builder.addCase(defaultActions.setAllDebugObjects, defaultReducers.setAllDebugObjectsReducer);
@@ -67,7 +64,6 @@ export default class DefaultSession extends BaseSession {
 
   constructor(sessionEntity: SessionEntity, initialState?: BaseSessionState) {
     super(sessionEntity, initialState);
-    this.sessionRulesEngine = new SessionRulesEngine(sessionEntity);
     if (this.initialState.lastPause > this.initialState.lastFetch) {
       this.fetchAfterInitialize = true;
     }
@@ -85,7 +81,7 @@ export default class DefaultSession extends BaseSession {
     api.dispatch(defaultActions.setLoading(this.id, { loading: true }));
 
     try {
-      await this.strategies.fetchSession(this.id, this.strategies, this.sessionRulesEngine, api, stoppedThread);
+      await this.strategies.fetchSession(this.id, this.strategies, api, stoppedThread);
     } catch (e) {
       console.error(e);
       MessageBox.showError("An error occured while fetching the debug state. The flowchart shown may be missing or incomplete.");

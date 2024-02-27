@@ -1,4 +1,4 @@
-import { DebugSessionRules, PedagogRule } from "shared/src/rules";
+import { PedagogRule } from "shared/src/rules";
 
 /**
  * Accepts a stack frame if its presentationHint is undefined or "normal",
@@ -119,9 +119,9 @@ const defaultVariableSkipChildrenRule: PedagogRule = {
   }
 };
 
-export const defaultRules: DebugSessionRules = {
-  threadRules: [],
-  stackFrameRules: [defaultStackFrameAcceptRule],
-  scopeRules: [defaultScopeAcceptRule],
-  variableRules: [defaultVariableMemoryReferenceIdRule, defaultVariableSkipChildrenRule],
-};
+export default [
+  defaultStackFrameAcceptRule,
+  defaultScopeAcceptRule,
+  defaultVariableMemoryReferenceIdRule,
+  defaultVariableSkipChildrenRule,
+];

@@ -1,16 +1,20 @@
 import { DebugSessionStrategies } from ".";
 import { AppListenerEffectApi } from "../../../../../listenerMiddleware";
 import { SessionRulesEngine } from "../../../../rulesEngine/engines/sessionRulesEngine";
+import { sessionsSelectors } from "../../../entities";
 import * as defaultActions from "../defaultActions";
 
 export default async function defaultFetchSessionStrategy(
   sessionId: string,
   strategies: DebugSessionStrategies,
-  sessionRulesEngine: SessionRulesEngine,
   api: AppListenerEffectApi,
   stoppedThreadId?: number
 ): Promise<void> {
   api.dispatch(defaultActions.updateLastFetch(sessionId));
+
+  const rootState = api.getState();
+  const sessionEntity = sessionsSelectors.selectById(rootState.sessions.sessionEntities, sessionId)!;
+  const sessionRulesEngine = new SessionRulesEngine(rootState.rules, sessionEntity);
 
   // Fetch threads
   const acceptedThreads = await strategies.fetchThreads(

@@ -3,7 +3,8 @@
   "private": true,
   "types": "src/index.ts",
   "dependencies": {
-    "@vscode/debugprotocol": "^1.61.0"
+    "@vscode/debugprotocol": "^1.61.0",
+    "json-rules-engine": "^6.5.0"
   },
   "devDependencies": {
     "typescript": "^4.1.3"

@@ -1,5 +1,5 @@
 import { ScopeEntity, SessionEntity, StackFrameEntity, ThreadEntity } from "../../sessions/entities";
-import { PedagogRuleEvent } from "../events";
+import { PedagogRuleEvent } from "shared/src/rules";
 import { BaseRulesEngine } from "./baseRulesEngine";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 

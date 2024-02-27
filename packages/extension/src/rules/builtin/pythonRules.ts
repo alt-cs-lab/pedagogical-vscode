@@ -1,5 +1,4 @@
-import { defaultRules } from "./defaultRules";
-import { DebugSessionRules, PedagogRule } from "shared/src/rules";
+import { PedagogRule } from "shared/src/rules";
 
 /**
  * Only accept the "Locals" scope.
@@ -49,9 +48,7 @@ const pythonVariableAcceptRule: PedagogRule = {
   },
 };
 
-export const pythonRules: DebugSessionRules = {
-  threadRules: defaultRules.threadRules,
-  stackFrameRules: defaultRules.stackFrameRules,
-  scopeRules: [pythonScopeAcceptRule],
-  variableRules: [...defaultRules.variableRules, pythonVariableAcceptRule],
-};
+export default [
+  pythonScopeAcceptRule,
+  pythonVariableAcceptRule,
+];
