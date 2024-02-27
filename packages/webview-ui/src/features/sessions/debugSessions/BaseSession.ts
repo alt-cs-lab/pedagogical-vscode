@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { AnyAction, EntityState, Reducer } from "@reduxjs/toolkit";
 import { AppAddListener } from "../../../listenerMiddleware";
-import { ThreadEntity, StackFrameEntity, ScopeEntity, VariablesEntity, NodeEntity, EdgeEntity, edgesAdapter, nodesAdapter, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter } from "../entities";
+import { ThreadEntity, StackFrameEntity, ScopeEntity, VariablesEntity, NodeEntity, EdgeEntity, edgesAdapter, nodesAdapter, scopesAdapter, stackFramesAdapter, threadsAdapter, variablesAdapter, SessionEntity } from "../entities";
 
 export type BaseSessionState = {
   name: string;
@@ -22,6 +22,11 @@ export default abstract class BaseSession {
    * This is used as a key in the redux state.
    */
   readonly id: string;
+
+  /**
+   * The name of the debugger given by vscode.
+   */
+  readonly debugType: string;
 
   /**
    * The initial state of a session.
@@ -95,8 +100,9 @@ export default abstract class BaseSession {
    *
    * @param id debug session id given by vscode
    */
-  constructor(id: string, preloadedState?: Partial<BaseSessionState>) {
-    this.id = id;
+  constructor(sessionEntity: SessionEntity, preloadedState?: Partial<BaseSessionState>) {
+    this.id = sessionEntity.id;
+    this.debugType = sessionEntity.type;
     if (preloadedState) {
       this.initialState = {
         ...this.initialState,

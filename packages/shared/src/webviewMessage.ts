@@ -1,6 +1,7 @@
 import type { DebugRequest, DebugResponse, DebugEvent } from "./debugProtocol";
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import type { DebugSession } from "vscode";
+import type { PedagogicalRulesSchema } from "./rules";
 
 type MessageData<T extends string, D> = {
   type: T;
@@ -29,7 +30,9 @@ type AnyVsCodeMessage =
   | MessageData<"getAllSessionsRequest", void>
   | MessageData<"getAllSessionsResponse", GetAllSessionsResponse>
   | MessageData<"showError", { msg: string }>
-  | MessageData<"showInformation", { msg: string}>;
+  | MessageData<"showInformation", { msg: string}>
+  | MessageData<"workspaceRulesRequest", void>
+  | MessageData<"workspaceRulesResponse", PedagogicalRulesSchema>;
 
 export type VsCodeMessageType = AnyVsCodeMessage["type"];
 export type VsCodeMessage<T extends VsCodeMessageType = VsCodeMessageType> = Extract<AnyVsCodeMessage, { type: T }>;

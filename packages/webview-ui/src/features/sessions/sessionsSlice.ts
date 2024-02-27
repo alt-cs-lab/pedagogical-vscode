@@ -30,7 +30,7 @@ const sessionsSlice = createSlice({
   reducers: {
     addSession: (state, action: PayloadAction<{ sessionEntity: SessionEntity, preloadedState?: Partial<BaseSessionState> }>) => {
       const SessionClass = getSessionClassByDebugType(action.payload.sessionEntity.type);
-      const session = new SessionClass(action.payload.sessionEntity.id, action.payload.preloadedState);
+      const session = new SessionClass(action.payload.sessionEntity, action.payload.preloadedState);
       sessionInstances.set(session.id, session);
 
       sessionsAdapter.addOne(state.sessionEntities, action.payload.sessionEntity);

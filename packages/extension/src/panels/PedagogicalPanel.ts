@@ -3,6 +3,7 @@ import { getUri } from "../util/getUri";
 import { getNonce } from "../util/getNonce";
 import { VsCodeMessage, DebugRequest } from "shared";
 import DebugSessionController, { DebugSessionMessageListener } from "../DebugSessionController";
+import { loadWorkspaceRules } from "../rules";
 
 /**
  * This class manages the state and behavior of webview panels.
@@ -135,23 +136,22 @@ export class PedagogicalPanel {
    * executes code based on the message that is recieved.
    *
    * @param webview A reference to the extension webview
-   * @param context A reference to the extension context
    */
   private _setWebviewMessageListener(webview: vscode.Webview) {
     webview.onDidReceiveMessage(
-      (message: VsCodeMessage) => {
+      async (message: VsCodeMessage) => {
         switch (message.type) {
           case "debugRequest":
             this._handleDebugRequest(message.data.sessionId, message.data.req, message.msgSeq);
-            break;
+            return;
 
           case "showError":
             void vscode.window.showErrorMessage(`Pedagogical: ${message.data.msg}`);
-            break;
+            return;
           
           case "showInformation":
             void vscode.window.showInformationMessage(`Pedagogical: ${message.data.msg}`);
-            break;
+            return;
 
           case "getAllSessionsRequest": {
             const respData: VsCodeMessage<"getAllSessionsResponse">["data"] = {
@@ -168,7 +168,17 @@ export class PedagogicalPanel {
               data: respData,
               msgSeq: message.msgSeq,
             });
-            break;
+            return;
+          }
+
+          case "workspaceRulesRequest": {
+            const workspaceRules = await loadWorkspaceRules();
+            this._postWebviewMessage({
+              type: "workspaceRulesResponse",
+              data: workspaceRules,
+              msgSeq: message.msgSeq,
+            });
+            return;
           }
         }
       },

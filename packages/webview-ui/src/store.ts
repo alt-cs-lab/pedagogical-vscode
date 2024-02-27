@@ -4,6 +4,7 @@ import { startMessageObserver } from "./util/messageObserver";
 import { AppListenerMiddlewareInstance, appListenerMiddleware } from "./listenerMiddleware";
 import sessionsSlice from "./features/sessions/sessionsSlice";
 import { startStateChangedListener } from "./stateChangeListener";
+import rulesSlice from "./features/rulesEngine/rulesSlice";
 
 // load redux devtools if this is a dev environment
 // there's probably a better way to do this
@@ -13,6 +14,7 @@ const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment as boolean
 
 export const store = configureStore({
   reducer: {
+    [rulesSlice.name]: rulesSlice.reducer,
     [sessionsSlice.name]: sessionsSlice.reducer,
   },
   middleware: (getDefaultMiddleware) => (
@@ -27,6 +29,7 @@ export const store = configureStore({
       realtime: isDevEnvironment,
       suppressConnectErrors: true,
       trace: true,
+      traceLimit: 100,
     }),
   ] : undefined,
 });

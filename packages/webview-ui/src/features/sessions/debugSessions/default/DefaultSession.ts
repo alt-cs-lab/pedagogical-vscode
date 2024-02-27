@@ -8,6 +8,8 @@ import defaultStrategies from "./strategies";
 import { getDefaultFlowComponent } from "./DefaultFlowComponent";
 import { debugEventAction } from "../../debugEventActions";
 import { sessionsInitialized } from "../../sessionsSlice";
+import { SessionEntity } from "../../entities";
+import { MessageBox } from "../../../../util";
 
 export default class DefaultSession extends BaseSession {
   override reducer = createReducer(this.initialState, (builder) => {
@@ -60,8 +62,8 @@ export default class DefaultSession extends BaseSession {
     }),
   ];
 
-  constructor(id: string, initialState?: BaseSessionState) {
-    super(id, initialState);
+  constructor(sessionEntity: SessionEntity, initialState?: BaseSessionState) {
+    super(sessionEntity, initialState);
     if (this.initialState.lastPause > this.initialState.lastFetch) {
       this.fetchAfterInitialize = true;
     }
@@ -77,7 +79,14 @@ export default class DefaultSession extends BaseSession {
     const stoppedThread = debugEventAction.stopped.match(action) ? action.payload.body.threadId : undefined;
     
     api.dispatch(defaultActions.setLoading(this.id, { loading: true }));
-    await this.strategies.fetchSession(this.id, this.strategies, api, stoppedThread);
+
+    try {
+      await this.strategies.fetchSession(this.id, this.strategies, api, stoppedThread);
+    } catch (e) {
+      console.error(e);
+      MessageBox.showError("An error occured while fetching the debug state. The flowchart shown may be missing or incomplete.");
+    }
+
     api.dispatch(defaultActions.buildFlow(this.id));
     api.dispatch(defaultActions.setLoading(this.id, { loading: false }));
   };

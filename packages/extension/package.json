@@ -17,6 +17,7 @@
     "@vscode/debugprotocol": "^1.61.0",
     "@vscode/test-electron": "^2.3.4",
     "glob": "^10.3.3",
+    "json5": "^2.2.3",
     "mocha": "^10.2.0",
     "shared": "workspace:*",
     "typescript": "^4.1.3"
