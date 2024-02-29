@@ -131,3 +131,12 @@ export const StackFrame: Story = {
     },
   },
 };
+
+export const StackTrace: Story = {
+  args: {
+    type: "commonStackTrace",
+    data: {},
+    height: 400,
+    width: 100,
+  },
+};

@@ -1,8 +1,7 @@
-import { NodeProps } from "reactflow";
-import { VariablesList, VariablesListItem } from "./VariablesList";
-
 import "./CommonNode.css";
 import "./StackFrameNode.css";
+import { NodeProps } from "reactflow";
+import { VariablesList, VariablesListItem } from "./VariablesList";
 import { BaseNodeData } from "../base";
 
 export type StackFrameData = BaseNodeData & {

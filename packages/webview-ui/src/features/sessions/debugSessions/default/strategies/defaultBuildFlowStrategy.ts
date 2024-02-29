@@ -28,6 +28,15 @@ async function defaultBuildFlowStrategy(
   const variableNodesToAdd: { entity: VariablesEntity; type: string | undefined }[] = [];
   const variableIdsAdded = new Set<string>();
 
+  // Parent stack trace node
+  const stackTraceNode: NodeEntity<"commonStackTrace"> = {
+    type: "commonStackTrace",
+    id: "stack-trace",
+    position: { x: 0, y: 0 },
+    data: {},
+  };
+  nodes.push(stackTraceNode);
+
   // start with stack frames and scopes
   for (const frame of stackFrameSelectors.selectAll(state.stackFrames)) {
     const frameNode: NodeEntity<"commonStackFrame"> = {
@@ -38,6 +47,8 @@ async function defaultBuildFlowStrategy(
         name: "Stack Frame: " + frame.name,
         scopes: [],
       },
+      parentNode: "stack-trace",
+      draggable: false,
     };
 
     for (const scopeId of frame.scopeIds) {

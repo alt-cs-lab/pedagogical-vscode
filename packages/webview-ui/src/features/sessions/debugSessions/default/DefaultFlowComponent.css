@@ -2,6 +2,12 @@
   z-index: -1 !important;
 }
 
-.react-flow__node:not(.dragging) {
+/*
+Add a transition to the transform property so nodes glide into place.
+Do not use the transition in these cases:
+ - The node is being dragged -- It's transform should change immediately
+ - The node is a stack frame -- Only the parent stack trace node should transition
+*/
+.react-flow__node:not(.dragging, .react-flow__node-commonStackFrame) {
   transition: transform 0.5s ease;
 }
