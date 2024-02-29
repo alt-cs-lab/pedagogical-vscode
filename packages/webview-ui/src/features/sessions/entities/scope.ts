@@ -11,11 +11,3 @@ export const scopesAdapter = createEntityAdapter<ScopeEntity>({
 });
 
 export const scopeSelectors = scopesAdapter.getSelectors();
-
-export function toScopeEntities(stackFrameId: number, scopes: DP.Scope[]): ScopeEntity[] {
-  return scopes.map((scope) => ({
-    pedagogId: `${stackFrameId}-${scope.name}`,
-    stackFrameId,
-    ...scope,
-  }));
-}

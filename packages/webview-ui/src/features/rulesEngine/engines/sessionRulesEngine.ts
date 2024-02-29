@@ -54,12 +54,13 @@ export class SessionRulesEngine {
    * @param stackFrame The StackFrame returned by the debug adapter.
    * @returns The StackFrameEntity and ScopeArguments resulting from the rules, or null if the stack frame is rejected.
    */
-  async evalStackFrame(thread: ThreadEntity, stackFrame: DP.StackFrame) {
+  async evalStackFrame(thread: ThreadEntity, stackFrame: DP.StackFrame, frameIndex: number) {
     try {
       return await this.stackFrameEngine.eval({
         session: this.session,
         thread,
         stackFrame,
+        frameIndex,
       });
     } catch (e) {
       console.error(e);

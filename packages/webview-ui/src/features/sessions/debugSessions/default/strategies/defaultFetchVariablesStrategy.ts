@@ -1,9 +1,16 @@
 import { AppListenerEffectApi } from "../../../../../listenerMiddleware";
 import debugApi from "../../../debugApi";
-import { ScopeEntity, StackFrameEntity, ThreadEntity, VariablesEntity } from "../../../entities";
+import {
+  ScopeEntity,
+  StackFrameEntity,
+  ThreadEntity,
+  VariablesEntity,
+  variableSelectors,
+} from "../../../entities";
 import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { SessionRulesEngine } from "../../../../rulesEngine/engines/sessionRulesEngine";
 import * as defaultActions from "../defaultActions";
+import { selectSessionState } from "../../../sessionsSlice";
 
 /**
  * Fetch variables using the given reference numbers.
@@ -20,6 +27,16 @@ export default async function defaultFetchVariablesStrategy(
   variablesPedagogId: string,
   depth: number,
 ): Promise<void> {
+  // Make sure we didn't already fetch with this variablesReference number
+  const sessionState = selectSessionState(api.getState(), sessionId);
+  const existingEntity = variableSelectors.selectByReference(
+    sessionState.variables,
+    variablesArgs.variablesReference,
+  );
+  if (existingEntity) {
+    return;
+  }
+
   // Fetch the variables
   const variablesResp = await debugApi.debugRequestAsync(sessionId, {
     command: "variables",

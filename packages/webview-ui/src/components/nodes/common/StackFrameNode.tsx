@@ -6,6 +6,7 @@ import { BaseNodeData } from "../base";
 
 export type StackFrameData = BaseNodeData & {
   scopes: ScopeData[];
+  stackPosition: number;
 };
 
 export type ScopeData = {

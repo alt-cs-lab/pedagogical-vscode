@@ -3,6 +3,7 @@ import { NodeChange } from "reactflow";
 import ELK, { ElkNode } from "elkjs";
 import { edgeSelectors, nodeSelectors } from "../../../entities";
 import { isDevEnvironment } from "../../../../../store";
+import { StackFrameData } from "../../../../../components/nodes/common/StackFrameNode";
 
 const elk = new ELK();
 
@@ -57,20 +58,20 @@ export default async function defaultLayoutNodesStrategy(
     })),
   };
 
-  let stackPosition = 0;
   for (const node of nodeSelectors.selectAll(state.nodes)) {
     if (node.id === stackTraceNode.id) {
       continue;
     }
 
     if (node.type === "commonStackFrame") {
+      const stackPosition = (node.data as StackFrameData).stackPosition;
       elkStackTraceNode.children!.push({
         id: node.id,
         width: node.width!,
         height: node.height!,
         labels: [{ text: node.data.name }],
         layoutOptions: {
-          position: `(0,${stackPosition++})`,
+          position: `(0,${stackPosition})`,
           alignment: "LEFT",
         },
       });

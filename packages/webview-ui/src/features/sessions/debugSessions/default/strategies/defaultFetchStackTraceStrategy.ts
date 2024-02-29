@@ -27,8 +27,10 @@ async function defaultFetchStackTraceStrategy(
 
   // Run each stack frame through the rules engine
   const acceptedFrames = [];
-  for (const stackFrame of framesResp.body.stackFrames) {
-    const acceptedFrame = await sessionRulesEngine.evalStackFrame(thread, stackFrame);
+  for (let i = 0; i < framesResp.body.stackFrames.length; i++) {
+    const stackFrame = framesResp.body.stackFrames[i];
+    const frameIndex = (stackTraceArgs.startFrame ?? 0) + i;
+    const acceptedFrame = await sessionRulesEngine.evalStackFrame(thread, stackFrame, frameIndex);
     acceptedFrame && acceptedFrames.push(acceptedFrame);
   }
 

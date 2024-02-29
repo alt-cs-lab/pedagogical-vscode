@@ -6,6 +6,7 @@ interface StackFrameFacts {
   session: SessionEntity;
   thread: ThreadEntity;
   stackFrame: DP.StackFrame;
+  frameIndex: number;
 }
 
 export interface AcceptedStackFrame {
@@ -33,6 +34,7 @@ export class StackFrameRulesEngine extends BaseRulesEngine {
       pedagogId: facts.stackFrame.id.toString(),
       threadId: facts.thread.id,
       scopeIds: [],
+      frameIndex: facts.frameIndex,
     };
 
     const scopesArgs: DP.ScopesArguments = {

@@ -38,14 +38,16 @@ async function defaultBuildFlowStrategy(
   nodes.push(stackTraceNode);
 
   // start with stack frames and scopes
-  for (const frame of stackFrameSelectors.selectAll(state.stackFrames)) {
+  const stackFrames = stackFrameSelectors.selectAll(state.stackFrames);
+  for (const [i, frame] of stackFrames.entries()) {
     const frameNode: NodeEntity<"commonStackFrame"> = {
       type: "commonStackFrame",
       id: `frame-${frame.pedagogId}`,
       position: { x: 0, y: 0 },
       data: {
-        name: "Stack Frame: " + frame.name,
+        name: frame.name,
         scopes: [],
+        stackPosition: i,
       },
       parentNode: "stack-trace",
       draggable: false,
