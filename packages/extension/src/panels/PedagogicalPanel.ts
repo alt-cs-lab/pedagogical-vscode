@@ -217,9 +217,6 @@ export class PedagogicalPanel {
   private _handleDebugRequest(sessionId: string, req: DebugRequest, msgSeq?: number) {
     DebugSessionController.sendDebugRequest(sessionId, req)
       .then((resp) => {
-        if (this._context.extensionMode !== vscode.ExtensionMode.Production) {
-          console.log(resp);
-        }
         this._postWebviewMessage({ type: "debugResponse", msgSeq, data: { sessionId, resp } });
       })
       .catch(() => {

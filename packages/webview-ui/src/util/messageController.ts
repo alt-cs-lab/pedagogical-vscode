@@ -1,11 +1,20 @@
 import { VsCodeMessage } from "shared";
 import { vscode } from "./vscode";
 import AsyncLock from "async-lock";
+import { isDevEnvironment } from "../store";
 
 type PromiseCallbacks = {
   resolve: (value: any) => void;
   reject: (error?: any) => void;
 };
+
+function logDebugMessages(msg: VsCodeMessage) {
+  if (msg.type === "debugRequest") {
+    console.debug(msg.msgSeq, "-->", msg.data.req.command, msg.data.req.args);
+  } else if (msg.type === "debugResponse") {
+    console.debug(msg.msgSeq, "<--", msg.data.resp.command, msg.data.resp.body);
+  }
+}
 
 /**
  * Class to help handle messages sent between this webview and vscode.
@@ -35,6 +44,8 @@ class VsCodeMessageController {
   /** Handle a message sent from the vscode extension */
   handleWindowMessage = (ev: MessageEvent) => {
     const msg = ev.data as VsCodeMessage;
+    isDevEnvironment && logDebugMessages(msg);
+
     if (msg.msgSeq) {
       // this is a reponse to an earlier request message
       void this.completeMessagePromise(msg.msgSeq, msg);
@@ -48,6 +59,7 @@ class VsCodeMessageController {
    * @param message The message to post.
    */
   postMessage(message: VsCodeMessage) {
+    isDevEnvironment && logDebugMessages(message);
     vscode.postMessage(message);
   }
 
@@ -59,10 +71,13 @@ class VsCodeMessageController {
    */
   postRequestAndWaitAsync(message: VsCodeMessage, timeout = 1000): Promise<VsCodeMessage> {
     const msgSeq = ++this.msgSeqCounter;
+    message.msgSeq = msgSeq;
+
+    isDevEnvironment && logDebugMessages(message);
 
     return new Promise((resolve, reject) => {
       this.seqPromiseMap.set(msgSeq, { resolve, reject });
-      vscode.postMessage({ msgSeq: msgSeq, ...message });
+      vscode.postMessage(message);
 
       // reject if we never hear back
       setTimeout(() => {

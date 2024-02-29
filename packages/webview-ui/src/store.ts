@@ -10,7 +10,7 @@ import rulesSlice from "./features/rulesEngine/rulesSlice";
 // there's probably a better way to do this
 const scriptData = document.getElementById("scriptData") as HTMLScriptElement;
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment as boolean;
+export const isDevEnvironment = JSON.parse(scriptData.text).isEnvDevelopment as boolean;
 
 export const store = configureStore({
   reducer: {
@@ -28,8 +28,7 @@ export const store = configureStore({
           secure: false,
           realtime: isDevEnvironment,
           suppressConnectErrors: true,
-          trace: true,
-          traceLimit: 100,
+          maxAge: 150,
         }),
       ]
     : undefined,

@@ -12,8 +12,6 @@ import { DebugProtocol as DP } from "@vscode/debugprotocol";
 import { MessageBox } from "../../../util";
 import { RulesState, getDebugSessionRules } from "../rulesSlice";
 
-window.localStorage.debug = "json-rules-engine";
-
 export class SessionRulesEngine {
   private session: SessionEntity;
   private threadEngine: ThreadRulesEngine;

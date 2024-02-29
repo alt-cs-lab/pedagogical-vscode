@@ -5,6 +5,10 @@ import {
   PedagogRuleSerializable,
 } from "shared/src/rules";
 import { MessageBox } from "../../util";
+import { isDevEnvironment } from "../../store";
+
+// If isDevEnvironment, json-rules-engine will log verbose stuff to the console.
+window.localStorage.debug = isDevEnvironment ? "json-rules-engine" : "";
 
 export interface RulesState {
   definitions: Record<string, PedagogRuleSerializable>;
