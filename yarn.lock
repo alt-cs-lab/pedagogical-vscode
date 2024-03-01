@@ -5967,14 +5967,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vscode/vsce@npm:^2.20.1":
-  version: 2.20.1
-  resolution: "@vscode/vsce@npm:2.20.1"
+"@vscode/vsce@npm:^2.24.0":
+  version: 2.24.0
+  resolution: "@vscode/vsce@npm:2.24.0"
   dependencies:
     azure-devops-node-api: ^11.0.1
     chalk: ^2.4.2
     cheerio: ^1.0.0-rc.9
-    commander: ^6.1.0
+    commander: ^6.2.1
     glob: ^7.0.6
     hosted-git-info: ^4.0.2
     jsonc-parser: ^3.2.0
@@ -5997,7 +5997,7 @@ __metadata:
       optional: true
   bin:
     vsce: vsce
-  checksum: b0fb3ed03fa09f700ced42986c4a5a5231cb13308e5f10517a3117895a5260854f8d8d38c0805ea7a444d327933482546b65ca5009e85b15e86fba0372cc444f
+  checksum: 3b603681ea9bdb630be5f31a0d7cc1e5444d84c58418001ad0d89acc1d333a00d77535fa00924e21cf67686a0d960a16ee3851066a7c14cb6a66cffac31f40d5
   languageName: node
   linkType: hard
 
@@ -7383,7 +7383,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^6.1.0, commander@npm:^6.2.1":
+"commander@npm:^6.2.1":
   version: 6.2.1
   resolution: "commander@npm:6.2.1"
   checksum: d7090410c0de6bc5c67d3ca41c41760d6d268f3c799e530aafb73b7437d1826bbf0d2a3edac33f8b57cc9887b4a986dce307fa5557e109be40eadb7c43b21742
@@ -13252,7 +13252,7 @@ __metadata:
     "@types/node": ^20.11.20
     "@typescript-eslint/eslint-plugin": ^6.7.0
     "@typescript-eslint/parser": ^6.7.0
-    "@vscode/vsce": ^2.20.1
+    "@vscode/vsce": ^2.24.0
     concurrently: ^8.2.0
     eslint: ^8.49.0
     eslint-config-prettier: ^8.8.0
