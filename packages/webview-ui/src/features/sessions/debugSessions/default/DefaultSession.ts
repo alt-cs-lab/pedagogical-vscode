@@ -31,8 +31,8 @@ export default class DefaultSession extends BaseSession {
 
     // apply node changes from react flow
     builder.addCase(defaultActions.nodesChanged, defaultReducers.nodesChangedReducer);
-
     builder.addCase(defaultActions.layoutNodesDone, defaultReducers.layoutNodesDoneReducer);
+    builder.addCase(defaultActions.nodeMeasured, defaultReducers.nodeMeasuredReducer);
 
     builder.addCase(defaultActions.setLoading, defaultReducers.setLoadingReducer);
 
@@ -44,24 +44,34 @@ export default class DefaultSession extends BaseSession {
   override component = getDefaultFlowComponent();
 
   override addListeners = (addListener: AppAddListener) => [
+    // sessionsInitialized
     addListener({
       predicate: (action) => sessionsInitialized.match(action) && this.fetchAfterInitialize,
       effect: (act, api) => this.debuggerStoppedEffect(act, api),
     }),
 
+    // "stopped" debug event
     addListener({
       matcher: matcherWithId(this.id, debugEventAction.stopped.match),
       effect: (act, api) => this.debuggerStoppedEffect(act, api),
     }),
 
+    // buildFLow
     addListener({
       matcher: matcherWithId(this.id, defaultActions.buildFlow.match),
       effect: (act, api) => this.buildFlowEffect(act, api),
     }),
 
+    // layoutNodes
     addListener({
       matcher: matcherWithId(this.id, defaultActions.layoutNodes.match),
       effect: (act, api) => this.layoutNodesEffect(act, api),
+    }),
+
+    // nodeMeasured
+    addListener({
+      matcher: matcherWithId(this.id, defaultActions.nodeMeasured.match),
+      effect: (act, api) => this.nodeMeasuredEffect(act, api),
     }),
   ];
 
@@ -75,6 +85,10 @@ export default class DefaultSession extends BaseSession {
   strategies = defaultStrategies;
 
   //#region listener effects
+  /**
+   * When the debugger stops, dispatch all actions needed to clear the debug objects,
+   * fetch new objects from the debug adapter, then build the nodes and edges for React Flow.
+   */
   debuggerStoppedEffect: AppListenerEffect = async (action, api) => {
     api.dispatch(defaultActions.updateLastPause(this.id));
     api.dispatch(defaultActions.removeAllDebugObjects(this.id));
@@ -86,8 +100,12 @@ export default class DefaultSession extends BaseSession {
     api.dispatch(defaultActions.setLoading(this.id, { loading: true }));
 
     try {
-      await this.strategies.fetchSession(this.id, this.strategies, api, stoppedThread);
+      await api.pause(this.strategies.fetchSession(this.id, this.strategies, api, stoppedThread));
     } catch (e) {
+      if (api.signal.aborted) {
+        // Don't show error message if listener was intentionally cancelled
+        return;
+      }
       console.error(e);
       MessageBox.showError(
         "An error occured while fetching the debug state. The flowchart shown may be missing or incomplete.",
@@ -98,17 +116,39 @@ export default class DefaultSession extends BaseSession {
     api.dispatch(defaultActions.setLoading(this.id, { loading: false }));
   };
 
+  /**
+   * Async handler for the `buildFlow` action.
+   *
+   * TODO: This is basically an async reducer, so it could probably be a thunk.
+   */
   buildFlowEffect: AppListenerEffect = async (_action, api) => {
     const state = api.getState().sessions.sessionStates[this.id];
-    const { nodes, edges } = await this.strategies.buildFlow(state);
+    const { nodes, edges } = await api.pause(this.strategies.buildFlow(state));
     api.dispatch(defaultActions.setAllFlowObjects(this.id, { nodes, edges }));
   };
 
+  /**
+   * Async handler for the `layoutFlow` action.
+   *
+   * TODO: This is basically an async reducer, so it could probably be a thunk.
+   */
   layoutNodesEffect: AppListenerEffect = async (_action, api) => {
     api.cancelActiveListeners();
     const state = api.getState().sessions.sessionStates[this.id];
-    const changes = await this.strategies.layoutFlow(state);
+    const changes = await api.pause(this.strategies.layoutFlow(state));
     api.dispatch(defaultActions.layoutNodesDone(this.id, { changes }));
+  };
+
+  /**
+   * Effect that dispatches `layoutNodes` after receiving the batched `nodeMeasured` actions.
+   */
+  nodeMeasuredEffect: AppListenerEffect = async (_action, api) => {
+    api.cancelActiveListeners();
+    // This effect is triggered several times at once.
+    // Debounce to make sure this listener code only runs once.
+    await api.delay(10);
+
+    api.dispatch(defaultActions.layoutNodes(this.id));
   };
   //#endregion listener effects
 }

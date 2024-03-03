@@ -33,7 +33,7 @@ async function defaultBuildFlowStrategy(
     type: "commonStackTrace",
     id: "stack-trace",
     position: { x: 0, y: 0 },
-    data: {},
+    data: { measuredSize: null },
   };
   nodes.push(stackTraceNode);
 
@@ -48,6 +48,7 @@ async function defaultBuildFlowStrategy(
         name: frame.name,
         scopes: [],
         stackPosition: i,
+        measuredSize: null,
       },
       parentNode: "stack-trace",
       draggable: false,
@@ -184,6 +185,7 @@ async function defaultBuildFlowStrategy(
       data: {
         name: variable.type,
         items: variablesListItems,
+        measuredSize: null,
       },
       id: variable.entity.pedagogId,
       position: { x: 0, y: 0 },

@@ -1,19 +1,20 @@
-import { useEffect } from "react";
-import { Background, Controls, ReactFlow, useNodesInitialized } from "reactflow";
+import "./DefaultFlowComponent.css";
+import { Background, Controls, ReactFlow } from "reactflow";
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
 import { edgesAdapter, nodesAdapter } from "../../entities";
-import { layoutNodes, nodesChanged } from "./defaultActions";
+import { nodesChanged } from "./defaultActions";
 import { nodeTypes } from "../../../../components/nodes";
 import { edgeTypes } from "../../../../components/edges";
 import LoadingScreen from "../../../../components/misc/LoadingScreen";
-
-import "./DefaultFlowComponent.css";
+import SessionContext from "../../SessionContext";
 
 const DefaultFlow = (props: { sessionId: string }) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state.sessions.sessionStates[props.sessionId]);
 
-  // const sessionEntity = useAppSelector((state) => state.sessions.sessionEntities.entities[props.sessionId]);
+  const sessionEntity = useAppSelector(
+    (state) => state.sessions.sessionEntities.entities[props.sessionId],
+  );
 
   const nodeSelectors = nodesAdapter.getSelectors();
   const edgeSelectors = edgesAdapter.getSelectors();
@@ -21,15 +22,8 @@ const DefaultFlow = (props: { sessionId: string }) => {
   const nodes = nodeSelectors.selectAll(state.nodes);
   const edges = edgeSelectors.selectAll(state.edges);
 
-  const nodesInitialized = useNodesInitialized({ includeHiddenNodes: false });
-  useEffect(() => {
-    if (nodesInitialized) {
-      dispatch(layoutNodes(props.sessionId));
-    }
-  }, [nodesInitialized]);
-
   return (
-    <>
+    <SessionContext.Provider value={sessionEntity}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -41,7 +35,7 @@ const DefaultFlow = (props: { sessionId: string }) => {
         <Background />
         <Controls />
       </ReactFlow>
-    </>
+    </SessionContext.Provider>
   );
 };
 
