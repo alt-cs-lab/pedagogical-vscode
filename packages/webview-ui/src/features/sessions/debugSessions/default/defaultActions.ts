@@ -52,6 +52,10 @@ export const layoutNodesDone = createSessionAction<{ changes: NodeChange[] }>(
 );
 export const nodesChanged = createSessionAction<{ changes: NodeChange[] }>("session/nodesChanged");
 
+export const nodeMeasured = createSessionAction<{ id: string; size: { h: number; w: number } }>(
+  "session/nodeMeasured",
+);
+
 export const updateLastPause = createAction("session/updateLastPause", (sessionId: string) => ({
   payload: { lastPause: Date.now() },
   meta: { sessionId },

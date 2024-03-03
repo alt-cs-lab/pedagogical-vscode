@@ -3,6 +3,8 @@ import "./StackFrameNode.css";
 import { NodeProps } from "reactflow";
 import { VariablesList, VariablesListItem } from "./VariablesList";
 import { BaseNodeData } from "../base";
+import { useRef } from "react";
+import { useMeasureNode } from "../hooks";
 
 export type StackFrameData = BaseNodeData & {
   scopes: ScopeData[];
@@ -16,8 +18,11 @@ export type ScopeData = {
 };
 
 export default function StackFrameNode(props: NodeProps<StackFrameData>) {
+  const divRef = useRef<HTMLDivElement | null>(null);
+  useMeasureNode(divRef, props.data.measuredSize);
+
   return (
-    <div className="common-node stack-frame-node">
+    <div ref={divRef} className="common-node stack-frame-node">
       <div className="common-node-header">{props.data.name}</div>
       {props.data.scopes.map((scopeData) => (
         <div className="common-node stack-frame-scope" key={scopeData.name}>

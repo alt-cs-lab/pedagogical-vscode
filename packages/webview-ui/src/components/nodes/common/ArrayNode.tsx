@@ -4,14 +4,19 @@ import { VariablesListItem } from "./VariablesList";
 
 import "./CommonNode.css";
 import "./ArrayNode.css";
+import { useRef } from "react";
+import { useMeasureNode } from "../hooks";
 
 export type ArrayData = BaseNodeData & {
   items: VariablesListItem[];
 };
 
 export default function ArrayNode(props: NodeProps<ArrayData>) {
+  const divRef = useRef<HTMLDivElement | null>(null);
+  useMeasureNode(divRef, props.data.measuredSize);
+
   return (
-    <div className="common-node variables-node">
+    <div ref={divRef} className="common-node variables-node">
       <div className="common-node-header">{props.data.name}</div>
       <Handle className="variables-node-handle" position={Position.Left} type="target" />
       <div className="array-list">

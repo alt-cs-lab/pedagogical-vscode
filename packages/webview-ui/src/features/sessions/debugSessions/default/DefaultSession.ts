@@ -31,8 +31,8 @@ export default class DefaultSession extends BaseSession {
 
     // apply node changes from react flow
     builder.addCase(defaultActions.nodesChanged, defaultReducers.nodesChangedReducer);
-
     builder.addCase(defaultActions.layoutNodesDone, defaultReducers.layoutNodesDoneReducer);
+    builder.addCase(defaultActions.nodeMeasured, defaultReducers.nodeMeasuredReducer);
 
     builder.addCase(defaultActions.setLoading, defaultReducers.setLoadingReducer);
 

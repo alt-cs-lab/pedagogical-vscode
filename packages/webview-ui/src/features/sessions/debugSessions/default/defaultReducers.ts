@@ -102,6 +102,22 @@ export const layoutNodesDoneReducer: CR<typeof defaultActions.layoutNodesDone> =
   );
 };
 
+export const nodeMeasuredReducer: CR<typeof defaultActions.nodeMeasured> = (state, action) => {
+  const node = nodeSelectors.selectById(state.nodes, action.payload.id);
+  if (node === undefined) {
+    return;
+  }
+  nodesAdapter.updateOne(state.nodes, {
+    id: action.payload.id,
+    changes: {
+      data: {
+        ...node.data,
+        measuredSize: action.payload.size,
+      },
+    },
+  });
+};
+
 export const updateLastStopReducer: CR<typeof defaultActions.updateLastPause> = (state, action) => {
   state.lastPause = action.payload.lastPause;
 };
