@@ -67,8 +67,8 @@ export default async function defaultLayoutNodesStrategy(
       const stackPosition = (node.data as StackFrameData).stackPosition;
       elkStackTraceNode.children!.push({
         id: node.id,
-        width: node.width!,
-        height: node.height!,
+        width: node.data.measuredSize?.w ?? node.width ?? undefined,
+        height: node.data.measuredSize?.h ?? node.height ?? undefined,
         labels: [{ text: node.data.name }],
         layoutOptions: {
           position: `(0,${stackPosition})`,
@@ -80,17 +80,16 @@ export default async function defaultLayoutNodesStrategy(
         id: node.id,
         // x: node.data.isLayouted ? node.position.x : undefined,
         // y: node.data.isLayouted ? node.position.y : undefined,
-        width: node.width!,
-        height: node.height!,
+        width: node.data.measuredSize?.w ?? node.width ?? undefined,
+        height: node.data.measuredSize?.h ?? node.height ?? undefined,
         labels: node.data.name ? [{ text: node.data.name }] : undefined,
         ...(node.data.isLayouted ? { x: node.position.x, y: node.position.y } : undefined),
       });
     }
   }
 
-  isDevEnvironment && console.debug("Pre-layout graph:", JSON.stringify(elkRootNode));
   const layoutedGraph = await elk.layout(elkRootNode);
-  isDevEnvironment && console.debug("Post-layout graph:", JSON.stringify(layoutedGraph));
+  isDevEnvironment && console.debug("Layouted graph:", JSON.stringify(layoutedGraph));
 
   const layoutedNodes: ElkNode[] = layoutedGraph.children!.flatMap((elkNode) => [
     {
@@ -99,7 +98,6 @@ export default async function defaultLayoutNodesStrategy(
     },
     ...(elkNode.children ?? []),
   ]);
-  console.log("layouted graph:", layoutedGraph);
 
   const positionChanges: NodeChange[] = layoutedNodes.map((elkNode) => ({
     id: elkNode.id,

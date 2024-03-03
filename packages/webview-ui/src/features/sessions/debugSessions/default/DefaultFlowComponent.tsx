@@ -1,9 +1,8 @@
 import "./DefaultFlowComponent.css";
-import { useLayoutEffect } from "react";
-import { Background, Controls, ReactFlow, useNodesInitialized } from "reactflow";
+import { Background, Controls, ReactFlow } from "reactflow";
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
 import { edgesAdapter, nodesAdapter } from "../../entities";
-import { layoutNodes, nodesChanged } from "./defaultActions";
+import { nodesChanged } from "./defaultActions";
 import { nodeTypes } from "../../../../components/nodes";
 import { edgeTypes } from "../../../../components/edges";
 import LoadingScreen from "../../../../components/misc/LoadingScreen";
@@ -22,13 +21,6 @@ const DefaultFlow = (props: { sessionId: string }) => {
 
   const nodes = nodeSelectors.selectAll(state.nodes);
   const edges = edgeSelectors.selectAll(state.edges);
-
-  const nodesInitialized = useNodesInitialized({ includeHiddenNodes: false });
-  useLayoutEffect(() => {
-    if (nodesInitialized) {
-      dispatch(layoutNodes(props.sessionId));
-    }
-  }, [nodesInitialized]);
 
   return (
     <SessionContext.Provider value={sessionEntity}>

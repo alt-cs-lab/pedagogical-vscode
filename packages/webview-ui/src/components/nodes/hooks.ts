@@ -20,9 +20,6 @@ export function useMeasureNode(
   const nodeId = useNodeId();
   const session = useContext(SessionContext);
 
-  const offsetWidth = ref.current?.offsetWidth ?? 0;
-  const offsetHeight = ref.current?.offsetHeight ?? 0;
-
   useLayoutEffect(() => {
     if (ref.current === null) {
       console.warn("useMeasureNode: ref.current is null. Did you forget to use the ref?");
@@ -36,10 +33,10 @@ export function useMeasureNode(
     if (!measuredSize) {
       // Size hasn't been measured for this render yet, so report the measurement.
       const size = {
-        h: offsetHeight,
-        w: offsetWidth,
+        h: ref.current.offsetHeight,
+        w: ref.current.offsetWidth,
       };
       dispatch(nodeMeasured(session.id, { id: nodeId, size }));
     }
-  }, [measuredSize, offsetWidth, offsetHeight]);
+  }, [measuredSize, ref.current]);
 }

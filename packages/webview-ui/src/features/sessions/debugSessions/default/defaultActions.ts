@@ -8,7 +8,7 @@ import {
   EdgeEntity,
 } from "../../entities";
 import { createSessionAction } from "../../sessionAction";
-import { createAction } from "@reduxjs/toolkit";
+import { SHOULD_AUTOBATCH, createAction } from "@reduxjs/toolkit";
 
 type SetAllDebugObjectsPayload = {
   threads: ThreadEntity[];
@@ -52,8 +52,13 @@ export const layoutNodesDone = createSessionAction<{ changes: NodeChange[] }>(
 );
 export const nodesChanged = createSessionAction<{ changes: NodeChange[] }>("session/nodesChanged");
 
-export const nodeMeasured = createSessionAction<{ id: string; size: { h: number; w: number } }>(
+type NodeMeasuredPayload = { id: string; size: { h: number; w: number } };
+export const nodeMeasured = createAction(
   "session/nodeMeasured",
+  (sessionId: string, payload: NodeMeasuredPayload) => ({
+    payload,
+    meta: { sessionId, [SHOULD_AUTOBATCH]: true },
+  }),
 );
 
 export const updateLastPause = createAction("session/updateLastPause", (sessionId: string) => ({
