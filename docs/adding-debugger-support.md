@@ -1,5 +1,9 @@
 # Adding Debugger Support to Pedagogical
 
+> WARNING: **This is already obsolete!!** See [rules-engine.md](rules-engine.md) for the updated method of supporting other debuggers.
+>
+> It's still technically possible to support other debuggers with this method, but user-defined rules won't work as well (or at all). **If you need to add functionality to a debug session that's not possible with the rules engine, you should add that functionaly to the rules engine as an event so it may be reusable by other rules.**
+
 > NOTE: Pedagogical is in early development and some of this information is subject to change, but the general structure of debug sessions should stay the same.
 
 The debug adapter provides a common interface debug different languages in vscode. However, this does not mean that all debug adapters function the exact same way or provide the same information (see [Debug Adapter Protocol](./debug-adapter-protocol.md)). Because of this, a debug adapter session must be implemented in Pedagogical for it to work correctly.
