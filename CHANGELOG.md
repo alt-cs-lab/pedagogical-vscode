@@ -1,5 +1,9 @@
 # Pedagogical Changelog
 
+## v0.1.1
+
+- Fixed an issue where the flow layout wouldn't adapt to node dimension changes.
+
 ## v0.1.0
 
 - Added support the new `debugpy` debugger in newer versions of the Python extension.
