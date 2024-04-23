@@ -1,5 +1,3 @@
-import numpy
-
 def listSum(numbers):
   if not numbers:
     return 0

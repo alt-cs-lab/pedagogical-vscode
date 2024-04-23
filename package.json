@@ -41,7 +41,7 @@
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@4.1.1+sha256.f3cc0eda8e5560e529c7147565b30faa43b4e472d90e8634d7134a37c7f59781",
   "scripts": {
     "vscode:prepublish": "yarn cleanbuild",
     "watch": "concurrently 'yarn workspace extension watch' 'yarn workspace webview-ui watch'",
