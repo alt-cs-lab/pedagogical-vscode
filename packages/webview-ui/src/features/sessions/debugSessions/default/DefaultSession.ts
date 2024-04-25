@@ -90,6 +90,7 @@ export default class DefaultSession extends BaseSession {
    * fetch new objects from the debug adapter, then build the nodes and edges for React Flow.
    */
   debuggerStoppedEffect: AppListenerEffect = async (action, api) => {
+    api.cancelActiveListeners();
     api.dispatch(defaultActions.updateLastPause(this.id));
     api.dispatch(defaultActions.removeAllDebugObjects(this.id));
 
