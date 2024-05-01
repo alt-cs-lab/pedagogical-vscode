@@ -1,6 +1,10 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { ReactFlowProvider } from "reactflow";
 import { DebugNodeContainer } from "../components/nodes";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+
+const store = configureStore({ reducer: {} });
 
 // default export determines where story goes in the story list
 const meta: Meta<typeof DebugNodeContainer> = {
@@ -8,9 +12,11 @@ const meta: Meta<typeof DebugNodeContainer> = {
   decorators: [
     (Story) => (
       <div style={{ width: "min-content", margin: "0 auto" }}>
-        <ReactFlowProvider>
-          <Story />
-        </ReactFlowProvider>
+        <Provider store={store}>
+          <ReactFlowProvider>
+            <Story />
+          </ReactFlowProvider>
+        </Provider>
       </div>
     ),
   ],
@@ -24,6 +30,7 @@ export const Variables: Story = {
     type: "commonVariables",
     data: {
       name: "MyVariableType",
+      measuredSize: null,
       items: [
         {
           name: "i",
@@ -55,6 +62,7 @@ export const Array: Story = {
     type: "commonArray",
     data: {
       name: "MyVariableType",
+      measuredSize: null,
       items: [
         {
           name: "0",
@@ -86,6 +94,7 @@ export const StackFrame: Story = {
     type: "commonStackFrame",
     data: {
       name: "MyStackFrame",
+      measuredSize: null,
       scopes: [
         {
           name: "Locals",
@@ -135,7 +144,9 @@ export const StackFrame: Story = {
 export const StackTrace: Story = {
   args: {
     type: "commonStackTrace",
-    data: {},
+    data: {
+      measuredSize: null,
+    },
     height: 400,
     width: 100,
   },

@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { devToolsEnhancer } from "@redux-devtools/remote";
 import { startMessageObserver } from "./util/messageObserver";
 import { AppListenerMiddlewareInstance, appListenerMiddleware } from "./listenerMiddleware";
 import sessionsSlice from "./features/sessions/sessionsSlice";
@@ -20,18 +19,6 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().prepend(appListenerMiddleware.middleware),
   devTools: isDevEnvironment,
-  enhancers: isDevEnvironment
-    ? [
-        devToolsEnhancer({
-          hostname: "localhost",
-          port: 8000,
-          secure: false,
-          realtime: isDevEnvironment,
-          suppressConnectErrors: true,
-          maxAge: 150,
-        }),
-      ]
-    : undefined,
 });
 
 startStateChangedListener(appListenerMiddleware as AppListenerMiddlewareInstance);
