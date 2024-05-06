@@ -72,3 +72,7 @@ If the webview is open and you don't see the instance in devtools, wait a few se
 ## Adding debugger support
 
 Becuase debuggers are implemented differently for each language, support needs to be added for each debugger to guarantee accurate information in Pedagogical. If you are a developer who would like to add support for a specific language or debugger, read the guide [Adding Debugger Support to Pedagogical](docs/adding-debugger-support.md).
+
+## Publishing
+
+See [publishing.md](docs/publishing.md)

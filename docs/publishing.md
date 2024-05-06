@@ -12,6 +12,8 @@ Increment the version in `package.json` then run `yarn vsce package` to make sur
 It should create `pedagogical-x.x.x.vsix`, which should be less than 1MB.
 If you want to test this package, right-click the file in vscode and click Install Extension VSIX.
 
+After you publish the extension, please also upload the VSIX package in a new release on GitHub.
+
 ## Authenticate in vsce
 
 If you aren't already logged in to `vsce`, start by generating a personal access token.
