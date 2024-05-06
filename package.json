@@ -1,6 +1,6 @@
 {
   "name": "pedagogical",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "displayName": "Pedagogical",
   "description": "Real-time visualization of your program's debug state",
   "publisher": "ksu-alt-cs",
@@ -58,7 +58,7 @@
     "@types/node": "^20.11.20",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
-    "@vscode/vsce": "^2.24.0",
+    "@vscode/vsce": "^2.26.1",
     "concurrently": "^8.2.0",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^8.8.0",

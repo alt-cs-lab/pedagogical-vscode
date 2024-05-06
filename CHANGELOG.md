@@ -1,5 +1,10 @@
 # Pedagogical Changelog
 
+## v0.1.2
+
+- Fixed buggy behavior when stepping too fast.
+- Fixed missing colors in some color themes.
+
 ## v0.1.1
 
 - Fixed an issue where the flow layout wouldn't adapt to node dimension changes.
