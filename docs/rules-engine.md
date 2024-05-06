@@ -135,7 +135,7 @@ Right now the only event that Pedagogical really uses is the `accept` event, whi
 ### Facts
 A [fact] is a method or constant registered with the engine prior to runtime and referenced within rule conditions. In other words, facts are basically just variables that you set before processing the rules.
 
-Each engine in Pedagogical has facts defined for that engine's debug symbol type, the parent debug symbols, and possibly some metadata like the recursion depth. Check the interfaces defined at the top of each file in [packages/webview-ui/src/features/rulesEngine/engines/](packages/webview-ui/src/features/rulesEngine/engines/) folder to see what facts are defined.
+Each engine in Pedagogical has facts defined for that engine's debug symbol type, the parent debug symbols, and possibly some metadata like the recursion depth. Check the interfaces defined at the top of each file in [packages/webview-ui/src/features/rulesEngine/engines/](../packages/webview-ui/src/features/rulesEngine/engines/) folder to see what facts are defined.
 
 ### Almanac
 
@@ -149,7 +149,7 @@ A benefit of using JSON-defined rules is that users can create their own JSON fi
 
 ### Schema
 
-Object types are defined in [packages/shared/src/rules](packages/shared/src/rules), and those rules are used to generate [pedagogical-rules-schema.json](schemas/pedagogical-rules-schema.json), so you can benefit from type hints and autocompletion when writing custom rules. If you add more types, run `yarn generate-schema` to update the schema.
+Object types are defined in [packages/shared/src/rules](../packages/shared/src/rules), and those rules are used to generate [pedagogical-rules-schema.json](../schemas/pedagogical-rules-schema.json), so you can benefit from type hints and autocompletion when writing custom rules. If you add more types, run `yarn generate-schema` to update the schema.
 
 ## API
 
@@ -157,7 +157,7 @@ Here are lists of all the rules, operators, facts and events you can use when de
 
 ### List of rules
 
-Check the files in [packages/extension/src/rules/builtin](packages/extension/src/rules/builtin) to see all the rules that Pedagogical uses by default. These can be referenced in user-defined rules.
+Check the files in [packages/extension/src/rules/builtin](../packages/extension/src/rules/builtin) to see all the rules that Pedagogical uses by default. These can be referenced in user-defined rules.
 
 ### List of events
 
@@ -175,7 +175,7 @@ Some of these operators are built-in to json-rules-engine, and others are define
 
 - String and numeric
   - `equal` - fact must equal value (uses strict equality, ===)
-  - `notEqual` - fact must not equal value (string inequality, !==)
+  - `notEqual` - fact must not equal value (strict inequality, !==)
 - String (facts are converted to strings before evaluating)
   - `matchesRegExp` - fact must match against `RegExp(params.pattern, params.flags)`
   - `notMatchesRegExp` - fact must not match against `RegExp(params.pattern, params.flags)`
