@@ -5,5 +5,12 @@
     "titleBar.activeBackground": "#770000",
     "titleBar.inactiveBackground": "#772222",
     "activityBar.background": "#770000"
-  }
+  },
+  // Uncomment to test different color themes without changing your user settings
+  // "workbench.colorTheme": "Solarized Dark",
+  // "workbench.colorTheme": "GitHub Dark Default",
+  // "workbench.colorTheme": "Default Light Modern",
+  // "workbench.colorTheme": "GitHub Light Default",
+  // "workbench.colorTheme": "Default High Contrast",
+  // "workbench.colorTheme": "Default High Contrast Light",
 }

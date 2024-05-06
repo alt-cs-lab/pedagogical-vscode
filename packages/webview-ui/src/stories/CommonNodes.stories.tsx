@@ -1,10 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { ReactFlowProvider } from "reactflow";
 import { DebugNodeContainer } from "../components/nodes";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-
-const store = configureStore({ reducer: {} });
 
 // default export determines where story goes in the story list
 const meta: Meta<typeof DebugNodeContainer> = {
@@ -12,11 +8,9 @@ const meta: Meta<typeof DebugNodeContainer> = {
   decorators: [
     (Story) => (
       <div style={{ width: "min-content", margin: "0 auto" }}>
-        <Provider store={store}>
-          <ReactFlowProvider>
-            <Story />
-          </ReactFlowProvider>
-        </Provider>
+        <ReactFlowProvider>
+          <Story />
+        </ReactFlowProvider>
       </div>
     ),
   ],

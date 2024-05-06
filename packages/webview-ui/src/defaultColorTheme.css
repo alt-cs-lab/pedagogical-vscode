@@ -1,3 +1,8 @@
+/*
+ * Style declarations for the "Default Dark Modern" theme.
+ * VSCode should override these values with whatever color theme is used.
+ * These declarations act as a fallback in case a theme doesn't have one of these values for some reason.
+ */
 html {
   --vscode-font-family: "Segoe WPC", "Segoe UI", sans-serif;
   --vscode-font-weight: normal;
